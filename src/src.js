@@ -7,7 +7,6 @@ class Space {
         console.log('exploring!')
     }
 
-    
 }
 
 
@@ -52,11 +51,10 @@ class Game {
     }
 
 
-
-
     generateSpace() {
         this.addSpace(new Space())
     }
+
 
     addSpace(space) {
         this.spaces.push(space)
@@ -68,9 +66,7 @@ class Game {
         // create array of size x, y
         // populate with values of y
 
-        // should i be defining all these variables as this.map etc??
-
-        let map = [];
+        const map = [];
         for (let i = 0; i < row; i++) {
             map[i] = [];
             for (let j = 0; j < col; j++)
@@ -84,26 +80,28 @@ class Game {
 
         // 1. generate an empty map
 
-        let col = 10;  // map size
-        let row = 10;
-        let array2d = this.generateMap(col, row);
+        const col =10;  // map size
+        const row = 10;
+        const array2d = this.generateMap(col, row);
 
         // 2. seed map with initial elements
 
-        let landscapeElements = ['t', 'M', '.']; // trees, mountains, plains (?)
-        let numberOfUniqueElements = ((col * row) / (col + row));  // sparse initial seeding
-        let xSeeded = [];  // track seed locations
-        let ySeeded = [];
+        const landscapeElements = ['t', 'M', '.']; // trees, mountains, plains (?)
+        const numberOfUniqueElements = 20;  // rich initial seeding
+        // const numberOfUniqueElements = ((col * row) / (col + row));  // sparse initial seeding
+
+        const xSeeded = [];  // track seed locations
+        const ySeeded = [];
 
         for (let i = 0; i < numberOfUniqueElements; i++) {
 
             // find random location on map
-            let xSeed = Math.floor(Math.random() * col);
-            let ySeed = Math.floor(Math.random() * row);
+            const xSeed = Math.floor(Math.random() * col);
+            const ySeed = Math.floor(Math.random() * row);
 
             // get random element from available elements
-            let randomElementIndex = Math.floor(Math.random() * landscapeElements.length);
-            let randomElement = landscapeElements[randomElementIndex];
+            const randomElementIndex = Math.floor(Math.random() * landscapeElements.length);
+            const randomElement = landscapeElements[randomElementIndex];
             
             // inject element into map
 
@@ -119,26 +117,29 @@ class Game {
         // 2. grow element territories from seeds
 
 
-        let mapPopulated = false;   // loop until entire map is filled
+        // loop until entire map is filled:
+        // let mapPopulated = false;   
         // while (!mapPopulated) {
-        // }
 
+        // }
 
 
         function growLoop(xIncrement, yIncrement) { // add probability arg (?)
 
 
             for (let j = 0; j < xSeeded.length; j++) {
-                let probability = Math.floor(Math.random() * 3);  // likelihood of growing from seed
-                let x = xSeeded[j];
-                let y = ySeeded[j];
-                let growSource = array2d[x][y]; // find a seeded location
+                const probability = Math.floor(Math.random() * 3);  // likelihood of growing from seed
+                const x = xSeeded[j];
+                const y = ySeeded[j];
+                const growSource = array2d[x][y]; // find a seeded location
 
-                if (array2d[x + xIncrement] === undefined) {  // returns undefined if try seeding beyond map edges
-                    break  // would rather not break ... just skip to the next one
-    
-                } else if (array2d[x + xIncrement][y + yIncrement] !== NaN) {
-                    if (probability === 0) { // 66% chance
+                if (array2d[x + xIncrement] === undefined) {  // returns undefined if seeding beyond X axis
+                    continue;     
+                } else if (array2d[x + xIncrement][y + yIncrement] !== NaN) {  
+                    // hmmm.. what to do if that location is larger than the Y axis size?
+                    // currently this code will not seed beyond left border of Y axis,
+                    // but will append characters to the end...
+                    if (probability === 0) { // 50% chance
                         console.log('probability check ' + j);
                         array2d[x + xIncrement][y + yIncrement] = growSource;  // assign neighboring location seed
                         xSeeded.push(x + xIncrement); // adding the new seed location
@@ -152,41 +153,29 @@ class Game {
         // seed a cell (x,y) from initial seed
         // idea is to move to neighboring cells to have contained shapes
 
-        growLoop(-1,1);
+
         growLoop(-1,-1);
+        growLoop(-1,1);
         growLoop(1,-1);
         growLoop(1,1);
-        // growLoop(0,1); // motion in just one direction freezes browser?
-        // growLoop(1,0);
+        growLoop(0,1); // now it works?
+        growLoop(1,0);
 
-
-
-
-
-
-
-
-
-
+        // return the map from this function
 
 
         // convert 2D array map into browser-displayable strings
+        // migrate this section to displayMap()
 
-        let array1d = [];
+        const array1d = [];
         for (let i = 0; i < array2d.length; i++) {
             array1d.push(array2d[i].join(''));
         }
-        let mapDisplay = array1d.join('<br />');
-        let map = document.getElementById('map');
+        const mapDisplay = array1d.join('<br />');
+        const map = document.getElementById('map');
         map.innerHTML = mapDisplay;
-
         // console.log(mapDisplay);
-
-
-
     }
-
-
 
 
     displaySpace() {
