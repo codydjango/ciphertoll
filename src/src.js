@@ -1,19 +1,25 @@
-class Space {
-    constructor() {
-        console.log('creating space!')
-    }
+class Map {
 
-    explore() {
-        console.log('exploring!')
-    }
+    constructor(col, row) {
+        console.log('creating map')
 
+    }
 }
-
 
 class Game {
     constructor() {
         this.initGame()
         this.startGame()
+    }
+
+    initGame() {
+        this.spaces = [];
+        this.generateSpace();
+        this.gameOver = false;
+        const map = this.instantiateEmptyMap(10,10)
+        this.renderMap(map)
+        console.log(map)
+//        this.populateMap();
     }
 
     startGame() {
@@ -43,13 +49,10 @@ class Game {
         // calculate stats
     }
 
-    initGame() {
-        this.spaces = [];
-        this.generateSpace();
-        this.gameOver = false;
-        this.populateMap();
-    }
 
+    explore() {
+        console.log(`exploring the ${this.kind} zone!`)
+    }
 
     generateSpace() {
         this.addSpace(new Space())
@@ -61,16 +64,17 @@ class Game {
     }
 
 
-    generateMap(col, row) {
+    instantiateEmptyMap(col, row) {
 
         // create array of size x, y
-        // populate with values of y
+        // populate with value '.'
 
         const map = [];
         for (let i = 0; i < row; i++) {
             map[i] = [];
-            for (let j = 0; j < col; j++)
-            map[i].push(j);
+            for (let j = 0; j < col; j++) {
+                map[i].push('.');
+            }
         }
         return map;
     }
@@ -123,7 +127,7 @@ class Game {
 
         // }
 
-
+/*
         function growLoop(xIncrement, yIncrement) { // add probability arg (?)
 
 
@@ -149,10 +153,10 @@ class Game {
             }
         }
 
-
+*/
         // seed a cell (x,y) from initial seed
         // idea is to move to neighboring cells to have contained shapes
-
+/*
 
         growLoop(-1,-1);
         growLoop(-1,1);
@@ -161,20 +165,31 @@ class Game {
         growLoop(0,1); // now it works?
         growLoop(1,0);
 
+*/
+
         // return the map from this function
 
 
+
+ 
+
+
+    }
+
+
+    renderMap(instantiatedMap) {
         // convert 2D array map into browser-displayable strings
         // migrate this section to displayMap()
 
-        const array1d = [];
-        for (let i = 0; i < array2d.length; i++) {
-            array1d.push(array2d[i].join(''));
+        const condensedMap = [];
+        for (let i = 0; i < instantiatedMap.length; i++) {
+            condensedMap.push(instantiatedMap[i].join(''));
         }
-        const mapDisplay = array1d.join('<br />');
-        const map = document.getElementById('map');
-        map.innerHTML = mapDisplay;
+        const renderedMap = condensedMap.join('<br />');
+        const el = document.getElementById('map');
+        el.innerHTML = renderedMap;
         // console.log(mapDisplay);
+
     }
 
 
