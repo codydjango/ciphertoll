@@ -1,47 +1,43 @@
+class Utility {
+
+}
+
+
 class Map {
 
     constructor(col, row) {
         console.log('creating map')
 
         const grid = this.init(col, row)
-        const gridWithSeeds = this.seed(grid);
+        const seededGrid = this.seed(grid)
         
-        this.render(gridWithSeeds)
+        this.grow(seededGrid)
+
+        this.render(seededGrid)
+
+        
     }
 
     init(col, row) {
+        // create array of size col, row
+        // populate with value '.'
         this._col = col
         this._row = row
-
-        // create array of size x, y
-        // populate with value '.'
-
-        const map = [];
-        
+        const grid = []
         for (let i = 0; i < row; i++) {
-            map[i] = [];
+            grid[i] = []
             for (let j = 0; j < col; j++) {
-                map[i].push('.');
+                grid[i].push('.')
             }
         }
-
-        return map
+        return grid
     }
 
-    getNumberOfElementSeeds() {
-        // const numberOfElementSeeds = 4; // rich initial seeding
-        return ((this._col * this._row) / (this._col + this._row));  // sparse initial seeding
-    }
-
-    randomize(mult) {
-        return Math.floor(Math.random() * mult)
-    } 
 
     seed(grid) {
-        // 2. seed map with initial elements
+        // seed map with initial elements
 
-        const landscapeElements = ['t', 'M', '*']; // trees, mountains, plains (?)
-
+        const landscapeElements = ['t', 'M', '*']
         const numberOfElementSeeds = this.getNumberOfElementSeeds()
 
         const randomElements = []
@@ -55,55 +51,138 @@ class Map {
 
         const seedLocations = this.generateSeedLocations(randomElements)
 
-        seedLocations.map((seedLocation, index) => grid[seedLocation.x][seedLocation.y] = randomElements[index])
+        seedLocations.map((seedLocation, index) => 
+            grid[seedLocation.x][seedLocation.y] = randomElements[index])
 
-        this._seedLocation = seedLocations
+        this._seedLocations = seedLocations
         this._randomElements = randomElements
 
         return grid
     }
 
-    generateSeedLocations(randomElements) {
-        const seedLocations = randomElements.map(i => {
-            return { x: this.randomize(this._col), y: this.randomize(this._row)}
-        })
+    getNumberOfElementSeeds() {
+           //  return 1 // test setting
+    
+             return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
+    }
 
+    randomize(mult) {
+        return Math.floor(Math.random() * mult)
+    }
+
+    probability(percentage) {
+        this.randomize(100) + 1 // random number out of 100
+
+        // const probability = Math.floor(Math.random() * 3);  // likelihood of growing from seed
+        //         if (probability === 0) { // 50% chance
+        //             console.log('probability check ' + j);
+        //             array2d[x + xIncrement][y + yIncrement] = growSource;  // assign neighboring location seed
+        //             xSeeded.push(x + xIncrement); // adding the new seed location
+        //             ySeeded.push(y + yIncrement);
+        //         }
+        //     }
+        // }
+
+    }
+
+
+    generateSeedLocations(randomElements) {  // create array of objects
+        const seedLocations = randomElements.map(element => {
+            return { 
+                x: this.randomize(this._row - 1),   
+                y: this.randomize(this._col - 1)
+            }
+        })
         return seedLocations
     }
 
-    growLoop(xIncrement, yIncrement) { // add probability arg (?)
-        // 2. grow element territories from seeds
 
-        // loop until entire map is filled:
-        // let mapPopulated = false;   
-        // while (!mapPopulated) {
-
-
-        for (let j = 0; j < xSeeded.length; j++) {
-            const probability = Math.floor(Math.random() * 3);  // likelihood of growing from seed
-            const x = xSeeded[j];
-            const y = ySeeded[j];
-            const growSource = array2d[x][y]; // find a seeded location
-
-            if (array2d[x + xIncrement] === undefined) {  // returns undefined if seeding beyond X axis
-                continue;     
-            } else if (array2d[x + xIncrement][y + yIncrement] !== NaN) {  
-                // hmmm.. what to do if that location is larger than the Y axis size?
-                // currently this code will not seed beyond left border of Y axis,
-                // but will append characters to the end...
-                if (probability === 0) { // 50% chance
-                    console.log('probability check ' + j);
-                    array2d[x + xIncrement][y + yIncrement] = growSource;  // assign neighboring location seed
-                    xSeeded.push(x + xIncrement); // adding the new seed location
-                    ySeeded.push(y + yIncrement);
-                }
-            }
+    checkSeed(seed) {
+        if (seed[0] >= this._col || seed[0] < 0 ||
+            seed[1] >= this._row || seed[1] < 0) {
+            console.log('rejected seed ' + seed)
+            return [this._seedLocations[0].x, this._seedLocations[0].y] // original seed 
+            // can't return null, undefined, [] ...
+        } else {
+            return seed
         }
     }
 
+
+    directions() {
+        const directions = {
+            north: { x: 0, y: -1 },
+            south: { x: 0, y: 1 },
+            east: { x: 1, y: 0 },
+            west: { x: -1, y: 0 },
+            northwest: { x: -1, y: -1 },
+            northeast: { x: 1, y: -1 },
+            southeast: { x: 1, y: 1 },
+            southwest: { x: -1, y: 1 }
+        }
+        return directions
+    }
+
+
+    getNextGenSeeds() {
+        const nextGenSeeds = this._seedLocations.map((location) => {   
+            const directions = this.directions()
+            const seeds = []
+            for (let direction in directions) {  // for each direction
+                let directionValues = directions[direction]
+                const nextGenSeed = []
+                for (let key in directionValues) {  // for each key in each direction
+                    if (key === 'x') {
+                        const x = location.x + directionValues[key]  // move from seeded location to new location
+                        nextGenSeed.push(x)
+                    } else if (key === 'y') {
+                        const y = location.y + directionValues[key]  // currently only works for seed element 0
+                        nextGenSeed.push(y)
+                    }
+                }
+                seeds.push(nextGenSeed)
+            }
+            return seeds // return from .map
+        })
+
+        return nextGenSeeds
+    }
+
+
+    grow(seededGrid)   {
+
+        // loop until entire map is filled:
+        // let mapPopulated = false;   
+        // while (!mapPopulated) {}
+
+        const allSeeds = this.getNextGenSeeds()
+        console.log('seeds: ', allSeeds)
+
+        const goodSeeds = []  // oldschool way to do it
+        for (let seeds of allSeeds) {
+            for (let seed of seeds) {
+                const goodSeed = this.checkSeed(seed)
+                goodSeeds.push(goodSeed)
+            }
+        }
+
+        // const goodSeeds = seeds.filter((seed) => {  // better, but does not filter!
+        //     return this.checkSeed(seed)
+        // })
+        console.log('good seeds: ', goodSeeds)
+
+        // now build the map
+        for (let goodSeed of goodSeeds) {
+            const x = goodSeed[0]
+            const y = goodSeed[1]
+            seededGrid[x][y] = this._randomElements[0] // currently only works for seed index 0
+            // try keying to index of allSeeds
+        } 
+    }
+
+
     render(grid) {
         // convert 2D array map into browser-displayable strings
-        // migrate this section to displayMap()
 
         const condensedMap = [];
         for (let i = 0; i < grid.length; i++) {
@@ -116,6 +195,8 @@ class Map {
         el.innerHTML = renderedMap;
     }
 }
+
+
 
 class Game {
     constructor() {
@@ -148,22 +229,6 @@ window.game = new Game();
 
 
 
-
-
-
-// seed a cell (x,y) from initial seed
-// idea is to move to neighboring cells to have contained shapes
-
-// return the map from this function
-// growLoop(-1,-1);
-// growLoop(-1,1);
-// growLoop(1,-1);
-// growLoop(1,1);
-// growLoop(0,1); // now it works?
-// growLoop(1,0);
-// 
-// 
-// 
 //     giveOptionForAction() {
         // if (window.prompt('Exit?', 'Sure') === 'Sure') {
             // this.gameOver = true
