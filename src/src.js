@@ -2,6 +2,16 @@ class Utility {
 
 }
 
+const DIRECTIONS = {
+    north: { x: 0, y: -1 },
+    south: { x: 0, y: 1 },
+    east: { x: 1, y: 0 },
+    west: { x: -1, y: 0 },
+    northwest: { x: -1, y: -1 },
+    northeast: { x: 1, y: -1 },
+    southeast: { x: 1, y: 1 },
+    southwest: { x: -1, y: 1 }
+}
 
 class Map {
 
@@ -13,9 +23,9 @@ class Map {
         
         this.grow(seededGrid)
 
-        this.render(seededGrid)
+        this.seededGrid = seededGrid
 
-        
+        this.render()
     }
 
     init(col, row) {
@@ -61,9 +71,8 @@ class Map {
     }
 
     getNumberOfElementSeeds() {
-           //  return 1 // test setting
-    
-             return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
+        //  return 1 // test setting
+        return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
     }
 
     randomize(mult) {
@@ -110,17 +119,7 @@ class Map {
 
 
     directions() {
-        const directions = {
-            north: { x: 0, y: -1 },
-            south: { x: 0, y: 1 },
-            east: { x: 1, y: 0 },
-            west: { x: -1, y: 0 },
-            northwest: { x: -1, y: -1 },
-            northeast: { x: 1, y: -1 },
-            southeast: { x: 1, y: 1 },
-            southwest: { x: -1, y: 1 }
-        }
-        return directions
+        return DIRECTIONS
     }
 
 
@@ -149,7 +148,7 @@ class Map {
     }
 
 
-    grow(seededGrid)   {
+    grow(seededGrid) {
 
         // loop until entire map is filled:
         // let mapPopulated = false;   
@@ -180,8 +179,8 @@ class Map {
         } 
     }
 
-
-    render(grid) {
+    render() {
+        const grid = this.seededGrid
         // convert 2D array map into browser-displayable strings
 
         const condensedMap = [];
@@ -189,10 +188,15 @@ class Map {
             condensedMap.push(grid[i].join(''));
         }
 
+
         const renderedMap = condensedMap.join('<br />');
         const el = document.getElementById('map');
 
         el.innerHTML = renderedMap;
+    }
+
+    draw() {
+        this.render()
     }
 }
 
@@ -207,7 +211,7 @@ class Game {
     initGame() {
         this.spaces = [];
         this.gameOver = false;
-        this.map = new Map(10, 10)
+        this.map = new Map(30, 10)
     }
 
     startGame() {
@@ -220,6 +224,10 @@ class Game {
 
     explore() {
         console.log(`exploring the ${this.kind} zone!`)
+    }
+
+    draw() {
+        this.map.draw()
     }
 }
 
