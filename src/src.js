@@ -1,6 +1,9 @@
 class Utility {
-
+    static contains(obj, property) {
+        return Object.keys(obj).indexOf(String(property)) !== -1
+    }
 }
+
 
 const DIRECTIONS = {
     north: { x: 0, y: -1 },
@@ -26,6 +29,9 @@ class Map {
         this.seededGrid = seededGrid
 
         this.render()
+
+        this.setInitialCharacterCoordinates()
+
     }
 
     init(col, row) {
@@ -198,8 +204,52 @@ class Map {
     draw() {
         this.render()
     }
-}
 
+    setInitialCharacterCoordinates() {
+
+        const initialCoordinates = [9, 9]
+        const x = initialCoordinates[0]
+        const y = initialCoordinates[1]
+        const characterLocation = this.seededGrid[y][x]
+
+        console.log(`character coordinates: ${initialCoordinates}`)
+        console.log(`character location: ${characterLocation}`)
+        
+        this.coordinates = initialCoordinates
+    }
+
+    updateCharacterCoordinates(move) {
+        const newCoordinates = [this.coordinates[0] + move.x, this.coordinates[1] + move.y]
+        console.log(`character coordinates: ${newCoordinates}`)
+ 
+        const x = newCoordinates[0]
+        const y = newCoordinates[1]
+        const characterLocation = this.seededGrid[y][x]
+        console.log(`character location: ${characterLocation}`)
+
+        this.coordinates = newCoordinates
+
+    }
+
+    moveDudeNorth() {
+        console.log('north')
+        this.updateCharacterCoordinates(DIRECTIONS.north)
+    }
+
+    moveDudeSouth() {
+        console.log('south')
+        this.updateCharacterCoordinates(DIRECTIONS.south)
+    }
+    moveDudeWest() {
+        console.log('west')
+        this.updateCharacterCoordinates(DIRECTIONS.west)
+    }
+    moveDudeEast() {
+        console.log('east')
+        this.updateCharacterCoordinates(DIRECTIONS.east)
+    }
+
+}
 
 
 class Game {
@@ -212,6 +262,16 @@ class Game {
         this.spaces = [];
         this.gameOver = false;
         this.map = new Map(30, 10)
+        this.input = this.initUserInput()
+    }
+
+    initUserInput() {
+        return new UserInput({
+            '38': this.map.moveDudeNorth.bind(this.map),
+            '37': this.map.moveDudeWest.bind(this.map),
+            '39': this.map.moveDudeEast.bind(this.map),
+            '40': this.map.moveDudeSouth.bind(this.map),
+        })
     }
 
     startGame() {
@@ -231,6 +291,22 @@ class Game {
     }
 }
 
+
+class UserInput {
+    constructor(keyActionMap) {
+        this.keyActionMap = keyActionMap
+
+        document.onkeydown = this.tryActionForEvent.bind(this)
+    }
+
+    tryActionForEvent(event) {
+        if (!Utility.contains(this.keyActionMap, event.keyCode)) {
+            console.log(`not a valid keycode: ${event.keyCode}`)
+        } else {
+            this.keyActionMap[event.keyCode]()
+        }
+    }
+}
 
 window.game = new Game();
 
