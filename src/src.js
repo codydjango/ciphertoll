@@ -1,10 +1,3 @@
-class Utility {
-    static contains(obj, property) {
-        return Object.keys(obj).indexOf(String(property)) !== -1
-    }
-}
-
-
 const DIRECTIONS = {
     north: { x: 0, y: -1 },
     south: { x: 0, y: 1 },
@@ -16,10 +9,18 @@ const DIRECTIONS = {
     southwest: { x: -1, y: 1 }
 }
 
-class Map {
+
+class Utility {
+    static contains(obj, property) {
+        return Object.keys(obj).indexOf(String(property)) !== -1
+    }
+}
+
+
+class MapGenerator {
 
     constructor(col, row) {
-        console.log('creating map')
+        console.log('generating map')
 
         const grid = this.init(col, row)
         const seededGrid = this.seed(grid)
@@ -27,11 +28,6 @@ class Map {
         this.grow(seededGrid)
 
         this.seededGrid = seededGrid
-
-        this.render()
-
-        this.setInitialCharacterCoordinates()
-
     }
 
     init(col, row) {
@@ -49,7 +45,6 @@ class Map {
         return grid
     }
 
-
     seed(grid) {
         // seed map with initial elements
 
@@ -61,16 +56,15 @@ class Map {
             // get random element from available elements
             const randomElementIndex = this.randomize(landscapeElements.length);
             const randomElement = landscapeElements[randomElementIndex];
-            
             randomElements.push(randomElement)
         }
 
-        const seedLocations = this.generateSeedLocations(randomElements)
+        const seeds = this.generateSeedLocations(randomElements)
 
-        seedLocations.map((seedLocation, index) => 
+        seeds.map((seedLocation, index) => 
             grid[seedLocation.x][seedLocation.y] = randomElements[index])
 
-        this._seedLocations = seedLocations
+        this._seeds = seeds
         this._randomElements = randomElements
 
         return grid
@@ -85,72 +79,16 @@ class Map {
         return Math.floor(Math.random() * mult)
     }
 
-    probability(percentage) {
-        this.randomize(100) + 1 // random number out of 100
-
-        // const probability = Math.floor(Math.random() * 3);  // likelihood of growing from seed
-        //         if (probability === 0) { // 50% chance
-        //             console.log('probability check ' + j);
-        //             array2d[x + xIncrement][y + yIncrement] = growSource;  // assign neighboring location seed
-        //             xSeeded.push(x + xIncrement); // adding the new seed location
-        //             ySeeded.push(y + yIncrement);
-        //         }
-        //     }
-        // }
-
-    }
-
-
     generateSeedLocations(randomElements) {  // create array of objects
-        const seedLocations = randomElements.map(element => {
+        const seeds = randomElements.map(el => {
             return { 
+                element: el,
                 x: this.randomize(this._row - 1),   
                 y: this.randomize(this._col - 1)
             }
         })
-        return seedLocations
-    }
-
-
-    checkSeed(seed) {
-        if (seed[0] >= this._col || seed[0] < 0 ||
-            seed[1] >= this._row || seed[1] < 0) {
-            console.log('rejected seed ' + seed)
-            return [this._seedLocations[0].x, this._seedLocations[0].y] // original seed 
-            // can't return null, undefined, [] ...
-        } else {
-            return seed
-        }
-    }
-
-
-    directions() {
-        return DIRECTIONS
-    }
-
-
-    getNextGenSeeds() {
-        const nextGenSeeds = this._seedLocations.map((location) => {   
-            const directions = this.directions()
-            const seeds = []
-            for (let direction in directions) {  // for each direction
-                let directionValues = directions[direction]
-                const nextGenSeed = []
-                for (let key in directionValues) {  // for each key in each direction
-                    if (key === 'x') {
-                        const x = location.x + directionValues[key]  // move from seeded location to new location
-                        nextGenSeed.push(x)
-                    } else if (key === 'y') {
-                        const y = location.y + directionValues[key]  // currently only works for seed element 0
-                        nextGenSeed.push(y)
-                    }
-                }
-                seeds.push(nextGenSeed)
-            }
-            return seeds // return from .map
-        })
-
-        return nextGenSeeds
+        console.log(seeds)
+        return seeds
     }
 
 
@@ -185,24 +123,83 @@ class Map {
         } 
     }
 
-    render() {
-        const grid = this.seededGrid
-        // convert 2D array map into browser-displayable strings
+    getNextGenSeeds() {
+        const nextGenSeeds = this._seeds.map((location) => {   
+        
+            const directions = DIRECTIONS
+            const seeds = []
+        
+            for (let direction in directions) {  // for each direction
+                let directionValues = directions[direction]
+                const nextGenSeed = []
+                for (let key in directionValues) {  // for each key in each direction
+                    if (key === 'x') {
+                        const x = location.x + directionValues[key]  // move from seeded location to new location
+                        nextGenSeed.push(x)
+                    } else if (key === 'y') {
+                        const y = location.y + directionValues[key]  // currently only works for seed element 0
+                        nextGenSeed.push(y)
+                    }
+                }
+                seeds.push(nextGenSeed)
+            }
+            return seeds // return from .map
+        })
 
-        const condensedMap = [];
-        for (let i = 0; i < grid.length; i++) {
-            condensedMap.push(grid[i].join(''));
-        }
-
-
-        const renderedMap = condensedMap.join('<br />');
-        const el = document.getElementById('map');
-
-        el.innerHTML = renderedMap;
+        return nextGenSeeds
     }
 
-    draw() {
+    checkSeed(seed) {
+        if (seed[1] >= this._col || seed[1] < 0 ||   // fixed checkSeed bug!
+            seed[0] >= this._row || seed[0] < 0) {
+            console.log('rejected seed ' + seed)
+            return [this._seeds[0].x, this._seeds[0].y] // original seed 
+            // can't return null, undefined, [] ...
+        } else {
+            return seed
+        }
+    }
+
+
+    probability(percentage) {
+        this.randomize(100) + 1 // random number out of 100
+
+        // const probability = Math.floor(Math.random() * 3);  // likelihood of growing from seed
+        //         if (probability === 0) { // 50% chance
+        //             console.log('probability check ' + j);
+        //             array2d[x + xIncrement][y + yIncrement] = growSource;  // assign neighboring location seed
+        //             xSeeded.push(x + xIncrement); // adding the new seed location
+        //             ySeeded.push(y + yIncrement);
+        //         }
+        //     }
+        // }
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+class Map {
+
+    constructor(col, row) {
+
+        this.generatedMap = new MapGenerator(30, 10)
+        console.log('map instantiated')
+
+
+        this.setInitialCharacterCoordinates()
+
         this.render()
+
+
+
     }
 
     setInitialCharacterCoordinates() {
@@ -210,7 +207,7 @@ class Map {
         const initialCoordinates = [9, 9]
         const x = initialCoordinates[0]
         const y = initialCoordinates[1]
-        const characterLocation = this.seededGrid[y][x]
+        const characterLocation = this.generatedMap.seededGrid[y][x]
 
         console.log(`character coordinates: ${initialCoordinates}`)
         console.log(`character location: ${characterLocation}`)
@@ -224,7 +221,7 @@ class Map {
  
         const x = newCoordinates[0]
         const y = newCoordinates[1]
-        const characterLocation = this.seededGrid[y][x]
+        const characterLocation = this.generatedMap.seededGrid[y][x]
         console.log(`character location: ${characterLocation}`)
 
         this.coordinates = newCoordinates
@@ -247,6 +244,26 @@ class Map {
     moveDudeEast() {
         console.log('east')
         this.updateCharacterCoordinates(DIRECTIONS.east)
+    }
+
+    render() {
+        const grid = this.generatedMap.seededGrid
+        // convert 2D array map into browser-displayable strings
+
+        const condensedMap = [];
+        for (let i = 0; i < grid.length; i++) {
+            condensedMap.push(grid[i].join(''));
+        }
+
+
+        const renderedMap = condensedMap.join('<br />');
+        const el = document.getElementById('map');
+
+        el.innerHTML = renderedMap;
+    }
+
+    draw() {
+        this.render()
     }
 
 }
