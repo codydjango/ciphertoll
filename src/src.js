@@ -24,10 +24,11 @@ class MapGenerator {
 
         const grid = this.init(col, row)
         const seededGrid = this.seed(grid)
-        
-        this.grow(seededGrid)
-
         this.seededGrid = seededGrid
+        
+        this.grow()
+
+
     }
 
     init(col, row) {
@@ -46,14 +47,12 @@ class MapGenerator {
     }
 
     seed(grid) {
-        // seed map with initial elements
 
         const landscapeElements = ['t', 'M', '*']
         const numberOfElementSeeds = this.getNumberOfElementSeeds()
 
         const randomElements = []
         for (let i = 0; i < numberOfElementSeeds; i++) {
-            // get random element from available elements
             const randomElementIndex = this.randomize(landscapeElements.length);
             const randomElement = landscapeElements[randomElementIndex];
             randomElements.push(randomElement)
@@ -87,78 +86,81 @@ class MapGenerator {
                 y: this.randomize(this._col - 1)
             }
         })
-        console.log(seeds)
+        console.log('seeds: ', seeds)
         return seeds
     }
 
 
-    grow(seededGrid) {
+    grow() {
 
         // loop until entire map is filled:
         // let mapPopulated = false;   
         // while (!mapPopulated) {}
 
-        const allSeeds = this.getNextGenSeeds()
-        console.log('seeds: ', allSeeds)
-
-        const goodSeeds = []  // oldschool way to do it
-        for (let seeds of allSeeds) {
-            for (let seed of seeds) {
-                const goodSeed = this.checkSeed(seed)
-                goodSeeds.push(goodSeed)
+        const allSeeds = this.getNextGenSeeds() // returns array of OBJECTS now
+        const goodSeeds = []
+        allSeeds.forEach((seed) => {
+            const checkedSeed = this.checkSeed(seed)
+            if (checkedSeed !== undefined) { 
+                goodSeeds.push(checkedSeed) 
             }
-        }
+        })
 
-        // const goodSeeds = seeds.filter((seed) => {  // better, but does not filter!
-        //     return this.checkSeed(seed)
-        // })
-        console.log('good seeds: ', goodSeeds)
+        console.log('goodSeeds: ', goodSeeds)
 
         // now build the map
         for (let goodSeed of goodSeeds) {
-            const x = goodSeed[0]
-            const y = goodSeed[1]
-            seededGrid[x][y] = this._randomElements[0] // currently only works for seed index 0
-            // try keying to index of allSeeds
+            const x = goodSeed.x
+            const y = goodSeed.y
+            
+            // occasional bug ... 
+            this.seededGrid[x][y] = goodSeed.element
+
         } 
     }
 
+    checkSeed(seed) {
+        
+        if ((seed.y < this._col && seed.y >= 0) &&   // new bugs in checkSeed?
+            (seed.x < this._row && seed.x >= 0)) {
+            return seed
+
+        } else {
+            console.log('rejected seed: ', seed)
+
+        }
+    }
+
+
     getNextGenSeeds() {
-        const nextGenSeeds = this._seeds.map((location) => {   
+        const nextGenSeeds = []
+
+        this._seeds.forEach((location) => {   
+                            
+            for (let direction in DIRECTIONS) {  // for each direction
+                let directionValues = DIRECTIONS[direction]
         
-            const directions = DIRECTIONS
-            const seeds = []
-        
-            for (let direction in directions) {  // for each direction
-                let directionValues = directions[direction]
-                const nextGenSeed = []
+                const nextGenSeed = {}
                 for (let key in directionValues) {  // for each key in each direction
+                    nextGenSeed.element = location.element
                     if (key === 'x') {
-                        const x = location.x + directionValues[key]  // move from seeded location to new location
-                        nextGenSeed.push(x)
+                    nextGenSeed.x = location.x + directionValues[key]  // move from seeded location to new location
                     } else if (key === 'y') {
-                        const y = location.y + directionValues[key]  // currently only works for seed element 0
-                        nextGenSeed.push(y)
+                    nextGenSeed.y = location.y + directionValues[key]  // currently only works for seed element 0
                     }
+
                 }
-                seeds.push(nextGenSeed)
+                nextGenSeeds.push(nextGenSeed)
             }
-            return seeds // return from .map
         })
+
+        console.log('nextGenSeeds: ', nextGenSeeds)
 
         return nextGenSeeds
     }
 
-    checkSeed(seed) {
-        if (seed[1] >= this._col || seed[1] < 0 ||   // fixed checkSeed bug!
-            seed[0] >= this._row || seed[0] < 0) {
-            console.log('rejected seed ' + seed)
-            return [this._seeds[0].x, this._seeds[0].y] // original seed 
-            // can't return null, undefined, [] ...
-        } else {
-            return seed
-        }
-    }
+
+
 
 
     probability(percentage) {
