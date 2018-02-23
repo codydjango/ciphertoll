@@ -9,6 +9,27 @@ const DIRECTIONS = {
     southwest: { x: -1, y: 1 }
 }
 
+const LANDSCAPE = [
+    {
+        element: '|',
+        description: ''
+    }, {
+        element: ';',
+        description: ''
+    }, {
+        element: '*',
+        description: ''
+    }, {
+        element: ',',
+        description: '' 
+    }, {
+        element: ':',
+        description: ''
+    }, {
+        element: '.',
+        description: ''
+    }
+]
 
 class Utility {
     static contains(obj, property) {
@@ -36,11 +57,14 @@ class MapGenerator {
         // populate with value '.'
         this._col = col
         this._row = row
+        const bareLandscape = 'Q'
+        this.bareLandscape = bareLandscape
         const grid = []
+
         for (let i = 0; i < row; i++) {
             grid[i] = []
             for (let j = 0; j < col; j++) {
-                grid[i].push('.')
+                grid[i].push(bareLandscape)
             }
         }
         return grid
@@ -48,7 +72,7 @@ class MapGenerator {
 
     seed(grid) {
 
-        const landscapeElements = ['t', 'M', '*']
+        const landscapeElements = LANDSCAPE.map(el => el.element)
         const numberOfElementSeeds = this.getNumberOfElementSeeds()
 
         const randomElements = []
@@ -64,13 +88,14 @@ class MapGenerator {
             grid[seedLocation.x][seedLocation.y] = randomElements[index])
 
         this._seeds = seeds
-        this._randomElements = randomElements
+        this.landscapeElements = landscapeElements
+        // this._randomElements = randomElements
 
         return grid
     }
 
     getNumberOfElementSeeds() {
-        //  return 1 // test setting
+        //  return 1        // test setting
         return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
     }
 
@@ -93,49 +118,88 @@ class MapGenerator {
 
     grow() {
 
-        // loop until entire map is filled:
-        // let mapPopulated = false;   
-        // while (!mapPopulated) {}
+        let seeds = this._seeds
+        let mapPopulated = false
 
-        const allSeeds = this.getNextGenSeeds() // returns array of OBJECTS now
-        const goodSeeds = []
-        allSeeds.forEach((seed) => {
-            const checkedSeed = this.checkSeed(seed)
-            if (checkedSeed !== undefined) { 
-                goodSeeds.push(checkedSeed) 
+        while (mapPopulated === false) {   // introduce while loop to populate entire map
+
+            const nextGenSeeds = this.getNextGenSeeds(seeds)    // get next generation of seeds
+            let goodSeeds = []
+           // goodSeeds.splice(0, goodSeeds.length)  // trying to clear the array... maybe here?
+
+            nextGenSeeds.forEach((seed) => {
+                const checkedSeed = this.checkSeed(seed)    // check that seed is on map
+                if (checkedSeed !== null) { 
+                    goodSeeds.push(checkedSeed) // problem: goodSeed is too large
+                }
+            })
+
+            console.log('goodSeeds: ', goodSeeds)
+
+            for (let goodSeed of goodSeeds) {
+                const x = goodSeed.x
+                const y = goodSeed.y
+                if (this.seededGrid[x][y] === this.bareLandscape) {
+                    this.seededGrid[x][y] = goodSeed.element    // inject seed into grid
+                }
             }
-        })
 
-        console.log('goodSeeds: ', goodSeeds)
-
-        // now build the map
-        for (let goodSeed of goodSeeds) {
-            const x = goodSeed.x
-            const y = goodSeed.y
-            
-            // occasional bug ... 
-            this.seededGrid[x][y] = goodSeed.element
-
-        } 
-    }
-
-    checkSeed(seed) {
-        
-        if ((seed.y < this._col && seed.y >= 0) &&   // new bugs in checkSeed?
-            (seed.x < this._row && seed.x >= 0)) {
-            return seed
-
-        } else {
-            console.log('rejected seed: ', seed)
-
+            let unseededLocations = this.countUnseeded()    // find number of unseeded locations
+            console.log('unseededLocations: ', unseededLocations)
+            if (unseededLocations === 0) {
+                mapPopulated = true     // loop until all locations are seeded
+            } else {
+                seeds = goodSeeds  // feed all goodSeeds back into the grower
+                // goodSeeds.splice(0, goodSeeds.length)  // trying to clear the array, doesn't work in this position
+            }
         }
     }
 
 
-    getNextGenSeeds() {
-        const nextGenSeeds = []
+    countUnseeded() {
+        const flattenedGrid = [].concat.apply([], this.seededGrid)
+        let count = 0
+        for (let i of flattenedGrid) {
+            if (i === this.bareLandscape) {
+                count++
+            }
+        }
+        return count
+    }
 
-        this._seeds.forEach((location) => {   
+
+    checkSeed(seed) {
+
+        const x = seed.x
+        const y = seed.y
+        
+        let goodSeed = false
+
+        if ((y < this._col && y >= 0) &&  
+            (x < this._row && x >= 0)) {
+            goodSeed = true
+        } else {
+            return null
+        }
+
+        if (this.seededGrid[x][y] !== this.bareLandscape) {
+            console.log('location already seeded')
+            goodSeed = false
+        }
+        
+        if (goodSeed === true) {
+            return seed
+        } else {
+            // console.log('rejected seed: ', seed)
+            return null
+        }
+
+    }
+
+
+    getNextGenSeeds(seeds) {
+        const nextGenSeeds = []
+        seeds.forEach((location) => {   
                             
             for (let direction in DIRECTIONS) {  // for each direction
                 let directionValues = DIRECTIONS[direction]
@@ -156,6 +220,7 @@ class MapGenerator {
 
         console.log('nextGenSeeds: ', nextGenSeeds)
 
+        this.nextGenSeeds = nextGenSeeds
         return nextGenSeeds
     }
 
