@@ -27,10 +27,10 @@ class Map {
         this.grow(seededGrid)
 
         this.seededGrid = seededGrid
-
+        this.setInitialCharacterCoordinates()
         this.render()
 
-        this.setInitialCharacterCoordinates()
+
 
     }
 
@@ -186,23 +186,28 @@ class Map {
     }
 
     render() {
-        const grid = this.seededGrid
         // convert 2D array map into browser-displayable strings
+        const displayGrid = this.seededGrid.map(arr => { return arr.slice() })
 
-        const condensedMap = [];
-        for (let i = 0; i < grid.length; i++) {
-            condensedMap.push(grid[i].join(''));
+        const character = '@'
+
+        const x = this.coordinates[0]
+        const y = this.coordinates[1]
+        displayGrid[y][x] = character
+
+        const renderedGrid = [];
+        for (let i = 0; i < displayGrid.length; i++) {
+            renderedGrid.push(displayGrid[i].join(''));
         }
 
 
-        const renderedMap = condensedMap.join('<br />');
+        const gridToHTML = renderedGrid.join('<br />');
+
+
+        // display the rendered ap
         const el = document.getElementById('map');
 
-        el.innerHTML = renderedMap;
-    }
-
-    draw() {
-        this.render()
+        el.innerHTML = gridToHTML;
     }
 
     setInitialCharacterCoordinates() {
@@ -234,19 +239,26 @@ class Map {
     moveDudeNorth() {
         console.log('north')
         this.updateCharacterCoordinates(DIRECTIONS.north)
+        this.render()
     }
 
     moveDudeSouth() {
         console.log('south')
         this.updateCharacterCoordinates(DIRECTIONS.south)
+        this.render()
+
     }
     moveDudeWest() {
         console.log('west')
         this.updateCharacterCoordinates(DIRECTIONS.west)
+        this.render()
+
     }
     moveDudeEast() {
         console.log('east')
         this.updateCharacterCoordinates(DIRECTIONS.east)
+        this.render()
+
     }
 
 }
@@ -284,10 +296,6 @@ class Game {
 
     explore() {
         console.log(`exploring the ${this.kind} zone!`)
-    }
-
-    draw() {
-        this.map.draw()
     }
 }
 
