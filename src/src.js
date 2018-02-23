@@ -124,8 +124,9 @@ class MapGenerator {
         while (mapPopulated === false) {   // introduce while loop to populate entire map
 
             const nextGenSeeds = this.getNextGenSeeds(seeds)    // get next generation of seeds
-            let goodSeeds = []
-           // goodSeeds.splice(0, goodSeeds.length)  // trying to clear the array... maybe here?
+            
+            let goodSeeds = []  // goodSeeds clears itself automatically
+            this.goodSeeds = goodSeeds
 
             nextGenSeeds.forEach((seed) => {
                 const checkedSeed = this.checkSeed(seed)    // check that seed is on map
@@ -150,7 +151,6 @@ class MapGenerator {
                 mapPopulated = true     // loop until all locations are seeded
             } else {
                 seeds = goodSeeds  // feed all goodSeeds back into the grower
-                // goodSeeds.splice(0, goodSeeds.length)  // trying to clear the array, doesn't work in this position
             }
         }
     }
@@ -172,25 +172,32 @@ class MapGenerator {
 
         const x = seed.x
         const y = seed.y
-        
-        let goodSeed = false
+        let seedSucceeds = false
 
+        // check that seed is within grid bounds
         if ((y < this._col && y >= 0) &&  
             (x < this._row && x >= 0)) {
-            goodSeed = true
+            seedSucceeds = true
         } else {
             return null
         }
 
+        // check that seed location is not already seeded
         if (this.seededGrid[x][y] !== this.bareLandscape) {
-            console.log('location already seeded')
-            goodSeed = false
-        }
+            seedSucceeds = false
+        }        
+
+        // check that seed location is not already waiting to be seeded
+        this.goodSeeds.forEach(goodSeed => {
+            if ((x === goodSeed.x) &&
+                (y === goodSeed.y)) {
+                seedSucceeds = false
+            }
+        })
         
-        if (goodSeed === true) {
+        if (seedSucceeds === true) {
             return seed
         } else {
-            // console.log('rejected seed: ', seed)
             return null
         }
 
