@@ -11,27 +11,41 @@ const DIRECTIONS = {
 
 const LANDSCAPE = [
     {
-        element: '|',
-        description: ''
-    }, {
-        element: ';',
-        description: ''
-    }, {
-        element: '*',
-        description: ''
+        element: '.',
+        description: '',
+        probability: 28
     }, {
         element: ',',
-        description: '' 
+        description: '',
+        probability: 28
     }, {
-        element: ':',
-        description: ''
+        element: ';',
+        description: '',
+        probability: 22
     }, {
-        element: '.',
-        description: ''
+        element: '^',
+        description: '',
+        probability: 22
+    }, {
+        element: '*',
+        description: '',
+        probability: 22
+    }, {
+        element: ';',
+        description: '',
+        probability: 22
+    }, {
+        element: '^',
+        description: '',
+        probability: 22
+    }, {
+        element: '*',
+        description: '',
+        probability: 22
     }
 ]
 
-
+// klhjkhjklh
 class Utility {
     static contains(obj, property) {
         return Object.keys(obj).indexOf(String(property)) !== -1
@@ -42,7 +56,6 @@ class Utility {
 class MapGenerator {
     constructor(col, row) {
         console.log('generating map')
-
         const grid = this.init(col, row)
         const seededGrid = this.seed(grid)
         this.seededGrid = seededGrid
@@ -59,7 +72,7 @@ class MapGenerator {
         // populate with value '.'
         this._col = col
         this._row = row
-        const bareLandscape = 'Q'
+        const bareLandscape = '&nbsp;'
         this.bareLandscape = bareLandscape
         const grid = []
 
@@ -73,31 +86,26 @@ class MapGenerator {
     }
 
     seed(grid) {
-        const landscapeElements = LANDSCAPE.map(el => el.element)
         const numberOfElementSeeds = this.getNumberOfElementSeeds()
-
         const randomElements = []
         for (let i = 0; i < numberOfElementSeeds; i++) {
-            const randomElementIndex = this.randomize(landscapeElements.length);
-            const randomElement = landscapeElements[randomElementIndex];
+            const randomElementIndex = this.randomize(LANDSCAPE.length);
+            const randomElement = LANDSCAPE[randomElementIndex];
             randomElements.push(randomElement)
         }
 
         const seeds = this.generateSeedLocations(randomElements)
-
-        seeds.map((seedLocation, index) => 
-            grid[seedLocation.x][seedLocation.y] = randomElements[index])
-
+        seeds.map(seed => grid[seed.x][seed.y] = seed.element)
+        // console.log('seeds: ', seeds)
         this._seeds = seeds
-        this.landscapeElements = landscapeElements
-        // this._randomElements = randomElements
 
         return grid
     }
 
     getNumberOfElementSeeds() {
         //  return 1        // test setting
-        return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
+        // return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
+        return (this._col + this._row)  // rich initial seeding
     }
 
     randomize(mult) {
@@ -106,13 +114,10 @@ class MapGenerator {
 
     generateSeedLocations(randomElements) {  // create array of objects
         const seeds = randomElements.map(el => {
-            return { 
-                element: el,
-                x: this.randomize(this._row - 1),   
-                y: this.randomize(this._col - 1)
-            }
+            el.x = this.randomize(this._row - 1)
+            el.y = this.randomize(this._col - 1)
+            return el
         })
-        console.log('seeds: ', seeds)
         return seeds
     }
 
@@ -124,6 +129,10 @@ class MapGenerator {
 
             const nextGenSeeds = this.getNextGenSeeds(seeds)    // get next generation of seeds
             
+            if (nextGenSeeds.length === 0) {
+                mapPopulated = true
+            }
+
             let goodSeeds = []  // goodSeeds clears itself automatically
             this.goodSeeds = goodSeeds
 
@@ -134,7 +143,7 @@ class MapGenerator {
                 }
             })
 
-            console.log('goodSeeds: ', goodSeeds)
+            // console.log('goodSeeds: ', goodSeeds)
 
             for (let goodSeed of goodSeeds) {
                 const x = goodSeed.x
@@ -168,7 +177,6 @@ class MapGenerator {
 
 
     checkSeed(seed) {
-
         const x = seed.x
         const y = seed.y
         let seedSucceeds = false
@@ -205,22 +213,28 @@ class MapGenerator {
 
     getNextGenSeeds(seeds) {
         const nextGenSeeds = []
-        seeds.forEach((location) => {   
+        seeds.forEach((originalSeed) => {   
                             
             for (let direction in DIRECTIONS) {  // for each direction
-                let directionValues = DIRECTIONS[direction]
-        
-                const nextGenSeed = {}
-                for (let key in directionValues) {  // for each key in each direction
-                    nextGenSeed.element = location.element
-                    if (key === 'x') {
-                    nextGenSeed.x = location.x + directionValues[key]  // move from seeded location to new location
-                    } else if (key === 'y') {
-                    nextGenSeed.y = location.y + directionValues[key]  // currently only works for seed element 0
-                    }
+                const directionValues = DIRECTIONS[direction]       
+                const nextGenSeed = Object.assign({}, originalSeed)
 
+                
+                const percentage = nextGenSeed.probability
+                const probabilityCheck = (this.probability(percentage))
+
+                if (probabilityCheck === true) {
+                
+                    for (let key in directionValues) {  // for each key in each direction
+                        if (key === 'x') {
+                        nextGenSeed.x = originalSeed.x + directionValues[key]  // move from seeded location to new location
+                        } else if (key === 'y') {
+                        nextGenSeed.y = originalSeed.y + directionValues[key]  // currently only works for seed element 0
+                        }
+
+                    }
+                    nextGenSeeds.push(nextGenSeed)
                 }
-                nextGenSeeds.push(nextGenSeed)
             }
         })
 
@@ -230,26 +244,31 @@ class MapGenerator {
         return nextGenSeeds
     }
 
+
     probability(percentage) {
-        this.randomize(100) + 1 // random number out of 100
+        const probabilityArray = []
+        for (let i = 0; i < percentage; i++) {
+            probabilityArray.push(true)
+        }
+        for (let i = 0; i < 100 - percentage; i++) {
+            probabilityArray.push(false)
+        }
+        // console.log('probabilityArray: ', probabilityArray)
+        
+        const index = this.randomize(100)
+        // console.log(probabilityArray[index])
 
-        // const probability = Math.floor(Math.random() * 3);  // likelihood of growing from seed
-        //         if (probability === 0) { // 50% chance
-        //             console.log('probability check ' + j);
-        //             array2d[x + xIncrement][y + yIncrement] = growSource;  // assign neighboring location seed
-        //             xSeeded.push(x + xIncrement); // adding the new seed location
-        //             ySeeded.push(y + yIncrement);
-        //         }
-        //     }
-        // }
-
+        return probabilityArray[index]
     }
+
+
+
 }
 
 
 class Map {
     constructor(col, row) {
-        this.generatedMap = new MapGenerator(110, 30)
+        this.generatedMap = new MapGenerator(220, 60)
 
         console.log('map instantiated')
         this.setInitialCharacterCoordinates()
