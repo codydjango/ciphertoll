@@ -1,7 +1,27 @@
+body {
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    text-align: center;
+}
+
 #map {
-	font-family: monospace;
-	font-size: 20px;
-	margin: 30px;
-	border: 1px solid black;
-	padding: 60px;
+    font-family: monospace;
+    margin: 30px;
+    border: 1px solid black;
+    padding: 60px;
+    display: inline-block;
+}
+
+.character {
+    color: red;
+}
+
+.item {
+    position: relative;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    font-size: 14px;
+    line-height: 20px;
 }
