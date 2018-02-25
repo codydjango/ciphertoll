@@ -331,9 +331,10 @@ class Map {
         displayGrid[y][x] = this.getCharacter()
 
         const renderedGrid = [];
+
         for (let i = 0; i < displayGrid.length; i++) {
             const rowItems = displayGrid[i]
-            const row = _.reduce(rowItems, (sum, item) => sum + this.renderItem(item), '')
+            const row = rowItems.reduce((sum, item) => sum + this.renderItem(item), '')
 
             renderedGrid.push(row);
         }
