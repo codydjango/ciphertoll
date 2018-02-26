@@ -268,7 +268,7 @@ class MapGenerator {
 
 class Map {
     constructor(col, row) {
-        this.generatedMap = new MapGenerator(220, 60)
+        this.generatedMap = new MapGenerator(col, row)
 
         console.log('map instantiated')
         this.setInitialCharacterCoordinates()
@@ -327,20 +327,35 @@ class Map {
         this.render()
     }
 
+    getCharacter() {
+        const character = '@'
+        return character
+    }
+
+    renderItem(item) {
+        let cls = ''
+        if (item === '@') {
+            cls = 'character'
+        }
+        return `<span class="item ${cls}">${item}</span>`
+    }
+
     render() {
         // convert 2D array map into browser-displayable strings
         const displayGrid = this.generatedMap.seededGrid.map(arr => { return arr.slice() })
 
-        const character = '@'
-
         const x = this.coordinates[0]
         const y = this.coordinates[1]
         
-        displayGrid[y][x] = character
+        displayGrid[y][x] = this.getCharacter()
 
         const renderedGrid = [];
+
         for (let i = 0; i < displayGrid.length; i++) {
-            renderedGrid.push(displayGrid[i].join(''));
+            const rowItems = displayGrid[i]
+            const row = rowItems.reduce((sum, item) => sum + this.renderItem(item), '')
+
+            renderedGrid.push(row);
         }
 
         const gridToHTML = renderedGrid.join('<br />');
@@ -366,7 +381,7 @@ class Game {
     initGame() {
         this.spaces = [];
         this.gameOver = false;
-        this.map = new Map(30, 10)
+        this.map = new Map(60, 60)
         this.input = this.initUserInput()
     }
 
