@@ -3,25 +3,76 @@ body {
     margin: 0px;
     overflow: hidden;
     text-align: center;
+    background-color: black;
 }
 
 #map {
     font-family: monospace;
-    margin: 30px;
-    border: 1px solid black;
-    padding: 60px;
-    display: inline-block;
+    /*margin: 30px;*/
+    /*border: 1px solid grey;*/
+    /*padding: 60px;*/
+    /*display: inline-block;*/
+
+    display: block;
+    padding: 0px;
+    margin: 0px;
+    border: 0;
+    position: relative;
+}
+
+#landscape-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+}
+
+#character-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    /*position: absolute;*/
+    /*left: 50;*/
+    /*top: 50;*/
+    /*z-index: 1;*/
 }
 
 .character {
-    color: red;
+    color: #969392;
 }
+
+.period {
+    color: #2A331D;
+}
+
+.comma {
+    color: #3E4A29;
+}
+
+.semicolon {
+    color: #7D9654;
+}
+
+.asterisk {
+    color: #485730;
+}
+
+.grave: {
+    color: #B2D678;
+}
+
 
 .item {
     position: relative;
     display: inline-block;
     width: 10px;
     height: 10px;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 12px;
+    line-height: 10px;
+}
+
+.character {
+    display: block;
+    position: absolute;
 }
