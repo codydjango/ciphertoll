@@ -9,46 +9,6 @@ const DIRECTIONS = {
     southwest: { x: -1, y: 1 }
 }
 
-const LANDSCAPE = [
-    {
-        element: '.',
-        description: '',
-        probability: 28,
-        cls: 'period'
-    }, {
-        element: ',',
-        description: '',
-        probability: 28,
-        cls: 'comma'
-    }, {
-        element: ';',
-        description: '',
-        probability: 22,
-        cls: 'semicolon'
-    }, {
-        element: '^',
-        description: '',
-        probability: 22,
-        cls: 'grave'
-    }, {
-        element: '*',
-        description: '',
-        probability: 22,
-        cls: 'asterisk'
-    }
-]
-
-const BARELANDSCAPE = {
-    element: '&nbsp;',
-    cls: 'blank'
-}
-
-
-class Topography {
-    
-}
-
-
 class Utility {
     static contains(obj, property) {
         return Object.keys(obj).indexOf(String(property)) !== -1
@@ -75,9 +35,56 @@ class Utility {
 }
 
 
+class Topography {
+    constructor() {
+        this.features = this.features()
+        this.bare = this.bare()
+    }
+
+    features() {
+        return [
+        {
+            element: '.',
+            description: '',
+            probability: 28,
+            cls: 'period'
+        }, {
+            element: ',',
+            description: '',
+            probability: 28,
+            cls: 'comma'
+        }, {
+            element: ';',
+            description: '',
+            probability: 22,
+            cls: 'semicolon'
+        }, {
+            element: '^',
+            description: '',
+            probability: 22,
+            cls: 'grave'
+        }, {
+            element: '*',
+            description: '',
+            probability: 22,
+            cls: 'asterisk'
+        }]
+    }
+
+    bare() {
+        return {
+            element: '&nbsp;',
+            cls: 'blank'
+        }
+
+    }
+}
+
+
 class MapGenerator {
     constructor(col, row) {
         console.log('generating map')
+        this.topography = new Topography()
         const grid = this.init(col, row)
         const seededGrid = this.seed(grid)
         this.seededGrid = seededGrid
@@ -96,7 +103,7 @@ class MapGenerator {
         for (let i = 0; i < row; i++) {
             grid[i] = []
             for (let j = 0; j < col; j++) {
-                grid[i].push(BARELANDSCAPE)
+                grid[i].push(this.topography.bare)
             }
         }
         return grid
@@ -105,7 +112,7 @@ class MapGenerator {
     seed(grid) {
         const randomElements = []
         for (let i = 0; i < this.getNumberOfElementSeeds(); i++) {
-            randomElements.push(LANDSCAPE[this.randomize(LANDSCAPE.length)])
+            randomElements.push(this.topography.features[this.randomize(this.topography.features.length)])
         }
         const seeds = this.generateSeedLocations(randomElements)
         seeds.map(seed => grid[seed.x][seed.y] = seed)
@@ -146,7 +153,7 @@ class MapGenerator {
                 }
             })
             for (let goodSeed of goodSeeds) {
-                if (this.seededGrid[goodSeed.x][goodSeed.y] === BARELANDSCAPE) {
+                if (this.seededGrid[goodSeed.x][goodSeed.y] === this.topography.bare) {
                     this.seededGrid[goodSeed.x][goodSeed.y] = goodSeed    
                 }
             }
@@ -163,7 +170,7 @@ class MapGenerator {
         const flattenedGrid = [].concat.apply([], this.seededGrid)
         let count = 0
         for (let i of flattenedGrid) {
-            if (i === BARELANDSCAPE) {
+            if (i === this.topography.bare) {
                 count++
             }
         }
@@ -179,7 +186,7 @@ class MapGenerator {
         } else {
             return null
         }
-        if (this.seededGrid[seed.x][seed.x] !== BARELANDSCAPE) {  
+        if (this.seededGrid[seed.x][seed.x] !== this.topography.bare) {  
             seedSucceeds = false
         }
         this.goodSeeds.forEach(goodSeed => { 
@@ -234,11 +241,7 @@ class MapGenerator {
 }
 
 
-
-
-
-
-class Map {
+class Map {   // aka board, 'play area'
     constructor(col, row) {
         this.col = col
         this.row = row
@@ -256,15 +259,15 @@ class Map {
         return [Math.floor(this.col/2), Math.floor(this.row/2)]
     }
 
-    // updateItemGridIndices(item, move) {
+    // updateGridIndices(sprite, move) {          // possibly make a generalized method?
+    // }                                            // which then takes 'character' / 'sprite' as input?
+    // updateLayer(sprite) {
     // }
-    // updateItemLayer(item) {
-    // }
-    // drawItemLayer(item) {
+    // drawLayer(sprite) {
     // }
 
 
-    moveDudeNorth() {
+    moveDudeNorth() {   // refactor movement into its own space?
         console.log('north')
         this.character.updateGridIndices(DIRECTIONS.north)
         this.character.updateLayer()
