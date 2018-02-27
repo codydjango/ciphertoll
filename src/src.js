@@ -44,6 +44,11 @@ const BARELANDSCAPE = {
 }
 
 
+class Topography {
+    
+}
+
+
 class Utility {
     static contains(obj, property) {
         return Object.keys(obj).indexOf(String(property)) !== -1
@@ -51,6 +56,20 @@ class Utility {
 
     static stringToNumber(string) {
         return string.match(/\d+/)[0]
+    }
+
+    static renderItem(item) {
+        let cls = ''
+        let element = '&nbsp;'
+        if (item) {
+            cls = item.cls
+            element = item.element
+        }
+        let style = ''
+        if (item.top && item.left) {
+            style = `top: ${item.top}px; left: ${item.left}px`
+        }
+        return `<span class="item ${cls}" style="${style}">${element}</span>`
     }
 
 }
@@ -63,6 +82,7 @@ class MapGenerator {
         const seededGrid = this.seed(grid)
         this.seededGrid = seededGrid
         this.grow()
+        console.log('map generated')
     }
 
     getMap() {
@@ -195,7 +215,7 @@ class MapGenerator {
                 }
             }
         })
-        console.log('nextGenSeeds: ', nextGenSeeds)
+        // console.log('nextGenSeeds: ', nextGenSeeds)
         this.nextGenSeeds = nextGenSeeds
         return nextGenSeeds
     }
@@ -222,69 +242,142 @@ class Map {
     constructor(col, row) {
         this.col = col
         this.row = row
+        
         this.generatedMap = new MapGenerator(col, row)
         this.map = this.generatedMap.getMap()
+        this.mapCenter = this.getMapCenter()
 
-        console.log('map instantiated')
-        this.setInitialCharacterGridIndices()
+        this.scenery = new Scenery(this.map)
 
-        this.render()
+        this.character = new Character(this.map, this.mapCenter)
     }
-
 
     getMapCenter() {
         return [Math.floor(this.col/2), Math.floor(this.row/2)]
     }
 
-    setInitialCharacterGridIndices() {
-        const initGridIndices = this.getMapCenter()
-        const characterLocation = this.map[initGridIndices[1]][initGridIndices[0]]
-        this.gridIndices = initGridIndices
+    // updateItemGridIndices(item, move) {
+    // }
+    // updateItemLayer(item) {
+    // }
+    // drawItemLayer(item) {
+    // }
 
-        console.log(`grid indices: ${initGridIndices}`)
-        console.log(`landscape: ${characterLocation.element}`)
-    }
-
-    updateCharacterGridIndices(move) {
-        const newGridIndices = [this.gridIndices[0] + move.x, this.gridIndices[1] + move.y]
-        const characterLocation = this.map[newGridIndices[1]][newGridIndices[0]]
-        this.gridIndices = newGridIndices
-
-        console.log(`grid indices: ${newGridIndices}`)
-        console.log(`landscape: ${characterLocation.element}`)
-    }
 
     moveDudeNorth() {
         console.log('north')
-        this.updateCharacterGridIndices(DIRECTIONS.north)
-        this.updateCharacterLayer()
-        this.drawCharacterLayer()
+        this.character.updateGridIndices(DIRECTIONS.north)
+        this.character.updateLayer()
+        this.character.drawLayer()
     }
 
     moveDudeSouth() {
         console.log('south')
-        this.updateCharacterGridIndices(DIRECTIONS.south)
-        this.updateCharacterLayer()
-        this.drawCharacterLayer()
+        this.character.updateGridIndices(DIRECTIONS.south)
+        this.character.updateLayer()
+        this.character.drawLayer()
 
     }
 
     moveDudeWest() {
         console.log('west')
-        this.updateCharacterGridIndices(DIRECTIONS.west)
-        this.updateCharacterLayer()
-        this.drawCharacterLayer()
+        this.character.updateGridIndices(DIRECTIONS.west)
+        this.character.updateLayer()
+        this.character.drawLayer()
     }
 
     moveDudeEast() {
         console.log('east')
-        this.updateCharacterGridIndices(DIRECTIONS.east)
-        this.updateCharacterLayer()
-        this.drawCharacterLayer()
+        this.character.updateGridIndices(DIRECTIONS.east)
+        this.character.updateLayer()
+        this.character.drawLayer()
+    }
+}
+
+
+class Scenery {
+    constructor(map) {
+        this.map = map
+        this.render()
+        console.log('scenery rendered')
+    }
+
+    setLayer(layer) {
+        this.layer = layer
+    }
+
+    getLayer() {
+        return this.layer
+    }
+
+    createLayer(grid) {
+        const sceneryGrid = []
+        for (let i = 0; i < grid.length; i++) {
+            const rowItems = grid[i]
+            let row = ''
+            for (let i = 0; i < rowItems.length; i++) {
+                row += Utility.renderItem(rowItems[i]) // add rendered items to the grid
+            }
+            sceneryGrid.push(row)
+        }
+        return sceneryGrid
+    }
+
+    render() {
+        const grid = this.map.map(arr => { return arr.slice() })
+        this.setLayer(this.createLayer(grid))
+        this.drawLayer()
+    }
+ 
+    drawLayer() {
+        const renderedLayer = this.getLayer()
+        const gridToHTML = renderedLayer.join('<br />')  // using HTML breaks for now
+        const el = document.getElementById('landscape-layer')
+        el.innerHTML = gridToHTML
+    }
+}
+
+
+class Character {
+    constructor(map, mapCenter) {
+        this.map = map
+        this.mapCenter = mapCenter
+        this.setInitialGridIndices()
+        this.render()
+        console.log('character rendered')
+        
+    }
+
+    setLayer(layer) {
+        this.characterLayer = layer
+    }
+    getLayer() {
+        return this.characterLayer
+    }
+    createLayer() {
+        return Utility.renderItem(this.getCharacter())
+    }
+
+    setInitialGridIndices() {
+        const initGridIndices = this.mapCenter
+        const location = this.map[initGridIndices[1]][initGridIndices[0]]
+        this.gridIndices = initGridIndices
+
+        // console.log(`grid indices: ${initGridIndices}`)
+        console.log(`character location: ${location.element}`)
+    }
+
+    updateGridIndices(move) {
+        const newGridIndices = [this.gridIndices[0] + move.x, this.gridIndices[1] + move.y]
+        const location = this.map[newGridIndices[1]][newGridIndices[0]]
+        this.gridIndices = newGridIndices
+
+        // console.log(`grid indices: ${newGridIndices}`)
+        console.log(`character location: ${location.element}`)
     }
 
     getCharacter() {
-        const { x, y } = this.getCharacterCoordinates()
+        const { x, y } = this.getCoordinates()
         const character = {
             element: '@',
             cls: 'character',
@@ -294,145 +387,49 @@ class Map {
         return character
     }
 
-    renderItem(item) {
-        let cls = ''
-        let element = '&nbsp;'
-
-        if (item) {
-            cls = item.cls
-            element = item.element
-        }
-
-        let style = ''
-        if (item.top && item.left) {    // if item has top / left style qualities
-            style = `top: ${item.top}px; left: ${item.left}px`
-        }
-
-        return `<span class="item ${cls}" style="${style}">${element}</span>`
-    }
-
-    getCharacterGridIndices() {
-        const x = this.gridIndices[0]
-        const y = this.gridIndices[1]
-        return { x, y }
-    }
-
-    getCharacterCoordinates() {
+    getCoordinates() {
         const css = this.getCSSHeightAndWidth()
         const x = this.gridIndices[0] * css.height
         const y = this.gridIndices[1] * css.width
         return { x, y }
     }
 
-
     getCSSHeightAndWidth() {
         const el = document.querySelector('.item')
-        console.log('el: ', el)
         const style = window.getComputedStyle(el)
         const width = Utility.stringToNumber(style.getPropertyValue('width'))
         const height = Utility.stringToNumber(style.getPropertyValue('height'))
         return { width, height }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    createLandscapeLayer(grid) {
-        const landscapeGrid = []
-        for (let i = 0; i < grid.length; i++) {
-            const rowItems = grid[i]
-            let row = ''
-            for (let i = 0; i < rowItems.length; i++) {
-                row += this.renderItem(rowItems[i]) // add rendered items to the grid
-            }
-            landscapeGrid.push(row)
-        }
-        return landscapeGrid
+    updateLayer() {
+        this.setLayer(this.createLayer())
     }
 
-    setLandscapeLayer(layer) {
-        this.landscapeLayer = layer
-    }
-
-    getLandscapeLayer() {
-        return this.landscapeLayer
-    }
-
-    drawLandscapeLayer() {
-        const renderedGrid = this.getLandscapeLayer()
-        const gridToHTML = renderedGrid.join('<br />')  // using HTML breaks for now
-        const el = document.getElementById('landscape-layer')
-        el.innerHTML = gridToHTML;
-    }
-
-
-
-    createCharacterLayer() {
-        return this.renderItem(this.getCharacter())
-    }
-    setCharacterLayer(layer) {
-        this.characterLayer = layer
-    }
-    getCharacterLayer() {
-        return this.characterLayer
-    }
-    drawCharacterLayer() {
+    drawLayer() {
         const el = document.getElementById('character-layer')
-        el.innerHTML = this.getCharacterLayer();
+        el.innerHTML = this.getLayer();
     }
-
-
-
-    moveCharacter(move) {
-        const el = document.getElementById('character')
-
-        el.style.top += move.x
-        el.style.left += move.y
-    }
-
-    updateCharacterLayer() {
-        this.setCharacterLayer(this.createCharacterLayer())
-    }
-
-
-
-
-
-
-
-
-
 
     render() {
-
-        const grid = this.map.map(arr => { return arr.slice() })
-        
-
-
-        this.setLandscapeLayer(this.createLandscapeLayer(grid))
-        this.drawLandscapeLayer()
-
-
-        this.setCharacterLayer(this.createCharacterLayer())
-        this.drawCharacterLayer()
+        this.setLayer(this.createLayer())
+        this.drawLayer()
     }
+    // getCharacterGridIndices() {
+    //     const x = this.gridIndices[0]
+    //     const y = this.gridIndices[1]
+    //     return { x, y }
+    // }
 
-    draw() {
-        this.render()
-    }
+    // moveCharacter(move) {
+    //     const el = document.getElementById('character')
+
+    //     console.log('moveCharacter: ', move)
+
+    //     el.style.top += move.x
+    //     el.style.left += move.y
+    // }
 }
-
-
-
-
 
 
 class Game {
@@ -445,6 +442,7 @@ class Game {
         this.spaces = []
         this.gameOver = false
         this.map = new Map(60, 60)
+
         this.input = this.initUserInput()
     }
 
@@ -486,6 +484,7 @@ class UserInput {
         }
     }
 }
+
 
 window.game = new Game()
 
