@@ -35,48 +35,53 @@ class Utility {
 }
 
 
-class Topography {
+class LandscapeSeeds {
     constructor() {
         this.features = this.features()
         this.bare = this.bare()
     }
 
     features() {
-        return [
-        {
+        const period = {
             element: '.',
             description: '',
             probability: 28,
             cls: 'period'
-        }, {
+        }
+        const comma = {
             element: ',',
             description: '',
             probability: 28,
             cls: 'comma'
-        }, {
+        }
+        const semicolon = {
             element: ';',
             description: '',
             probability: 22,
             cls: 'semicolon'
-        }, {
+        }
+        const grave = {
             element: '^',
             description: '',
             probability: 22,
             cls: 'grave'
-        }, {
+        }
+        const asterisk = {
             element: '*',
             description: '',
             probability: 22,
             cls: 'asterisk'
-        }]
+        }
+        return [period, comma, semicolon, asterisk, grave]
     }
 
     bare() {
-        return {
+        const bare = {
             element: '&nbsp;',
+            description: '',
             cls: 'blank'
         }
-
+        return bare
     }
 }
 
@@ -84,7 +89,7 @@ class Topography {
 class MapGenerator {
     constructor(col, row) {
         console.log('generating map')
-        this.topography = new Topography()
+        this.landscapeSeeds = new LandscapeSeeds()
         const grid = this.init(col, row)
         const seededGrid = this.seed(grid)
         this.seededGrid = seededGrid
@@ -103,7 +108,7 @@ class MapGenerator {
         for (let i = 0; i < row; i++) {
             grid[i] = []
             for (let j = 0; j < col; j++) {
-                grid[i].push(this.topography.bare)
+                grid[i].push(this.landscapeSeeds.bare)
             }
         }
         return grid
@@ -112,7 +117,7 @@ class MapGenerator {
     seed(grid) {
         const randomElements = []
         for (let i = 0; i < this.getNumberOfElementSeeds(); i++) {
-            randomElements.push(this.topography.features[this.randomize(this.topography.features.length)])
+            randomElements.push(this.landscapeSeeds.features[this.randomize(this.landscapeSeeds.features.length)])
         }
         const seeds = this.generateSeedLocations(randomElements)
         seeds.map(seed => grid[seed.x][seed.y] = seed)
@@ -153,7 +158,7 @@ class MapGenerator {
                 }
             })
             for (let goodSeed of goodSeeds) {
-                if (this.seededGrid[goodSeed.x][goodSeed.y] === this.topography.bare) {
+                if (this.seededGrid[goodSeed.x][goodSeed.y] === this.landscapeSeeds.bare) {
                     this.seededGrid[goodSeed.x][goodSeed.y] = goodSeed
                 }
             }
@@ -170,7 +175,7 @@ class MapGenerator {
         const flattenedGrid = [].concat.apply([], this.seededGrid)
         let count = 0
         for (let i of flattenedGrid) {
-            if (i === this.topography.bare) {
+            if (i === this.landscapeSeeds.bare) {
                 count++
             }
         }
@@ -186,7 +191,7 @@ class MapGenerator {
         } else {
             return null
         }
-        if (this.seededGrid[seed.x][seed.x] !== this.topography.bare) {
+        if (this.seededGrid[seed.x][seed.x] !== this.landscapeSeeds.bare) {
             seedSucceeds = false
         }
         this.goodSeeds.forEach(goodSeed => {
@@ -365,18 +370,31 @@ class Character {
         const initGridIndices = this.mapCenter
         const location = this.map[initGridIndices[1]][initGridIndices[0]]
         this.gridIndices = initGridIndices
-
-        // console.log(`grid indices: ${initGridIndices}`)
         console.log(`character location: ${location.element}`)
     }
 
     updateGridIndices(move) {
         const newGridIndices = [this.gridIndices[0] + move.x, this.gridIndices[1] + move.y]
-        const location = this.map[newGridIndices[1]][newGridIndices[0]]
-        this.gridIndices = newGridIndices
+        let location = ''
+        if (this.checkGridIndices(newGridIndices)) {
+            location = this.map[newGridIndices[1]][newGridIndices[0]]
+            this.gridIndices = newGridIndices
+            console.log(`character location: ${location.element}`)
+        } else {
+            location = this.map[this.gridIndices[1], this.gridIndices[0]]
+            console.log("you've reached the map's edge")
+        }
+    }
 
-        // console.log(`grid indices: ${newGridIndices}`)
-        console.log(`character location: ${location.element}`)
+    checkGridIndices(newGridIndices) {
+        let locationOnGrid = false
+        if (this.map[newGridIndices[1]]) {
+            const location = this.map[newGridIndices[1]][newGridIndices[0]]
+            if (location) {
+                locationOnGrid = true
+            }
+        }
+        return locationOnGrid
     }
 
     getCharacter() {
