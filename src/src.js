@@ -141,24 +141,24 @@ class MapGenerator {
     grow() {
         let seeds = this._seeds
         let mapPopulated = false
-        while (mapPopulated === false) { 
+        while (mapPopulated === false) {
             if (this.nextGenerationSeeds(seeds).length === 0) {
                 mapPopulated = true
             }
-            let goodSeeds = []  
+            let goodSeeds = []
             this.goodSeeds = goodSeeds
             this.nextGenerationSeeds(seeds).forEach((seed) => {
                 if (this.checkSeed(seed) !== null) {
-                    goodSeeds.push(this.checkSeed(seed)) 
+                    goodSeeds.push(this.checkSeed(seed))
                 }
             })
             for (let goodSeed of goodSeeds) {
                 if (this.seededGrid[goodSeed.x][goodSeed.y] === this.topography.bare) {
-                    this.seededGrid[goodSeed.x][goodSeed.y] = goodSeed    
+                    this.seededGrid[goodSeed.x][goodSeed.y] = goodSeed
                 }
             }
             if (this.countUnseededLocations() === 0) {
-                mapPopulated = true    
+                mapPopulated = true
             } else {
                 seeds = goodSeeds  // feed all goodSeeds back into the grower
             }
@@ -180,16 +180,16 @@ class MapGenerator {
 
     checkSeed(seed) {
         let seedSucceeds = false
-        if ((seed.x < this._col && seed.x >= 0) &&  
+        if ((seed.x < this._col && seed.x >= 0) &&
             (seed.x < this._row && seed.x >= 0)) {
             seedSucceeds = true
         } else {
             return null
         }
-        if (this.seededGrid[seed.x][seed.x] !== this.topography.bare) {  
+        if (this.seededGrid[seed.x][seed.x] !== this.topography.bare) {
             seedSucceeds = false
         }
-        this.goodSeeds.forEach(goodSeed => { 
+        this.goodSeeds.forEach(goodSeed => {
             if ((seed.x === goodSeed.x) &&
                 (seed.y === goodSeed.y)) {
                 seedSucceeds = false
@@ -207,11 +207,11 @@ class MapGenerator {
     nextGenerationSeeds(seeds) {
         const nextGenSeeds = []
         seeds.forEach((originalSeed) => {
-            for (let direction in DIRECTIONS) { 
+            for (let direction in DIRECTIONS) {
                 const directionValues = DIRECTIONS[direction]
                 const nextGenSeed = Object.assign({}, originalSeed)
                 if (this.probability(nextGenSeed.probability) === true) {
-                    for (let key in directionValues) { 
+                    for (let key in directionValues) {
                         if (key === 'x') {
                         nextGenSeed.x = originalSeed.x + directionValues[key]
                         } else if (key === 'y') {
@@ -245,7 +245,7 @@ class Map {   // aka board, 'play area'
     constructor(col, row) {
         this.col = col
         this.row = row
-        
+
         this.generatedMap = new MapGenerator(col, row)
         this.map = this.generatedMap.getMap()
         this.mapCenter = this.getMapCenter()
@@ -331,7 +331,7 @@ class Scenery {
         this.setLayer(this.createLayer(grid))
         this.drawLayer()
     }
- 
+
     drawLayer() {
         const renderedLayer = this.getLayer()
         const gridToHTML = renderedLayer.join('<br />')  // using HTML breaks for now
@@ -348,7 +348,7 @@ class Character {
         this.setInitialGridIndices()
         this.render()
         console.log('character rendered')
-        
+
     }
 
     setLayer(layer) {
