@@ -17,21 +17,6 @@ class Utility {
     static stringToNumber(string) {
         return string.match(/\d+/)[0]
     }
-
-    static renderItem(item) {
-        let cls = ''
-        let element = '&nbsp;'
-        if (item) {
-            cls = item.cls
-            element = item.element
-        }
-        let style = ''
-        if (item.top && item.left) {
-            style = `top: ${item.top}px; left: ${item.left}px`
-        }
-        return `<span class="item ${cls}" style="${style}">${element}</span>`
-    }
-
 }
 
 
@@ -283,8 +268,32 @@ class Map {   // aka board, 'play area'
 }
 
 
-class Scenery {
+
+class Renderable {
+    constructor() {
+
+    }
+
+    renderItem(item) {
+        let cls = ''
+        let element = '&nbsp;'
+        if (item) {
+            cls = item.cls
+            element = item.element
+        }
+        let style = ''
+        if (item.top && item.left) {
+            style = `top: ${item.top}px; left: ${item.left}px`
+        }
+        return `<span class="item ${cls}" style="${style}">${element}</span>`
+    }
+}
+
+
+
+class Scenery extends Renderable {
     constructor(map) {
+        super()
         this.map = map
         this.render()
         console.log('scenery rendered')
@@ -304,7 +313,7 @@ class Scenery {
             const rowItems = grid[i]
             let row = ''
             for (let i = 0; i < rowItems.length; i++) {
-                row += Utility.renderItem(rowItems[i]) // add rendered items to the grid
+                row += this.renderItem(rowItems[i]) // add rendered items to the grid
             }
             sceneryGrid.push(row)
         }
@@ -326,8 +335,9 @@ class Scenery {
 }
 
 
-class Character {
+class Character extends Renderable {
     constructor(map, mapCenter) {
+        super()
         this.map = map
         this.mapCenter = mapCenter
         this.setInitialGridIndices()
@@ -337,15 +347,15 @@ class Character {
     }
 
     setLayer(layer) {
-        this.characterLayer = layer
+        this.layer = layer
     }
 
     getLayer() {
-        return this.characterLayer
+        return this.layer
     }
 
     createLayer() {
-        return Utility.renderItem(this.getCharacter())
+        return this.renderItem(this.getCharacter())
     }
 
     setInitialGridIndices() {
@@ -390,8 +400,6 @@ class Character {
         return character
     }
 
-
-
     getCoordinates() {
         const css = this.getCSSHeightAndWidth()
         const x = this.gridIndices[0] * css.height
@@ -432,55 +440,16 @@ class Character {
         this.drawLayer()
     }
 
-
-
-
-
-
-    // moveDudeNorth() {   // refactor movement into its own space?
-    //     console.log('north')
-    //     this.character.updateGridIndices(DIRECTIONS.north)
-    //     this.character.updateLayer()
-    //     this.character.drawLayer()
-    // }
-
-    // moveDudeSouth() {
-    //     console.log('south')
-    //     this.character.updateGridIndices(DIRECTIONS.south)
-    //     this.character.updateLayer()
-    //     this.character.drawLayer()
-
-    // }
-
-    // moveDudeWest() {
-    //     console.log('west')
-    //     this.character.updateGridIndices(DIRECTIONS.west)
-    //     this.character.updateLayer()
-    //     this.character.drawLayer()
-    // }
-
-    // moveDudeEast() {
-    //     console.log('east')
-    //     this.character.updateGridIndices(DIRECTIONS.east)
-    //     this.character.updateLayer()
-    //     this.character.drawLayer()
-    // }
-
     // getCharacterGridIndices() {
     //     const x = this.gridIndices[0]
     //     const y = this.gridIndices[1]
     //     return { x, y }
     // }
 
-    // moveCharacter(move) {
-    //     const el = document.getElementById('character')
-
-    //     console.log('moveCharacter: ', move)
-
-    //     el.style.top += move.x
-    //     el.style.left += move.y
-    // }
 }
+
+
+
 
 
 class Game {
@@ -493,8 +462,11 @@ class Game {
         this.spaces = []
         this.gameOver = false
         this.map = new Map(60, 60)
+
         this.character = new Character(this.map.getMap(), this.map.getMapCenter())
-        this.map.setCharacter(this.character)
+
+        this.map.setCharacter(this.character)  // gives map reference to character
+
         this.input = this.initUserInput()
     }
 
