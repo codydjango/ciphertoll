@@ -257,12 +257,21 @@ class Map {   // aka board, 'play area'
 
         this.scenery = new Scenery(this.map)
 
-        this.character = new Character(this.map, this.mapCenter)
+    }
+
+    getMap() {
+        return this.map
     }
 
     getMapCenter() {
         return [Math.floor(this.col/2), Math.floor(this.row/2)]
     }
+
+    setCharacter(character) {
+        this.character = character
+    }
+
+
 
     // updateGridIndices(sprite, move) {          // possibly make a generalized method?
     // }                                            // which then takes 'character' / 'sprite' as input?
@@ -271,35 +280,6 @@ class Map {   // aka board, 'play area'
     // drawLayer(sprite) {
     // }
 
-
-    moveDudeNorth() {   // refactor movement into its own space?
-        console.log('north')
-        this.character.updateGridIndices(DIRECTIONS.north)
-        this.character.updateLayer()
-        this.character.drawLayer()
-    }
-
-    moveDudeSouth() {
-        console.log('south')
-        this.character.updateGridIndices(DIRECTIONS.south)
-        this.character.updateLayer()
-        this.character.drawLayer()
-
-    }
-
-    moveDudeWest() {
-        console.log('west')
-        this.character.updateGridIndices(DIRECTIONS.west)
-        this.character.updateLayer()
-        this.character.drawLayer()
-    }
-
-    moveDudeEast() {
-        console.log('east')
-        this.character.updateGridIndices(DIRECTIONS.east)
-        this.character.updateLayer()
-        this.character.drawLayer()
-    }
 }
 
 
@@ -359,9 +339,11 @@ class Character {
     setLayer(layer) {
         this.characterLayer = layer
     }
+
     getLayer() {
         return this.characterLayer
     }
+
     createLayer() {
         return Utility.renderItem(this.getCharacter())
     }
@@ -370,7 +352,7 @@ class Character {
         const initGridIndices = this.mapCenter
         const location = this.map[initGridIndices[1]][initGridIndices[0]]
         this.gridIndices = initGridIndices
-        console.log(`character location: ${location.element}`)
+        console.log(`location description: ${location.description}`)
     }
 
     updateGridIndices(move) {
@@ -379,7 +361,7 @@ class Character {
         if (this.checkGridIndices(newGridIndices)) {
             location = this.map[newGridIndices[1]][newGridIndices[0]]
             this.gridIndices = newGridIndices
-            console.log(`character location: ${location.element}`)
+            console.log(`location description: ${location.description}`)
         } else {
             location = this.map[this.gridIndices[1], this.gridIndices[0]]
             console.log("you've reached the map's edge")
@@ -407,6 +389,8 @@ class Character {
         }
         return character
     }
+
+
 
     getCoordinates() {
         const css = this.getCSSHeightAndWidth()
@@ -436,6 +420,52 @@ class Character {
         this.setLayer(this.createLayer())
         this.drawLayer()
     }
+
+    getAction(fnName, arg) {
+        return this[fnName].bind(this, arg)
+    }
+
+    move(direction) {
+        console.log(`${direction}`)
+        this.updateGridIndices(DIRECTIONS[direction])
+        this.updateLayer()
+        this.drawLayer()
+    }
+
+
+
+
+
+
+    // moveDudeNorth() {   // refactor movement into its own space?
+    //     console.log('north')
+    //     this.character.updateGridIndices(DIRECTIONS.north)
+    //     this.character.updateLayer()
+    //     this.character.drawLayer()
+    // }
+
+    // moveDudeSouth() {
+    //     console.log('south')
+    //     this.character.updateGridIndices(DIRECTIONS.south)
+    //     this.character.updateLayer()
+    //     this.character.drawLayer()
+
+    // }
+
+    // moveDudeWest() {
+    //     console.log('west')
+    //     this.character.updateGridIndices(DIRECTIONS.west)
+    //     this.character.updateLayer()
+    //     this.character.drawLayer()
+    // }
+
+    // moveDudeEast() {
+    //     console.log('east')
+    //     this.character.updateGridIndices(DIRECTIONS.east)
+    //     this.character.updateLayer()
+    //     this.character.drawLayer()
+    // }
+
     // getCharacterGridIndices() {
     //     const x = this.gridIndices[0]
     //     const y = this.gridIndices[1]
@@ -463,16 +493,17 @@ class Game {
         this.spaces = []
         this.gameOver = false
         this.map = new Map(60, 60)
-
+        this.character = new Character(this.map.getMap(), this.map.getMapCenter())
+        this.map.setCharacter(this.character)
         this.input = this.initUserInput()
     }
 
     initUserInput() {
         return new UserInput({
-            '38': this.map.moveDudeNorth.bind(this.map),
-            '37': this.map.moveDudeWest.bind(this.map),
-            '39': this.map.moveDudeEast.bind(this.map),
-            '40': this.map.moveDudeSouth.bind(this.map),
+            '38': this.character.getAction('move', 'north'),
+            '37': this.character.getAction('move', 'west'),
+            '39': this.character.getAction('move', 'east'),
+            '40': this.character.getAction('move', 'south'),
         })
     }
 
