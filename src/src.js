@@ -17,6 +17,10 @@ class Utility {
     static stringToNumber(string) {
         return string.match(/\d+/)[0]
     }
+
+    static randomize(mult) {
+        return Math.floor(Math.random() * mult)
+    }
 }
 
 
@@ -29,41 +33,41 @@ class LandscapeSeeds {
     features() {
         const period = {
             element: '.',
-            description: '',
-            probability: 28,
+            description: 'the air is choked with dust, static, wifi',
+            probability: 30,
             cls: 'period'
         }
         const comma = {
             element: ',',
-            description: '',
-            probability: 28,
+            description: 'sprawl of smart homes, cul-de-sacs, laneways',
+            probability: 30,
             cls: 'comma'
         }
         const semicolon = {
             element: ';',
-            description: '',
-            probability: 22,
+            description: 'rows of greenhouses: some shattered and barren, others overgrown',
+            probability: 15,
             cls: 'semicolon'
         }
         const grave = {
             element: '^',
-            description: '',
-            probability: 22,
+            description: 'a shimmering field of solar panels, broken and corroded',
+            probability: 15,
             cls: 'grave'
         }
         const asterisk = {
             element: '*',
-            description: '',
-            probability: 22,
+            description: 'hollow users jack in at the datahubs',
+            probability: 15,
             cls: 'asterisk'
         }
-        return [period, comma, semicolon, asterisk, grave]
+        return [period, comma, semicolon, semicolon, asterisk, asterisk, grave, grave]
     }
 
     bare() {
         const bare = {
             element: '&nbsp;',
-            description: '',
+            description: 'concrete and twisted rebar stretch to the horizon',
             cls: 'blank'
         }
         return bare
@@ -87,8 +91,8 @@ class MapGenerator {
     }
 
     init(col, row) {
-        this._col = col
-        this._row = row
+        this.col = col
+        this.row = row
         const grid = []
         for (let i = 0; i < row; i++) {
             grid[i] = []
@@ -102,7 +106,7 @@ class MapGenerator {
     seed(grid) {
         const randomElements = []
         for (let i = 0; i < this.getNumberOfElementSeeds(); i++) {
-            randomElements.push(this.landscapeSeeds.features[this.randomize(this.landscapeSeeds.features.length)])
+            randomElements.push(this.landscapeSeeds.features[Utility.randomize(this.landscapeSeeds.features.length)])
         }
         const seeds = this.generateSeedLocations(randomElements)
         seeds.map(seed => grid[seed.x][seed.y] = seed)
@@ -112,18 +116,14 @@ class MapGenerator {
 
     getNumberOfElementSeeds() {
         //  return 1        // test setting
-        // return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
-        return (this._col + this._row)  // rich initial seeding
-    }
-
-    randomize(mult) {
-        return Math.floor(Math.random() * mult)
+        // return ((this.col * this.row) / (this._col + this.row))  // sparse initial seeding
+        return (this.col + this.row)  // rich initial seeding
     }
 
     generateSeedLocations(randomElements) {
         return randomElements.map(el => {
-            el.x = this.randomize(this._row - 1)
-            el.y = this.randomize(this._col - 1)
+            el.x = Utility.randomize(this.row - 1)
+            el.y = Utility.randomize(this.col - 1)
             return el
         })
     }
@@ -155,7 +155,6 @@ class MapGenerator {
         }
     }
 
-
     countUnseededLocations() {
         const flattenedGrid = [].concat.apply([], this.seededGrid)
         let count = 0
@@ -167,11 +166,10 @@ class MapGenerator {
         return count
     }
 
-
     checkSeed(seed) {
         let seedSucceeds = false
-        if ((seed.x < this._col && seed.x >= 0) &&
-            (seed.x < this._row && seed.x >= 0)) {
+        if ((seed.x < this.col && seed.x >= 0) &&
+            (seed.x < this.row && seed.x >= 0)) {
             seedSucceeds = true
         } else {
             return null
@@ -190,9 +188,7 @@ class MapGenerator {
         } else {
             return null
         }
-
     }
-
 
     nextGenerationSeeds(seeds) {
         const nextGenSeeds = []
@@ -212,11 +208,9 @@ class MapGenerator {
                 }
             }
         })
-        // console.log('nextGenSeeds: ', nextGenSeeds)
         this.nextGenSeeds = nextGenSeeds
         return nextGenSeeds
     }
-
 
     probability(percentage) {
         const probabilityArray = []
@@ -226,22 +220,17 @@ class MapGenerator {
         for (let i = 0; i < 100 - percentage; i++) {
             probabilityArray.push(false)
         }
-        return probabilityArray[this.randomize(100)]
+        return probabilityArray[Utility.randomize(100)]
     }
 }
 
 
-class Map {   // aka board, 'play area'
+class Map {
     constructor(col, row) {
         this.col = col
         this.row = row
-
         this.generatedMap = new MapGenerator(col, row)
         this.map = this.generatedMap.getMap()
-        this.mapCenter = this.getMapCenter()
-
-        this.scenery = new Scenery(this.map)
-
     }
 
     getMap() {
@@ -252,14 +241,18 @@ class Map {   // aka board, 'play area'
         return [Math.floor(this.col/2), Math.floor(this.row/2)]
     }
 
+    getRandomMapLocation() {
+        return [Utility.randomize(this.row - 1), Utility.randomize(this.col - 1)]
+    }
+
     setCharacter(character) {
         this.character = character
     }
 
 
 
-    // updateGridIndices(sprite, move) {          // possibly make a generalized method?
-    // }                                            // which then takes 'character' / 'sprite' as input?
+    // updateGridIndices(sprite, move) {  // possibly make a generalized method?
+    // }                                  // which then takes 'character' / 'sprite' as input?
     // updateLayer(sprite) {
     // }
     // drawLayer(sprite) {
@@ -269,34 +262,9 @@ class Map {   // aka board, 'play area'
 
 
 
-class Renderable {
+class Renderable {  // generalized render functions for Scenery, Character
     constructor() {
 
-    }
-
-    renderItem(item) {
-        let cls = ''
-        let element = '&nbsp;'
-        if (item) {
-            cls = item.cls
-            element = item.element
-        }
-        let style = ''
-        if (item.top && item.left) {
-            style = `top: ${item.top}px; left: ${item.left}px`
-        }
-        return `<span class="item ${cls}" style="${style}">${element}</span>`
-    }
-}
-
-
-
-class Scenery extends Renderable {
-    constructor(map) {
-        super()
-        this.map = map
-        this.render()
-        console.log('scenery rendered')
     }
 
     setLayer(layer) {
@@ -305,64 +273,108 @@ class Scenery extends Renderable {
 
     getLayer() {
         return this.layer
+    }
+
+    renderUnit(unit) {      // issue when ITEMS are rendered: multiple items on one layer?
+        let cls = ''
+        let element = '&nbsp;'
+        if (unit) {
+            cls = unit.cls
+            element = unit.element
+        }
+        let style = ''
+        if (unit.top && unit.left) {
+            style = `top: ${unit.top}px; left: ${unit.left}px`
+        }
+        return `<span class="unit ${cls}" style="${style}">${element}</span>`
+    }
+}
+
+
+class Scenery extends Renderable {  // Scenery-specific rendering functions
+    constructor(map) {
+        super()
+        this.map = map.getMap()
+        this.renderLayer()
+        console.log('scenery rendered')
+    }
+
+    renderLayer() {
+        const grid = this.map.map(arr => { return arr.slice() })
+        this.setLayer(this.createLayer(grid))
+        this.drawLayer()
     }
 
     createLayer(grid) {
         const sceneryGrid = []
         for (let i = 0; i < grid.length; i++) {
             const rowItems = grid[i]
-            let row = ''
+            let row = ''  // possibly make each row a table?
             for (let i = 0; i < rowItems.length; i++) {
-                row += this.renderItem(rowItems[i]) // add rendered items to the grid
+                row += this.renderUnit(rowItems[i]) // add rendered items to the grid
             }
             sceneryGrid.push(row)
         }
         return sceneryGrid
     }
 
-    render() {
-        const grid = this.map.map(arr => { return arr.slice() })
-        this.setLayer(this.createLayer(grid))
-        this.drawLayer()
-    }
-
     drawLayer() {
-        const renderedLayer = this.getLayer()
-        const gridToHTML = renderedLayer.join('<br />')  // using HTML breaks for now
+        const layer = this.getLayer()
+        const gridToHTML = layer.join('<br />')  // using HTML breaks for now
         const el = document.getElementById('landscape-layer')
         el.innerHTML = gridToHTML
     }
 }
 
 
-class Character extends Renderable {
-    constructor(map, mapCenter) {
+class Moveable extends Renderable {  // movement and placement on the grid
+    constructor(map) {
         super()
-        this.map = map
-        this.mapCenter = mapCenter
-        this.setInitialGridIndices()
-        this.render()
-        console.log('character rendered')
-
+        this.map = map.getMap()
     }
 
-    setLayer(layer) {
-        this.layer = layer
+    createMoveableLayer(moveableObject) {
+        return this.renderUnit(moveableObject)
     }
 
-    getLayer() {
-        return this.layer
+    updateLayer(moveableObject) {
+        this.setLayer(this.createMoveableLayer(moveableObject))
     }
 
-    createLayer() {
-        return this.renderItem(this.getCharacter())
+    drawLayer(layerId) {
+        const el = document.getElementById(layerId)
+        el.innerHTML = this.getLayer();
     }
 
-    setInitialGridIndices() {
-        const initGridIndices = this.mapCenter
-        const location = this.map[initGridIndices[1]][initGridIndices[0]]
-        this.gridIndices = initGridIndices
-        console.log(`location description: ${location.description}`)
+    renderLayer(moveableObject, layerId) {
+        this.updateLayer(moveableObject)
+        this.drawLayer(layerId)
+    }
+
+    setInitialGridIndices(gridIndices) {
+        this.gridIndices = gridIndices
+        const location = this.map[this.gridIndices[1]][this.gridIndices[0]]
+    }
+
+    getCSSCoordinates() {
+        const css = this.getCSSHeightAndWidth()
+        const x = this.gridIndices[0] * css.height
+        const y = this.gridIndices[1] * css.width
+        return { x, y }
+    }
+
+    getGridIndices() {
+        const x = this.gridIndices[0]
+        const y = this.gridIndices[1]
+        return { x, y }
+    }
+
+    getCSSHeightAndWidth() {
+        const el = document.querySelector('.unit')
+        const style = window.getComputedStyle(el)
+        const width = Utility.stringToNumber(style.getPropertyValue('width'))
+        const height = Utility.stringToNumber(style.getPropertyValue('height'))
+        return { width, height }
     }
 
     updateGridIndices(move) {
@@ -371,11 +383,11 @@ class Character extends Renderable {
         if (this.checkGridIndices(newGridIndices)) {
             location = this.map[newGridIndices[1]][newGridIndices[0]]
             this.gridIndices = newGridIndices
-            console.log(`location description: ${location.description}`)
         } else {
             location = this.map[this.gridIndices[1], this.gridIndices[0]]
-            console.log("you've reached the map's edge")
+            // console.log("you've reached the map's edge")
         }
+        return location
     }
 
     checkGridIndices(newGridIndices) {
@@ -388,9 +400,21 @@ class Character extends Renderable {
         }
         return locationOnGrid
     }
+}
+
+
+class Character extends Moveable {  // Character data and actions
+    constructor(map) {
+        super(map)
+        this.initialGridIndices = map.getMapCenter()
+
+        this.setInitialGridIndices(this.initialGridIndices)
+        this.renderLayer(this.getCharacter(), 'character-layer')
+        console.log('character rendered')
+    }
 
     getCharacter() {
-        const { x, y } = this.getCoordinates()
+        const { x, y } = this.getCSSCoordinates()
         const character = {
             element: '@',
             cls: 'character',
@@ -400,54 +424,108 @@ class Character extends Renderable {
         return character
     }
 
-    getCoordinates() {
-        const css = this.getCSSHeightAndWidth()
-        const x = this.gridIndices[0] * css.height
-        const y = this.gridIndices[1] * css.width
-        return { x, y }
-    }
-
-    getCSSHeightAndWidth() {
-        const el = document.querySelector('.item')
-        const style = window.getComputedStyle(el)
-        const width = Utility.stringToNumber(style.getPropertyValue('width'))
-        const height = Utility.stringToNumber(style.getPropertyValue('height'))
-        return { width, height }
-    }
-
-    updateLayer() {
-        this.setLayer(this.createLayer())
-    }
-
-    drawLayer() {
-        const el = document.getElementById('character-layer')
-        el.innerHTML = this.getLayer();
-    }
-
-    render() {
-        this.setLayer(this.createLayer())
-        this.drawLayer()
-    }
-
     getAction(fnName, arg) {
         return this[fnName].bind(this, arg)
     }
 
     move(direction) {
-        console.log(`${direction}`)
-        this.updateGridIndices(DIRECTIONS[direction])
-        this.updateLayer()
-        this.drawLayer()
+        // console.log(`${direction}`)
+        const location = this.updateGridIndices(DIRECTIONS[direction])
+        console.log(`${location.description}`)
+        this.renderLayer(this.getCharacter(), 'character-layer')
     }
 
-    // getCharacterGridIndices() {
-    //     const x = this.gridIndices[0]
-    //     const y = this.gridIndices[1]
-    //     return { x, y }
-    // }
+    grabItem(item) {
+
+    }
+
 
 }
 
+
+
+class Item extends Moveable {
+    constructor(map, itemObject) {
+        super(map)
+        this.initialGridIndices = map.getRandomMapLocation()
+
+        this.setInitialGridIndices(this.initialGridIndices)
+        this.renderLayer(this.getItem(itemObject), 'item-layer')
+        console.log(`item ${itemObject.name} rendered at ${this.initialGridIndices}`)
+    }
+
+    getItem(itemObject) {
+        console.log('itemObject', itemObject)
+        const { x, y } = this.getCSSCoordinates()
+        itemObject.top = y
+        itemObject.left = x
+        return itemObject
+    }
+
+}
+
+
+class ItemGenerator {
+    constructor(map, numberOfItems) {
+        this.map = map
+        this.numberOfItems = numberOfItems
+        this.data = new ItemData()
+        this.generateItems()
+    }
+
+    getRandomItems() {
+        const allItems = this.data.items
+        const randomItems = []
+        for (let i = 0; i < this.numberOfItems; i++) {
+            const randomItem = allItems[Utility.randomize(allItems.length)]
+            randomItems.push(randomItem)
+        }
+        return randomItems
+    }
+
+    generateItems() {
+        const randomItems = this.getRandomItems()
+        randomItems.forEach(item => {
+            const newItem = new Item(this.map, item)
+            console.log('newItem', newItem)
+        })
+    }
+
+}
+
+class ItemData {
+    constructor() {
+        this.items = this.items()
+    }
+
+    items() {
+        const miner = {
+            name: 'miner',
+            element: '|',
+            description: '',
+            cls: 'item miner'
+        }
+        const cybernesion = {
+            name: 'cybernesion',
+            element: '?',
+            description: '',
+            cls: 'item cybernesion'
+        }
+        const artificialMuscle = {
+            name: 'artificialMuscle',
+            element: '&',
+            description: '',
+            cls: 'item artificialMuscle'
+        }
+        const printer = {
+            name: 'printer',
+            element: '#',
+            description: '',
+            cls: 'item printer'
+        }
+        return [miner, cybernesion, artificialMuscle, printer]
+    }
+}
 
 
 
@@ -462,8 +540,12 @@ class Game {
         this.spaces = []
         this.gameOver = false
         this.map = new Map(60, 60)
+        this.scenery = new Scenery(this.map)
+        this.character = new Character(this.map)
 
-        this.character = new Character(this.map.getMap(), this.map.getMapCenter())
+        // try generating from a set of stock items
+        // bug: only the last item generated will display!!
+        this.itemGenerator= new ItemGenerator(this.map, 5)
 
         this.map.setCharacter(this.character)  // gives map reference to character
 
@@ -476,6 +558,7 @@ class Game {
             '37': this.character.getAction('move', 'west'),
             '39': this.character.getAction('move', 'east'),
             '40': this.character.getAction('move', 'south'),
+            '71': this.character.getAction('grabItem', 'item')
         })
     }
 

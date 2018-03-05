@@ -20,6 +20,16 @@ body {
     position: relative;
 }
 
+.unit {
+    position: relative;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    font-size: 12px;
+    line-height: 10px;
+}
+
+
 #landscape-layer {
     position: absolute;
     left: 0;
@@ -27,20 +37,47 @@ body {
     z-index: 0;
 }
 
-#character-layer {
+#item-layer {
     position: absolute;
     left: 0;
     top: 0;
     z-index: 1;
+}
+
+#npc-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+}
+
+#character-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
     /*position: absolute;*/
     /*left: 50;*/
     /*top: 50;*/
     /*z-index: 1;*/
 }
 
+
 .character {
     color: #969392;
+    display: block;
+    position: absolute;
 }
+
+.item {
+    color: #F2516C;
+    display: block;
+    position: absolute;
+}
+
+
+
+
 
 .period {
     color: #2A331D;
@@ -63,16 +100,3 @@ body {
 }
 
 
-.item {
-    position: relative;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    font-size: 12px;
-    line-height: 10px;
-}
-
-.character {
-    display: block;
-    position: absolute;
-}
