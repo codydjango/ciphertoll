@@ -150,7 +150,7 @@ class MapGenerator {
             if (!this.countUnseededLocations()) {
                 mapPopulated = true
             } else {
-                seeds = goodSeeds  // feed all goodSeeds back into the grower
+                seeds = goodSeeds
             }
         }
     }
@@ -249,7 +249,9 @@ class Map {
         this.character = character
     }
 
-
+    setEventManager(eventManager) {
+        this.EM = eventManager
+    }
 
 
 
@@ -263,20 +265,13 @@ class Map {
         console.log('itemsOnMap', this.itemsOnMap)
     }
 
-
-
-        // if character is on the same location as an item,
-        //     print item description
-        //     allow character to interact with item
-
-
     checkCharacterLocation() {
         const char = this.character.getCharacter()
         this.itemsOnMap.forEach(item => {
-            // console.log('character grid location:', [char.x, char.y])
-            // console.log('item grid location:', [item.x, item.y])
             if (item.x === char.x &&
                 item.y === char.y) {
+                // if character is on the same location as an item,
+                // print item description and allow character to interact with item
                 console.log('character is at item!')
             }
         })
@@ -298,7 +293,7 @@ class Renderable {  // generalized render functions for Scenery, Character
         return this.layer
     }
 
-    renderUnit(unit) {      // issue when ITEMS are rendered: multiple items on one layer?
+    renderUnit(unit) {      // issue when ITEMS are rendered: cannot render multiple items on one layer??
         let cls = ''
         let element = '&nbsp;'
         if (unit) {
@@ -364,40 +359,26 @@ class Moveable extends Renderable {  // movement and placement on the grid
         this.setLayer(this.createMoveableLayer(moveableObject))
     }
 
+    renderLayer(moveableObject, layerId) {
+        this.updateLayer(moveableObject)
+        this.drawLayer(layerId)
+    }
+
     drawLayer(layerId) {
         const el = document.getElementById(layerId)
         el.innerHTML = this.getLayer();
     }
 
-    renderLayer(moveableObject, layerId) {
-        this.updateLayer(moveableObject)
-        this.drawLayer(layerId)
-    }
 
     setInitialGridIndices(gridIndices) {
         this.gridIndices = gridIndices
         const location = this.gotMap[this.gridIndices[1]][this.gridIndices[0]]
     }
 
-    getCSSCoordinates() {
-        const css = this.getCSSHeightAndWidth()
-        const cssLeft = this.gridIndices[0] * css.height
-        const cssTop = this.gridIndices[1] * css.width
-        return { cssLeft, cssTop }
-    }
-
     getGridIndices() {
         const x = this.gridIndices[0]
         const y = this.gridIndices[1]
         return { x, y }
-    }
-
-    getCSSHeightAndWidth() {
-        const el = document.querySelector('.unit')
-        const style = window.getComputedStyle(el)
-        const width = Utility.stringToNumber(style.getPropertyValue('width'))
-        const height = Utility.stringToNumber(style.getPropertyValue('height'))
-        return { width, height }
     }
 
     updateGridIndices(actor, move) {
@@ -426,6 +407,22 @@ class Moveable extends Renderable {  // movement and placement on the grid
             }
         }
         return locationOnGrid
+    }
+
+
+    getCSSHeightAndWidth() {
+        const el = document.querySelector('.unit')
+        const style = window.getComputedStyle(el)
+        const width = Utility.stringToNumber(style.getPropertyValue('width'))
+        const height = Utility.stringToNumber(style.getPropertyValue('height'))
+        return { width, height }
+    }
+
+    getCSSCoordinates() {
+        const css = this.getCSSHeightAndWidth()
+        const cssLeft = this.gridIndices[0] * css.height
+        const cssTop = this.gridIndices[1] * css.width
+        return { cssLeft, cssTop }
     }
 }
 
@@ -465,11 +462,8 @@ class Character extends Moveable {  // Character data and actions
     move(direction) {
         // console.log(`${direction}`)
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
-
-        const char = this.getCharacter()
-
-
-        console.log('location', this.location)
+        // const char = this.getCharacter()
+        // console.log('location', this.location)
         this.map.checkCharacterLocation()
         this.printLocation()
         this.renderLayer(this.getCharacter(), 'character-layer')
@@ -484,15 +478,14 @@ class Character extends Moveable {  // Character data and actions
 
     // eventmanager testing
 
-    setEM(eventManager) {
+    setEventManager(eventManager) {
         this.EM = eventManager
     }
 
     takeItem() {
         console.log('attempting to take item...')
-        this.EM.publish('item_taken')
-        console.log(this.EM.getEventsList())
-
+        this.EM.publish('item taken')
+        console.log('events remaining:', this.EM.getEventsList())
     }
 
 
@@ -534,9 +527,9 @@ class Item extends Moveable {
 
     // eventmanager testing
 
-    setEM(eventManager) {
+    setEventManager(eventManager) {
         this.EM = eventManager
-        this.EM.subscribe('item_taken', this.onTake, this)
+        this.EM.subscribe('item taken', this.onTake, this)
         console.log(this.EM.getEventsList())
     }
 
@@ -577,12 +570,13 @@ class ItemGenerator {
 
             // eventmanager testing
 
-            this.newItem.setEM(this.EM)
+            this.newItem.setEventManager(this.EM)
 
             this.map.pushItems(this.newItem.item)  // hmmm... pushItems refreshes each time generateItems is called?
             console.log('item generated:', this.newItem.item)
         })
     }
+
 }
 
 
@@ -674,16 +668,17 @@ class Game {
         this.map.setCharacter(this.character)  // gives map reference to character
 
 
+
         // eventmanager testing
 
-        this.EM = new EventManager()
-        this.character.setEM(this.EM)
-
+        this.EM = new EventManager()  // create only one EM ? or multiple ?
+        this.character.setEventManager(this.EM)
+        this.map.setEventManager(this.EM)
 
         // try generating from a set of stock items
         // bug: only the last item generated will display!!
         // testing with one item generated ...
-        this.itemGenerator = new ItemGenerator(this.map, this.EM, 1)
+        this.itemGenerator = new ItemGenerator(this.map, this.EM, 1)  // have to pass in EM to generator (inelegant)
 
 
         this.input = this.initUserInput()
@@ -695,7 +690,7 @@ class Game {
             '37': this.character.getAction('move', 'west'),
             '39': this.character.getAction('move', 'east'),
             '40': this.character.getAction('move', 'south'),
-            '84': this.character.getAction('takeItem', 'item') // press 't' to takeItem
+            '84': this.character.getAction('takeItem', 'item') // (t)ake item
         })
     }
 
