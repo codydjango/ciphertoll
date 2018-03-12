@@ -9,46 +9,68 @@ const DIRECTIONS = {
     southwest: { x: -1, y: 1 }
 }
 
-const LANDSCAPE = [
-    {
-        element: '.',
-        description: '',
-        probability: 28
-    }, {
-        element: ',',
-        description: '',
-        probability: 28
-    }, {
-        element: ';',
-        description: '',
-        probability: 22
-    }, {
-        element: '^',
-        description: '',
-        probability: 22
-    }, {
-        element: '*',
-        description: '',
-        probability: 22
-    }, {
-        element: ';',
-        description: '',
-        probability: 22
-    }, {
-        element: '^',
-        description: '',
-        probability: 22
-    }, {
-        element: '*',
-        description: '',
-        probability: 22
-    }
-]
-
-// klhjkhjklh
 class Utility {
     static contains(obj, property) {
         return Object.keys(obj).indexOf(String(property)) !== -1
+    }
+
+    static stringToNumber(string) {
+        return string.match(/\d+/)[0]
+    }
+
+    static randomize(mult) {
+        return Math.floor(Math.random() * mult)
+    }
+}
+
+
+class LandscapeSeeds {
+    constructor() {
+        this.features = this.features()
+        this.bare = this.bare()
+    }
+
+    features() {
+        const period = {
+            element: '.',
+            description: 'the air is choked with dust, static, wifi',
+            probability: 30,
+            cls: 'period'
+        }
+        const comma = {
+            element: ',',
+            description: 'sprawl of smart homes, cul-de-sacs, laneways',
+            probability: 30,
+            cls: 'comma'
+        }
+        const semicolon = {
+            element: ';',
+            description: 'rows of greenhouses: some shattered and barren, others overgrown',
+            probability: 15,
+            cls: 'semicolon'
+        }
+        const grave = {
+            element: '^',
+            description: 'a shimmering field of solar panels, broken and corroded',
+            probability: 15,
+            cls: 'grave'
+        }
+        const asterisk = {
+            element: '*',
+            description: 'hollow users jack in at the datahubs',
+            probability: 15,
+            cls: 'asterisk'
+        }
+        return [period, comma, semicolon, semicolon, asterisk, asterisk, grave, grave]
+    }
+
+    bare() {
+        const bare = {
+            element: '&nbsp;',
+            description: 'concrete and twisted rebar stretch to the horizon',
+            cls: 'blank'
+        }
+        return bare
     }
 }
 
@@ -56,11 +78,12 @@ class Utility {
 class MapGenerator {
     constructor(col, row) {
         console.log('generating map')
+        this.landscapeSeeds = new LandscapeSeeds()
         const grid = this.init(col, row)
         const seededGrid = this.seed(grid)
         this.seededGrid = seededGrid
-
         this.grow()
+        console.log('map generated')
     }
 
     getMap() {
@@ -68,182 +91,126 @@ class MapGenerator {
     }
 
     init(col, row) {
-        // create array of size col, row
-        // populate with value '.'
-        this._col = col
-        this._row = row
-        const bareLandscape = '&nbsp;'
-        this.bareLandscape = bareLandscape
+        this.col = col
+        this.row = row
         const grid = []
-
         for (let i = 0; i < row; i++) {
             grid[i] = []
             for (let j = 0; j < col; j++) {
-                grid[i].push(bareLandscape)
+                grid[i].push(this.landscapeSeeds.bare)
             }
         }
         return grid
     }
 
     seed(grid) {
-        const numberOfElementSeeds = this.getNumberOfElementSeeds()
         const randomElements = []
-        for (let i = 0; i < numberOfElementSeeds; i++) {
-            const randomElementIndex = this.randomize(LANDSCAPE.length);
-            const randomElement = LANDSCAPE[randomElementIndex];
-            randomElements.push(randomElement)
+        for (let i = 0; i < this.getNumberOfElementSeeds(); i++) {
+            randomElements.push(this.landscapeSeeds.features[Utility.randomize(this.landscapeSeeds.features.length)])
         }
-
         const seeds = this.generateSeedLocations(randomElements)
-        seeds.map(seed => grid[seed.x][seed.y] = seed.element)
-        // console.log('seeds: ', seeds)
+        seeds.map(seed => grid[seed.y][seed.x] = seed)
         this._seeds = seeds
-
         return grid
     }
 
     getNumberOfElementSeeds() {
         //  return 1        // test setting
-        // return ((this._col * this._row) / (this._col + this._row))  // sparse initial seeding
-        return (this._col + this._row)  // rich initial seeding
+        // return ((this.col * this.row) / (this._col + this.row))  // sparse initial seeding
+        return (this.col + this.row)  // rich initial seeding
     }
 
-    randomize(mult) {
-        return Math.floor(Math.random() * mult)
-    }
-
-    generateSeedLocations(randomElements) {  // create array of objects
-        const seeds = randomElements.map(el => {
-            el.x = this.randomize(this._row - 1)
-            el.y = this.randomize(this._col - 1)
+    generateSeedLocations(randomElements) {
+        return randomElements.map(el => {
+            el.x = Utility.randomize(this.row - 1)
+            el.y = Utility.randomize(this.col - 1)
             return el
         })
-        return seeds
     }
 
     grow() {
         let seeds = this._seeds
         let mapPopulated = false
-
-        while (mapPopulated === false) {   // introduce while loop to populate entire map
-
-            const nextGenSeeds = this.getNextGenSeeds(seeds)    // get next generation of seeds
-            
-            if (nextGenSeeds.length === 0) {
+        while (!mapPopulated) {
+            if (!this.nextGenerationSeeds(seeds).length) {
                 mapPopulated = true
             }
-
-            let goodSeeds = []  // goodSeeds clears itself automatically
+            let goodSeeds = []
             this.goodSeeds = goodSeeds
-
-            nextGenSeeds.forEach((seed) => {
-                const checkedSeed = this.checkSeed(seed)    // check that seed is on map
-                if (checkedSeed !== null) { 
-                    goodSeeds.push(checkedSeed) // problem: goodSeed is too large
+            this.nextGenerationSeeds(seeds).forEach((seed) => {
+                if (this.checkSeed(seed)) {
+                    goodSeeds.push(this.checkSeed(seed))
                 }
             })
-
-            // console.log('goodSeeds: ', goodSeeds)
-
             for (let goodSeed of goodSeeds) {
-                const x = goodSeed.x
-                const y = goodSeed.y
-                if (this.seededGrid[x][y] === this.bareLandscape) {
-                    this.seededGrid[x][y] = goodSeed.element    // inject seed into grid
+                if (this.seededGrid[goodSeed.y][goodSeed.x] === this.landscapeSeeds.bare) {
+                    this.seededGrid[goodSeed.y][goodSeed.x] = goodSeed
                 }
             }
-
-            let unseededLocations = this.countUnseeded()    // find number of unseeded locations
-            console.log('unseededLocations: ', unseededLocations)
-            if (unseededLocations === 0) {
-                mapPopulated = true     // loop until all locations are seeded
+            if (!this.countUnseededLocations()) {
+                mapPopulated = true
             } else {
-                seeds = goodSeeds  // feed all goodSeeds back into the grower
+                seeds = goodSeeds
             }
         }
     }
 
-
-    countUnseeded() {
+    countUnseededLocations() {
         const flattenedGrid = [].concat.apply([], this.seededGrid)
         let count = 0
         for (let i of flattenedGrid) {
-            if (i === this.bareLandscape) {
+            if (i === this.landscapeSeeds.bare) {
                 count++
             }
         }
         return count
     }
 
-
     checkSeed(seed) {
-        const x = seed.x
-        const y = seed.y
         let seedSucceeds = false
-
-        // check that seed is within grid bounds
-        if ((y < this._col && y >= 0) &&  
-            (x < this._row && x >= 0)) {
+        if ((seed.x < this.col && seed.x >= 0) &&
+            (seed.y < this.row && seed.y >= 0)) {
             seedSucceeds = true
         } else {
             return null
         }
-
-        // check that seed location is not already seeded
-        if (this.seededGrid[x][y] !== this.bareLandscape) {
+        if (this.seededGrid[seed.y][seed.x] !== this.landscapeSeeds.bare) {
             seedSucceeds = false
-        }        
-
-        // check that seed location is not already waiting to be seeded
+        }
         this.goodSeeds.forEach(goodSeed => {
-            if ((x === goodSeed.x) &&
-                (y === goodSeed.y)) {
+            if ((seed.x === goodSeed.x) &&
+                (seed.y === goodSeed.y)) {
                 seedSucceeds = false
             }
         })
-        
-        if (seedSucceeds === true) {
+        if (seedSucceeds) {
             return seed
         } else {
             return null
         }
-
     }
 
-
-    getNextGenSeeds(seeds) {
+    nextGenerationSeeds(seeds) {
         const nextGenSeeds = []
-        seeds.forEach((originalSeed) => {   
-                            
-            for (let direction in DIRECTIONS) {  // for each direction
-                const directionValues = DIRECTIONS[direction]       
+        seeds.forEach((originalSeed) => {
+            for (let direction in DIRECTIONS) {
+                const directionValues = DIRECTIONS[direction]
                 const nextGenSeed = Object.assign({}, originalSeed)
-
-                
-                const percentage = nextGenSeed.probability
-                const probabilityCheck = (this.probability(percentage))
-
-                if (probabilityCheck === true) {
-                
-                    for (let key in directionValues) {  // for each key in each direction
+                if (this.probability(nextGenSeed.probability)) {
+                    for (let key in directionValues) {
                         if (key === 'x') {
-                        nextGenSeed.x = originalSeed.x + directionValues[key]  // move from seeded location to new location
+                        nextGenSeed.x = originalSeed.x + directionValues[key]
                         } else if (key === 'y') {
-                        nextGenSeed.y = originalSeed.y + directionValues[key]  // currently only works for seed element 0
+                        nextGenSeed.y = originalSeed.y + directionValues[key]
                         }
-
                     }
                     nextGenSeeds.push(nextGenSeed)
                 }
             }
         })
-
-        console.log('nextGenSeeds: ', nextGenSeeds)
-
         this.nextGenSeeds = nextGenSeeds
         return nextGenSeeds
     }
-
 
     probability(percentage) {
         const probabilityArray = []
@@ -253,12 +220,350 @@ class MapGenerator {
         for (let i = 0; i < 100 - percentage; i++) {
             probabilityArray.push(false)
         }
-        // console.log('probabilityArray: ', probabilityArray)
-        
-        const index = this.randomize(100)
-        // console.log(probabilityArray[index])
+        return probabilityArray[Utility.randomize(100)]
+    }
+}
 
-        return probabilityArray[index]
+
+class Map {
+    constructor(col, row) {
+        this.col = col
+        this.row = row
+        this.generatedMap = new MapGenerator(col, row)
+        this.map = this.generatedMap.getMap()
+        this.itemsOnMap = []
+    }
+
+    getMap() {
+        return this.map
+    }
+
+    getMapCenter() {
+        return [Math.floor(this.col/2), Math.floor(this.row/2)]
+    }
+
+    getRandomMapLocation() {
+        return [Utility.randomize(this.row - 1), Utility.randomize(this.col - 1)]
+    }
+
+    setCharacter(character) {
+        this.character = character
+    }
+
+    setEventManager(eventManager) {
+        this.EM = eventManager
+    }
+
+
+    pushItem(item) {
+        this.itemsOnMap.push(item)
+        console.log('itemsOnMap', this.itemsOnMap)
+    }
+
+    checkCharacterLocation() {
+        const char = this.character.getCharacter()
+        this.itemsOnMap.forEach(item => {
+            if (item.x === char.x &&
+                item.y === char.y) {
+                // if character is on the same location as an item,
+                // print item description and allow character to interact with item
+                console.log('character is at item!')
+            }
+        })
+    }
+
+}
+
+
+
+class Renderable {  // generalized render functions for Scenery, Character
+    constructor() {
+    }
+
+    setLayer(layer) {
+        this.layer = layer
+    }
+
+    getLayer() {
+        return this.layer
+    }
+
+    renderUnit(unit) {      // issue when ITEMS are rendered: cannot render multiple items on one layer??
+        let cls = ''
+        let element = '&nbsp;'
+        if (unit) {
+            cls = unit.cls
+            element = unit.element
+        }
+        let style = ''
+        if (unit.top && unit.left) {
+            style = `top: ${unit.top}px; left: ${unit.left}px`
+        }
+        return `<span class="unit ${cls}" style="${style}">${element}</span>`
+    }
+}
+
+
+class Scenery extends Renderable {  // Scenery-specific rendering functions
+    constructor(map) {
+        super()
+        this.gotMap = map.getMap()
+        this.renderLayer()
+        console.log('scenery rendered')
+    }
+
+    renderLayer() {
+        const grid = this.gotMap.map(arr => { return arr.slice() })
+        this.setLayer(this.createLayer(grid))
+        this.drawLayer()
+    }
+
+    createLayer(grid) {
+        const sceneryGrid = []
+        for (let i = 0; i < grid.length; i++) {
+            const rowItems = grid[i]
+            let row = ''  // possibly make each row a table?
+            for (let i = 0; i < rowItems.length; i++) {
+                row += this.renderUnit(rowItems[i]) // add rendered items to the grid
+            }
+            sceneryGrid.push(row)
+        }
+        return sceneryGrid
+    }
+
+    drawLayer() {
+        const layer = this.getLayer()
+        const gridToHTML = layer.join('<br />')  // using HTML breaks for now
+        const el = document.getElementById('landscape-layer')
+        el.innerHTML = gridToHTML
+    }
+}
+
+
+class Moveable extends Renderable {  // movement and placement on the grid
+    constructor(map) {
+        super()
+        this.gotMap = map.getMap()
+    }
+
+    createMoveableLayer(moveableObject) {
+        return this.renderUnit(moveableObject)
+    }
+
+    updateLayer(moveableObject) {
+        this.setLayer(this.createMoveableLayer(moveableObject))
+    }
+
+    renderLayer(moveableObject, layerId) {
+        this.updateLayer(moveableObject)
+        this.drawLayer(layerId)
+    }
+
+    drawLayer(layerId) {
+        const el = document.getElementById(layerId)
+        el.innerHTML = this.getLayer();
+    }
+
+
+    setInitialGridIndices(gridIndices) {
+        this.gridIndices = gridIndices
+        const location = this.gotMap[this.gridIndices[1]][this.gridIndices[0]]
+    }
+
+    getGridIndices() {
+        const x = this.gridIndices[0]
+        const y = this.gridIndices[1]
+        return { x, y }
+    }
+
+    updateGridIndices(actor, move) {
+        const newGridIndices = [this.gridIndices[0] + move.x, this.gridIndices[1] + move.y]
+        let location = ''
+        if (this.checkGridIndices(newGridIndices)) {
+            location = this.gotMap[newGridIndices[1]][newGridIndices[0]]
+            this.gridIndices = newGridIndices
+            actor.x = newGridIndices[0]
+            actor.y = newGridIndices[1]
+        } else {
+            location = this.gotMap[this.gridIndices[1], this.gridIndices[0]]
+            if (actor.name === 'character') {
+                console.log("you've reached the map's edge")
+            }
+        }
+        return location
+    }
+
+    checkGridIndices(newGridIndices) {
+        let locationOnGrid = false
+        if (this.gotMap[newGridIndices[1]]) {
+            const location = this.gotMap[newGridIndices[1]][newGridIndices[0]]
+            if (location) {
+                locationOnGrid = true
+            }
+        }
+        return locationOnGrid
+    }
+
+    getCSSHeightAndWidth() {
+        const el = document.querySelector('.unit')
+        const style = window.getComputedStyle(el)
+        const width = Utility.stringToNumber(style.getPropertyValue('width'))
+        const height = Utility.stringToNumber(style.getPropertyValue('height'))
+        return { width, height }
+    }
+
+    getCSSCoordinates() {
+        const css = this.getCSSHeightAndWidth()
+        const cssLeft = this.gridIndices[0] * css.height
+        const cssTop = this.gridIndices[1] * css.width
+        return { cssLeft, cssTop }
+    }
+}
+
+
+class Character extends Moveable {  // Character data and actions
+    constructor(map) {
+        super(map)
+        this.map = map
+        this.EM = null
+        this.initialGridIndices = map.getMapCenter()
+
+        this.setInitialGridIndices(this.initialGridIndices)
+        this.renderLayer(this.getCharacter(), 'character-layer')
+        console.log('character rendered')
+    }
+
+    getCharacter() {
+        const { cssLeft, cssTop } = this.getCSSCoordinates()
+        const { x, y } = this.getGridIndices()
+        const character = {
+            name: 'character',
+            element: '@',
+            cls: 'character',
+            left: cssLeft,
+            top: cssTop,
+            x: x,
+            y: y
+        }
+        return character
+    }
+
+    getAction(fnName, arg) {
+        return this[fnName].bind(this, arg)
+    }
+
+    move(direction) {
+        // console.log(`${direction}`)
+        this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
+        // const char = this.getCharacter()
+        // console.log('location', this.location)
+        this.map.checkCharacterLocation()
+
+        if (this.EM) {
+            this.EM.publish('character-moved', this.location)
+        }
+
+        this.renderLayer(this.getCharacter(), 'character-layer')
+    }
+
+    // eventmanager testing
+    setEventManager(eventManager) {
+        this.EM = eventManager
+    }
+
+    takeItem() {
+        console.log('attempting to take item...')
+        this.EM.publish('item taken')
+        console.log('events remaining:', this.EM.getEventsList())
+    }
+}
+
+
+
+
+
+class Item extends Moveable {
+    constructor(map, itemObject) {
+        super(map)
+        this.item = itemObject
+        this.initialGridIndices = map.getRandomMapLocation()
+        this.setInitialGridIndices(this.initialGridIndices)
+        this.setGridIndices()
+        this.setCoordinates()
+
+
+        this.renderLayer(this.getItem(), 'item-layer')  // issues with rendering multiple items
+
+        console.log(`item ${this.item.name} rendered at ${this.initialGridIndices}`)
+
+    }
+
+    getItem() {
+        return this.item
+    }
+
+    setCoordinates() {
+        const { cssLeft, cssTop } = this.getCSSCoordinates()
+        this.item.left = cssLeft
+        this.item.top = cssTop
+    }
+
+    setGridIndices() {
+        this.item.x = this.gridIndices[0]
+        this.item.y = this.gridIndices[1]
+    }
+
+
+    // eventmanager testing
+
+    setEventManager(eventManager) {
+        this.EM = eventManager
+        this.EM.subscribe('item taken', this.onTake, this)
+        console.log('events list', this.EM.getEventsList())
+    }
+
+    onTake() {
+        console.log(`${this.item.name} taken!`)
+    }
+}
+
+
+class ItemGenerator {
+    constructor(map, eventManager, numberOfItems) {
+        this.map = map
+        this.numberOfItems = numberOfItems
+        this.data = new ItemData()
+
+        // eventmanager testing
+
+        this.EM = eventManager
+
+        this.generateItems()
+    }
+
+    getRandomItems() {
+        const allItems = this.data.items
+        const randomItems = []
+        for (let i = 0; i < this.numberOfItems; i++) {
+            const randomItem = allItems[Utility.randomize(allItems.length)]
+            randomItems.push(randomItem)
+        }
+        return randomItems
+    }
+
+    generateItems() {
+        const randomItems = this.getRandomItems()
+        randomItems.forEach(item => {
+            this.newItem = new Item(this.map, item)
+
+
+            // eventmanager testing
+
+            this.newItem.setEventManager(this.EM)
+
+            this.map.pushItem(this.newItem.item)  // hmmm... pushItems refreshes each time generateItems is called?
+            console.log('item generated:', this.newItem.item)
+        })
     }
 
 
@@ -266,108 +571,94 @@ class MapGenerator {
 }
 
 
-class Map {
-    constructor(col, row) {
-        this.generatedMap = new MapGenerator(col, row)
-
-        console.log('map instantiated')
-        this.setInitialCharacterCoordinates()
-
-        this.render()
+class ItemData {
+    constructor() {
+        this.items = this.items()
     }
 
-    setInitialCharacterCoordinates() {
-        const initialCoordinates = [9, 9]
-        const x = initialCoordinates[0]
-        const y = initialCoordinates[1]
-
-        const characterLocation = this.generatedMap.seededGrid[y][x]
-
-        console.log(`character coordinates: ${initialCoordinates}`)
-        console.log(`character location: ${characterLocation}`)
-        
-        this.coordinates = initialCoordinates
-    }
-
-    updateCharacterCoordinates(move) {
-        const newCoordinates = [this.coordinates[0] + move.x, this.coordinates[1] + move.y]
-        console.log(`character coordinates: ${newCoordinates}`)
- 
-        const x = newCoordinates[0]
-        const y = newCoordinates[1]
-
-        const characterLocation = this.generatedMap.seededGrid[y][x]
-
-        console.log(`character location: ${characterLocation}`)
-
-        this.coordinates = newCoordinates
-    }
-
-    moveDudeNorth() {
-        console.log('north')
-        this.updateCharacterCoordinates(DIRECTIONS.north)
-        this.render()
-    }
-
-    moveDudeSouth() {
-        console.log('south')
-        this.updateCharacterCoordinates(DIRECTIONS.south)
-        this.render()
-
-    }
-    moveDudeWest() {
-        console.log('west')
-        this.updateCharacterCoordinates(DIRECTIONS.west)
-        this.render()
-    }
-
-    moveDudeEast() {
-        console.log('east')
-        this.updateCharacterCoordinates(DIRECTIONS.east)
-        this.render()
-    }
-
-    getCharacter() {
-        const character = '@'
-        return character
-    }
-
-    renderItem(item) {
-        let cls = ''
-        if (item === '@') {
-            cls = 'character'
+    items() {
+        const particleMiner = {
+            name: 'particle miner',
+            element: '|',
+            description: '',
+            cls: 'item miner'
         }
-        return `<span class="item ${cls}">${item}</span>`
-    }
-
-    render() {
-        // convert 2D array map into browser-displayable strings
-        const displayGrid = this.generatedMap.seededGrid.map(arr => { return arr.slice() })
-
-        const x = this.coordinates[0]
-        const y = this.coordinates[1]
-        
-        displayGrid[y][x] = this.getCharacter()
-
-        const renderedGrid = [];
-
-        for (let i = 0; i < displayGrid.length; i++) {
-            const rowItems = displayGrid[i]
-            const row = rowItems.reduce((sum, item) => sum + this.renderItem(item), '')
-
-            renderedGrid.push(row);
+        const blueprint = {
+            name: 'blueprint',
+            element: '?',
+            description: '',
+            cls: 'item blueprint'
         }
+        const artificialMuscle = {
+            name: 'artificial muscle',
+            element: '&',
+            description: '',
+            cls: 'item muscle'
+        }
+        const printer = {
+            name: '3D printer',
+            element: '#',
+            description: '',
+            cls: 'item printer'
+        }
+        return [particleMiner, blueprint, artificialMuscle, printer]
+    }
+}
 
-        const gridToHTML = renderedGrid.join('<br />');
 
-        // display the rendered ap
-        const el = document.getElementById('map');
 
-        el.innerHTML = gridToHTML;
+
+// eventmanager testing
+
+
+class EventManager {
+    constructor() {
+        this.eventsList = []        // create array of events
     }
 
-    draw() {
-        this.render()
+    subscribe(event, fn, thisValue, once=false) {
+        if (typeof thisValue === 'undefined') {   // if no thisValue provided, binds the fn to the fn??
+            thisValue = fn
+        }
+        this.eventsList.push({      // create objects linking events + functions to perform
+            event: event,           // push em to the array
+            fn: fn,
+            once: once,
+            thisValue: thisValue
+        })
+    }
+
+    publish(event, arg) {
+        for (let i = 0; i < this.eventsList.length; i++) {
+            if (this.eventsList[i].event === event) {
+                const { thisValue, fn, once } = this.eventsList[i]
+
+                fn.call(thisValue, arg)
+
+                if (once) {
+                    this.eventsList.splice(i, 1)
+                }
+            }
+        }
+    }
+
+    getEventsList() {
+        return this.eventsList
+    }
+}
+
+
+class Status {
+    constructor(EM) {
+        EM.subscribe('character-moved', this.update, this)
+    }
+
+    update(location) {
+        this.set(location.description)
+    }
+
+    set(description) {
+        document.getElementById('status').innerHTML = description
     }
 }
 
@@ -379,18 +670,37 @@ class Game {
     }
 
     initGame() {
-        this.spaces = [];
-        this.gameOver = false;
+        this.spaces = []
+        this.gameOver = false
         this.map = new Map(60, 60)
+        this.scenery = new Scenery(this.map)
+        this.character = new Character(this.map)
+        this.map.setCharacter(this.character)  // gives map reference to character
+
+
+        // eventmanager testing
+        this.EM = new EventManager()  // create only one EM ? or multiple ?
+        this.character.setEventManager(this.EM)
+        this.map.setEventManager(this.EM)
+
+        // try generating from a set of stock items
+        // bug: only the last item generated will display!!
+        // testing with one item generated ...
+        this.itemGenerator = new ItemGenerator(this.map, this.EM, 5)  // have to pass in EM to generator (inelegant)
+
+        this.status = new Status(this.EM)
+        this.status.set('you wake up')
+
         this.input = this.initUserInput()
     }
 
     initUserInput() {
         return new UserInput({
-            '38': this.map.moveDudeNorth.bind(this.map),
-            '37': this.map.moveDudeWest.bind(this.map),
-            '39': this.map.moveDudeEast.bind(this.map),
-            '40': this.map.moveDudeSouth.bind(this.map),
+            '38': this.character.getAction('move', 'north'),
+            '37': this.character.getAction('move', 'west'),
+            '39': this.character.getAction('move', 'east'),
+            '40': this.character.getAction('move', 'south'),
+            '84': this.character.getAction('takeItem', 'item') // (t)ake item
         })
     }
 
@@ -424,7 +734,8 @@ class UserInput {
     }
 }
 
-window.game = new Game();
+
+window.game = new Game()
 
 
 

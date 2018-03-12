@@ -3,25 +3,104 @@ body {
     margin: 0px;
     overflow: hidden;
     text-align: center;
+    background-color: black;
+    font-family: monospace;
 }
 
 #map {
-    font-family: monospace;
-    margin: 30px;
-    border: 1px solid black;
-    padding: 60px;
-    display: inline-block;
+    display: block;
+    height: 600px;
+    width: 600px;
+    padding: 0px;
+    margin: 0px;
+    border: 0;
+    position: relative;
 }
 
-.character {
-    color: red;
+#status {
+    display: block;
+    position: relative;
+    text-align: left;
+    color: white;
 }
 
-.item {
+.unit {
     position: relative;
     display: inline-block;
     width: 10px;
     height: 10px;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 12px;
+    line-height: 10px;
 }
+
+
+#landscape-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+}
+
+#item-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+
+#npc-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+}
+
+#character-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    /*position: absolute;*/
+    /*left: 50;*/
+    /*top: 50;*/
+    /*z-index: 1;*/
+}
+
+
+.character {
+    color: #969392;
+    display: block;
+    position: absolute;
+}
+
+.item {
+    color: #F2516C;
+    display: block;
+    position: absolute;
+}
+
+
+
+
+
+.period {
+    color: #2A331D;
+}
+
+.comma {
+    color: #3E4A29;
+}
+
+.semicolon {
+    color: #7D9654;
+}
+
+.asterisk {
+    color: #485730;
+}
+
+.grave {
+    color: #B2D678;
+}
+
+
