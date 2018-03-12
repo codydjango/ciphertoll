@@ -231,6 +231,7 @@ class Map {
         this.row = row
         this.generatedMap = new MapGenerator(col, row)
         this.map = this.generatedMap.getMap()
+        this.itemsOnMap = []
     }
 
     getMap() {
@@ -254,13 +255,7 @@ class Map {
     }
 
 
-
-    // generate list of all items currently located on the map
-    // currently only works for one item??
-
-
-    pushItems(item) {
-        this.itemsOnMap = []
+    pushItem(item) {
         this.itemsOnMap.push(item)
         console.log('itemsOnMap', this.itemsOnMap)
     }
@@ -409,7 +404,6 @@ class Moveable extends Renderable {  // movement and placement on the grid
         return locationOnGrid
     }
 
-
     getCSSHeightAndWidth() {
         const el = document.querySelector('.unit')
         const style = window.getComputedStyle(el)
@@ -431,6 +425,7 @@ class Character extends Moveable {  // Character data and actions
     constructor(map) {
         super(map)
         this.map = map
+        this.EM = null
         this.initialGridIndices = map.getMapCenter()
 
         this.setInitialGridIndices(this.initialGridIndices)
@@ -453,8 +448,6 @@ class Character extends Moveable {  // Character data and actions
         return character
     }
 
-
-
     getAction(fnName, arg) {
         return this[fnName].bind(this, arg)
     }
@@ -465,19 +458,15 @@ class Character extends Moveable {  // Character data and actions
         // const char = this.getCharacter()
         // console.log('location', this.location)
         this.map.checkCharacterLocation()
-        this.printLocation()
+
+        if (this.EM) {
+            this.EM.publish('character-moved', this.location)
+        }
+
         this.renderLayer(this.getCharacter(), 'character-layer')
     }
 
-    printLocation() {
-        if (this.location.description) {
-            console.log(`${this.location.description}`)
-        }
-    }
-
-
     // eventmanager testing
-
     setEventManager(eventManager) {
         this.EM = eventManager
     }
@@ -487,9 +476,9 @@ class Character extends Moveable {  // Character data and actions
         this.EM.publish('item taken')
         console.log('events remaining:', this.EM.getEventsList())
     }
-
-
 }
+
+
 
 
 
@@ -530,7 +519,7 @@ class Item extends Moveable {
     setEventManager(eventManager) {
         this.EM = eventManager
         this.EM.subscribe('item taken', this.onTake, this)
-        console.log(this.EM.getEventsList())
+        console.log('events list', this.EM.getEventsList())
     }
 
     onTake() {
@@ -572,10 +561,12 @@ class ItemGenerator {
 
             this.newItem.setEventManager(this.EM)
 
-            this.map.pushItems(this.newItem.item)  // hmmm... pushItems refreshes each time generateItems is called?
+            this.map.pushItem(this.newItem.item)  // hmmm... pushItems refreshes each time generateItems is called?
             console.log('item generated:', this.newItem.item)
         })
     }
+
+
 
 }
 
@@ -625,23 +616,28 @@ class EventManager {
         this.eventsList = []        // create array of events
     }
 
-    subscribe(event, fn, thisValue) {
+    subscribe(event, fn, thisValue, once=false) {
         if (typeof thisValue === 'undefined') {   // if no thisValue provided, binds the fn to the fn??
             thisValue = fn
         }
         this.eventsList.push({      // create objects linking events + functions to perform
             event: event,           // push em to the array
-            fn: fn.bind(thisValue)
+            fn: fn,
+            once: once,
+            thisValue: thisValue
         })
     }
 
-    publish(event) {
+    publish(event, arg) {
         for (let i = 0; i < this.eventsList.length; i++) {
-            if (this.eventsList[i].event === event) {       // iterate through the array
-                console.log('event', event)                 // call the function when it's reached
-                this.eventsList[i].fn.call()
-                this.eventsList.splice(i, 1)                // possibly splice fn from the list once called?
-                break                                       // break so that multiples of fn are only called once
+            if (this.eventsList[i].event === event) {
+                const { thisValue, fn, once } = this.eventsList[i]
+
+                fn.call(thisValue, arg)
+
+                if (once) {
+                    this.eventsList.splice(i, 1)
+                }
             }
         }
     }
@@ -651,6 +647,20 @@ class EventManager {
     }
 }
 
+
+class Status {
+    constructor(EM) {
+        EM.subscribe('character-moved', this.update, this)
+    }
+
+    update(location) {
+        this.set(location.description)
+    }
+
+    set(description) {
+        document.getElementById('status').innerHTML = description
+    }
+}
 
 
 class Game {
@@ -668,9 +678,7 @@ class Game {
         this.map.setCharacter(this.character)  // gives map reference to character
 
 
-
         // eventmanager testing
-
         this.EM = new EventManager()  // create only one EM ? or multiple ?
         this.character.setEventManager(this.EM)
         this.map.setEventManager(this.EM)
@@ -678,8 +686,10 @@ class Game {
         // try generating from a set of stock items
         // bug: only the last item generated will display!!
         // testing with one item generated ...
-        this.itemGenerator = new ItemGenerator(this.map, this.EM, 1)  // have to pass in EM to generator (inelegant)
+        this.itemGenerator = new ItemGenerator(this.map, this.EM, 5)  // have to pass in EM to generator (inelegant)
 
+        this.status = new Status(this.EM)
+        this.status.set('you wake up')
 
         this.input = this.initUserInput()
     }

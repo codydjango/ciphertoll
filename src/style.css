@@ -4,20 +4,24 @@ body {
     overflow: hidden;
     text-align: center;
     background-color: black;
+    font-family: monospace;
 }
 
 #map {
-    font-family: monospace;
-    /*margin: 30px;*/
-    /*border: 1px solid grey;*/
-    /*padding: 60px;*/
-    /*display: inline-block;*/
-
     display: block;
+    height: 600px;
+    width: 600px;
     padding: 0px;
     margin: 0px;
     border: 0;
     position: relative;
+}
+
+#status {
+    display: block;
+    position: relative;
+    text-align: left;
+    color: white;
 }
 
 .unit {
