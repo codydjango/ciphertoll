@@ -24,6 +24,6 @@ app.listen(port, listening)
 function listening() {
     browserSync({
         proxy: `localhost:${port}`,
-        files: ['./src/**/*.{js,html}']
+        files: ['./src/**/*.{js,html,css}']
     })
 }
