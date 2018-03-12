@@ -15,7 +15,6 @@ watcher.on('ready', function() {
   })
 })
 
-
 console.log(`listening on port:${port}`)
 
 app.use(express.static('src'))
@@ -24,6 +23,9 @@ app.listen(port, listening)
 function listening() {
     browserSync({
         proxy: `localhost:${port}`,
-        files: ['./src/**/*.{js,html,css}']
+        files: [
+            './src/dist/bundle.js',
+            './src/**/*.{html,css}'
+        ]
     })
 }

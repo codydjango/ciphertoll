@@ -1,3 +1,6 @@
+import foo from './test'
+
+
 const DIRECTIONS = {
     north: { x: 0, y: -1 },
     south: { x: 0, y: 1 },
@@ -128,7 +131,7 @@ class MapGenerator {
         while (mapPopulated === false) {   // introduce while loop to populate entire map
 
             const nextGenSeeds = this.getNextGenSeeds(seeds)    // get next generation of seeds
-            
+
             if (nextGenSeeds.length === 0) {
                 mapPopulated = true
             }
@@ -138,7 +141,7 @@ class MapGenerator {
 
             nextGenSeeds.forEach((seed) => {
                 const checkedSeed = this.checkSeed(seed)    // check that seed is on map
-                if (checkedSeed !== null) { 
+                if (checkedSeed !== null) {
                     goodSeeds.push(checkedSeed) // problem: goodSeed is too large
                 }
             })
@@ -182,7 +185,7 @@ class MapGenerator {
         let seedSucceeds = false
 
         // check that seed is within grid bounds
-        if ((y < this._col && y >= 0) &&  
+        if ((y < this._col && y >= 0) &&
             (x < this._row && x >= 0)) {
             seedSucceeds = true
         } else {
@@ -192,7 +195,7 @@ class MapGenerator {
         // check that seed location is not already seeded
         if (this.seededGrid[x][y] !== this.bareLandscape) {
             seedSucceeds = false
-        }        
+        }
 
         // check that seed location is not already waiting to be seeded
         this.goodSeeds.forEach(goodSeed => {
@@ -201,7 +204,7 @@ class MapGenerator {
                 seedSucceeds = false
             }
         })
-        
+
         if (seedSucceeds === true) {
             return seed
         } else {
@@ -213,18 +216,18 @@ class MapGenerator {
 
     getNextGenSeeds(seeds) {
         const nextGenSeeds = []
-        seeds.forEach((originalSeed) => {   
-                            
+        seeds.forEach((originalSeed) => {
+
             for (let direction in DIRECTIONS) {  // for each direction
-                const directionValues = DIRECTIONS[direction]       
+                const directionValues = DIRECTIONS[direction]
                 const nextGenSeed = Object.assign({}, originalSeed)
 
-                
+
                 const percentage = nextGenSeed.probability
                 const probabilityCheck = (this.probability(percentage))
 
                 if (probabilityCheck === true) {
-                
+
                     for (let key in directionValues) {  // for each key in each direction
                         if (key === 'x') {
                         nextGenSeed.x = originalSeed.x + directionValues[key]  // move from seeded location to new location
@@ -254,7 +257,7 @@ class MapGenerator {
             probabilityArray.push(false)
         }
         // console.log('probabilityArray: ', probabilityArray)
-        
+
         const index = this.randomize(100)
         // console.log(probabilityArray[index])
 
@@ -285,14 +288,14 @@ class Map {
 
         console.log(`character coordinates: ${initialCoordinates}`)
         console.log(`character location: ${characterLocation}`)
-        
+
         this.coordinates = initialCoordinates
     }
 
     updateCharacterCoordinates(move) {
         const newCoordinates = [this.coordinates[0] + move.x, this.coordinates[1] + move.y]
         console.log(`character coordinates: ${newCoordinates}`)
- 
+
         const x = newCoordinates[0]
         const y = newCoordinates[1]
 
@@ -346,7 +349,7 @@ class Map {
 
         const x = this.coordinates[0]
         const y = this.coordinates[1]
-        
+
         displayGrid[y][x] = this.getCharacter()
 
         const renderedGrid = [];
@@ -360,9 +363,8 @@ class Map {
 
         const gridToHTML = renderedGrid.join('<br />');
 
-        // display the rendered ap
+        // display the rendered app
         const el = document.getElementById('map');
-
         el.innerHTML = gridToHTML;
     }
 
