@@ -1,5 +1,6 @@
 import foo from './test'
 
+alert(`foo: ${foo}`)
 
 const DIRECTIONS = {
     north: { x: 0, y: -1 },
@@ -426,8 +427,7 @@ class UserInput {
     }
 }
 
-window.game = new Game();
-
+export default new Game();
 
 
 

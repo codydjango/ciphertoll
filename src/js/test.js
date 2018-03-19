@@ -1,3 +1,3 @@
-const foo = 'bar'
+const foo = 'bar5'
 
 export default foo
