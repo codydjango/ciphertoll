@@ -1,3 +1,7 @@
+import foo from './test'
+
+alert(`foo: ${foo}`)
+
 const DIRECTIONS = {
     north: { x: 0, y: -1 },
     south: { x: 0, y: 1 },
@@ -131,6 +135,9 @@ class MapGenerator {
     grow() {
         let seeds = this._seeds
         let mapPopulated = false
+
+
+
         while (!mapPopulated) {
             if (!this.nextGenerationSeeds(seeds).length) {
                 mapPopulated = true
@@ -177,12 +184,15 @@ class MapGenerator {
         if (this.seededGrid[seed.y][seed.x] !== this.landscapeSeeds.bare) {
             seedSucceeds = false
         }
+
+        // check that seed location is not already waiting to be seeded
         this.goodSeeds.forEach(goodSeed => {
             if ((seed.x === goodSeed.x) &&
                 (seed.y === goodSeed.y)) {
                 seedSucceeds = false
             }
         })
+
         if (seedSucceeds) {
             return seed
         } else {
@@ -606,11 +616,7 @@ class ItemData {
 }
 
 
-
-
 // eventmanager testing
-
-
 class EventManager {
     constructor() {
         this.eventsList = []        // create array of events
@@ -734,25 +740,4 @@ class UserInput {
     }
 }
 
-
-window.game = new Game()
-
-
-
-
-//     giveOptionForAction() {
-        // if (window.prompt('Exit?', 'Sure') === 'Sure') {
-            // this.gameOver = true
-        // }
-
-        // actions could have constraints, such as
-        //     -only can take one action of this type at a time
-        //     - action requires cooldown
-        //     - action requires prep
-        //     - action costs resources
-
-
-        // ask player for action
-        // process action
-        // calculate stats
-    // }
+export default new Game();

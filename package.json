@@ -1,15 +1,41 @@
 {
-  "name": "game",
-  "version": "0.0.1",
-  "main": "src/index.js",
-  "license": "MIT",
-  "scripts": {
-    "start": "node ./server.js"
-  },
-  "dependencies": {
-    "babel-preset-env": "^1.6.1",
-    "browser-sync": "^2.23.6",
-    "chokidar": "^2.0.0",
-    "express": "^4.16.2"
-  }
+    "name": "game",
+    "version": "0.0.1",
+    "main": "src/index.js",
+    "license": "MIT",
+    "scripts": {
+        "serve": "node ./server.js",
+        "start": "concurrently \"yarn serve\" \"yarn watch\"",
+        "browserify": "./node_modules/.bin/browserify",
+        "watchify": "./node_modules/.bin/watchify",
+        "build": "yarn browserify ./src/index.js -d -o ./src/game.bundle.js",
+        "watch": "yarn watchify ./src/index.js --debug -o ./src/game.bundle.js"
+    },
+    "browserify": {
+        "transform": [
+            [
+                "babelify",
+                {
+                    "presets": [
+                        "env"
+                    ]
+                }
+            ]
+        ]
+    },
+    "dependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-plugin-add-module-exports": "^0.2.1",
+        "babel-plugin-module-resolver": "^2.7.1",
+        "babel-preset-env": "^1.6.1",
+        "babelify": "^8.0.0",
+        "browser-sync": "^2.23.6",
+        "browserify": "^16.1.1",
+        "chokidar": "^2.0.0",
+        "concurrently": "^3.5.1",
+        "express": "^4.16.2",
+        "watchify": "^3.11.0",
+        "webpack": "^4.1.1"
+    },
+    "devDependencies": {}
 }
