@@ -2,19 +2,17 @@ body {
     padding: 0px;
     margin: 0px;
     overflow: hidden;
-    text-align: center;
     background-color: black;
     font-family: monospace;
 }
 
 #map {
     display: block;
-    height: 600px;
-    width: 600px;
     padding: 0px;
     margin: 0px;
     border: 0;
     position: relative;
+    overflow: hidden;
 }
 
 #status {
@@ -33,9 +31,8 @@ body {
     line-height: 10px;
 }
 
-
 #landscape-layer {
-    position: absolute;
+    /*position: absolute;*/
     left: 0;
     top: 0;
     z-index: 0;

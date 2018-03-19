@@ -2,7 +2,7 @@ var express = require('express')
 var browserSync = require('browser-sync')
 var app = express()
 var port = 3000
-\
+
 // var chokidar = require('chokidar')
 // var watcher = chokidar.watch('./src')
 // watcher.on('ready', function() {
