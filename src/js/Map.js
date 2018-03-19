@@ -39,11 +39,10 @@ class Map {
     checkCharacterLocation() {
         const char = this.character.getCharacter()
         this.itemsOnMap.forEach(item => {
-            if (item.x === char.x &&
-                item.y === char.y) {
-                // if character is on the same location as an item,
-                // print item description and allow character to interact with item
-                console.log('character is at item!')
+            if (item.x === char.x && item.y === char.y) {
+                this.EM.publish(`on-${item.name}`, item)
+            } else {
+                this.EM.publish(`off-${item.name}`, item)
             }
         })
     }

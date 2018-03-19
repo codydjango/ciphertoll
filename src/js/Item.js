@@ -11,11 +11,37 @@ class Item extends Moveable {
         this.setCoordinates()
 
 
+
+        // this.setLayer(this.renderUniqueItemDiv(this.getItem()))
+        // this.drawLayer('item-layer')
+
+
         this.renderLayer(this.getItem(), 'item-layer')  // issues with rendering multiple items
+
+
 
         console.log(`item ${this.item.name} rendered at ${this.initialGridIndices}`)
 
     }
+
+
+    // renderUniqueItemDiv(item) {
+    //     let element = '&nbsp;'
+    //     let style = ''
+    //     if (item) {
+    //         cls = item.cls
+    //         element = item.element
+    //     }
+    //     if (item.top && item.left) {
+    //         style = `top: ${item.top}px; left: ${item.left}px`
+    //     }
+    //     console.log(`<div id="${cls}" style="${style}">${element}</div>`)
+    //     return `<div id="${cls}" style="${style}">${element}</div>`
+    // }
+
+
+
+
 
     getItem() {
         return this.item
@@ -36,8 +62,8 @@ class Item extends Moveable {
 
     setEventManager(eventManager) {
         this.EM = eventManager
-        this.EM.subscribe('item taken', this.onTake, this)
-        console.log('events list', this.EM.getEventsList())
+        this.EM.subscribe(`${this.item.name} taken`, this.onTake, this, true)
+        // console.log('events list', this.EM.getEventsList())
     }
 
     onTake() {

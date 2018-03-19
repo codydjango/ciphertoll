@@ -25,13 +25,15 @@ class Game {
 
         // eventmanager testing
         this.EM = new EventManager()  // create only one EM ? or multiple ?
-        this.character.setEventManager(this.EM)
-        this.map.setEventManager(this.EM)
+
 
         // try generating from a set of stock items
         // bug: only the last item generated will display!!
         // testing with one item generated ...
-        this.itemGenerator = new ItemGenerator(this.map, this.EM, 5)  // have to pass in EM to generator (inelegant)
+        this.itemGenerator = new ItemGenerator(this.map, this.EM, 2)  // have to pass in EM to generator (inelegant)
+
+        this.character.setEventManager(this.EM)
+        this.map.setEventManager(this.EM)
 
         this.status = new Status(this.EM)
         this.status.set('you wake up')
@@ -47,7 +49,8 @@ class Game {
             '37': this.character.getAction('move', 'west'),
             '39': this.character.getAction('move', 'east'),
             '40': this.character.getAction('move', 'south'),
-            '84': this.character.getAction('takeItem', 'item') // (t)ake item
+
+            '84': this.character.getAction('take', 'item') // (t)ake item
         })
     }
 

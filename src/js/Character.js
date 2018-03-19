@@ -1,5 +1,5 @@
 import Moveable from './Moveable'
-import { DIRECTIONS } from './constants'
+import { DIRECTIONS } from './Constants'
 
 
 class Character extends Moveable {  // Character data and actions
@@ -7,6 +7,8 @@ class Character extends Moveable {  // Character data and actions
         super(map)
         this.map = map
         this.EM = null
+        this.item = null
+
         this.initialGridIndices = map.getMapCenter()
 
         this.setInitialGridIndices(this.initialGridIndices)
@@ -50,12 +52,42 @@ class Character extends Moveable {  // Character data and actions
     // eventmanager testing
     setEventManager(eventManager) {
         this.EM = eventManager
+        console.log('character knows about items', this.map.itemsOnMap)
+        this.map.itemsOnMap.forEach(item => {
+            this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
+            this.EM.subscribe(`take-${item.name}`, this.takeItem, this, true)
+
+        })
     }
 
-    takeItem() {
+    onItem(item) {
+        console.log(`character is at ${item.name}!`)
+        item.takeable = true
+        this.item = item
+        this.EM.subscribe(`off-${item.name}`, this.offItem, this, true)
+    }
+
+    offItem(item) {
+        this.item = item
+        console.log(`character is no longer on ${this.item.name}`)
+        this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
+        this.item = null
+    }
+
+    take() {
         console.log('attempting to take item...')
-        this.EM.publish('item taken')
-        console.log('events remaining:', this.EM.getEventsList())
+        if (this.item) {
+            this.EM.publish(`take-${this.item.name}`, this.item)
+        } else {
+            console.log('nothing to take!')
+        }
+    }
+
+    takeItem(item) {
+        if (item.takeable) {
+            this.EM.publish(`${item.name} taken`)
+            // console.log('events remaining:', this.EM.getEventsList())
+        }
     }
 }
 

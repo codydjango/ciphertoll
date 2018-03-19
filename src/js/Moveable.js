@@ -9,12 +9,8 @@ class Moveable extends Renderable {  // movement and placement on the grid
         this.gotMap = map.getMap()
     }
 
-    createMoveableLayer(moveableObject) {
-        return this.renderUnit(moveableObject)
-    }
-
     updateLayer(moveableObject) {
-        this.setLayer(this.createMoveableLayer(moveableObject))
+        this.setLayer(this.renderUnit(moveableObject))
     }
 
     renderLayer(moveableObject, layerId) {
@@ -24,7 +20,7 @@ class Moveable extends Renderable {  // movement and placement on the grid
 
     drawLayer(layerId) {
         const el = document.getElementById(layerId)
-        el.innerHTML = this.getLayer();
+        el.innerHTML = this.getLayer()
     }
 
     setInitialGridIndices(gridIndices) {
