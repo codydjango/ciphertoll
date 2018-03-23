@@ -6,27 +6,31 @@ class ItemData {
     items() {
         const particleMiner = {
             name: 'particle miner',
+            type: 'item',
             element: '|',
             description: '',
-            cls: 'item-miner'
+            div: 'item-miner'
         }
         const blueprint = {
             name: 'blueprint',
+            type: 'item',
             element: '?',
             description: '',
-            cls: 'item-blueprint'
+            div: 'item-blueprint'
         }
         const artificialMuscle = {
             name: 'artificial muscle',
+            type: 'item',
             element: '&',
             description: '',
-            cls: 'item-muscle'
+            div: 'item-muscle'
         }
         const printer = {
             name: '3D printer',
+            type: 'item',
             element: '#',
             description: '',
-            cls: 'item-printer'
+            div: 'item-printer'
         }
         return [particleMiner, blueprint, artificialMuscle, printer]
     }

@@ -8,9 +8,6 @@ class ItemGenerator {
         this.map = map
         this.numberOfItems = numberOfItems
         this.data = new ItemData()
-
-        // eventmanager testing
-
         this.EM = eventManager
 
         this.generateItems()
@@ -26,16 +23,16 @@ class ItemGenerator {
         return randomItems
     }
 
+
+// issues with items overwriting one another...
     generateItems() {
         const randomItems = this.getRandomItems()
-        randomItems.forEach(item => {
-            this.newItem = new Item(this.map, item)
-
-            // eventmanager testing
+        randomItems.forEach((item, index) => {
+            this.newItem = new Item(this.map, item, index)
 
             this.newItem.setEventManager(this.EM)
 
-            this.map.pushItem(this.newItem.item)  // hmmm... pushItems refreshes each time generateItems is called?
+            this.map.pushItem(this.newItem.item)
             console.log('item generated:', this.newItem.item)
         })
     }

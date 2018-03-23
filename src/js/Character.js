@@ -8,9 +8,7 @@ class Character extends Moveable {  // Character data and actions
         this.map = map
         this.EM = null
         this.item = null
-
         this.initialGridIndices = map.getMapCenter()
-
         this.setInitialGridIndices(this.initialGridIndices)
         this.renderLayer(this.getCharacter(), 'character-layer')
         console.log('character rendered')
@@ -21,6 +19,7 @@ class Character extends Moveable {  // Character data and actions
         const { x, y } = this.getGridIndices()
         const character = {
             name: 'character',
+            type: 'actor',
             element: '@',
             cls: 'character',
             left: cssLeft,
@@ -36,10 +35,7 @@ class Character extends Moveable {  // Character data and actions
     }
 
     move(direction) {
-        // console.log(`${direction}`)
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
-        // const char = this.getCharacter()
-        // console.log('location', this.location)
         this.map.checkCharacterLocation()
 
         if (this.EM) {
@@ -49,7 +45,6 @@ class Character extends Moveable {  // Character data and actions
         this.renderLayer(this.getCharacter(), 'character-layer')
     }
 
-    // eventmanager testing
     setEventManager(eventManager) {
         this.EM = eventManager
         console.log('character knows about items', this.map.itemsOnMap)

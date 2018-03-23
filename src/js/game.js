@@ -27,10 +27,7 @@ class Game {
         this.EM = new EventManager()  // create only one EM ? or multiple ?
 
 
-        // try generating from a set of stock items
-        // bug: only the last item generated will display!!
-        // testing with one item generated ...
-        this.itemGenerator = new ItemGenerator(this.map, this.EM, 2)  // have to pass in EM to generator (inelegant)
+        this.itemGenerator = new ItemGenerator(this.map, this.EM, 6)  // have to pass in EM to generator (inelegant)
 
         this.character.setEventManager(this.EM)
         this.map.setEventManager(this.EM)

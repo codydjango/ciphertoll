@@ -21,7 +21,7 @@ class Scenery extends Renderable {  // Scenery-specific rendering functions
             const rowItems = grid[i]
             let row = ''  // possibly make each row a table?
             for (let i = 0; i < rowItems.length; i++) {
-                row += this.renderUnit(rowItems[i]) // add rendered items to the grid
+                row += this.renderSpan(rowItems[i]) // add rendered items to the grid
             }
             sceneryGrid.push(row)
         }

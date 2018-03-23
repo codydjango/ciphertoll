@@ -39,10 +39,19 @@ body {
 }
 
 #item-layer {
-    position: absolute;
+/*    position: absolute;*/
     left: 0;
     top: 0;
     z-index: 1;
+    color: #F2516C;
+/*    display: block;
+    position: absolute;*/
+    position: absolute;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    font-size: 12px;
+    line-height: 10px;
 }
 
 #npc-layer {
@@ -57,10 +66,6 @@ body {
     left: 0;
     top: 0;
     z-index: 3;
-    /*position: absolute;*/
-    /*left: 50;*/
-    /*top: 50;*/
-    /*z-index: 1;*/
 }
 
 
@@ -70,10 +75,10 @@ body {
     position: absolute;
 }
 
-.item-muscle {
+#item {
     color: #F2516C;
-/*    display: block;
-    position: absolute;*/
+    display: block;
+    position: absolute;
     position: relative;
     display: inline-block;
     width: 10px;
@@ -81,45 +86,6 @@ body {
     font-size: 12px;
     line-height: 10px;
 }
-
-.item-printer {
-    color: #F2516C;
-/*    display: block;
-    position: absolute;*/
-    position: relative;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    font-size: 12px;
-    line-height: 10px;
-}
-
-.item-blueprint {
-    color: #F2516C;
-/*    display: block;
-    position: absolute;*/
-    position: relative;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    font-size: 12px;
-    line-height: 10px;
-}
-
-.item-miner {
-    color: #F2516C;
-/*    display: block;
-    position: absolute;*/
-    position: relative;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    font-size: 12px;
-    line-height: 10px;
-}
-
-
-
 
 
 .period {

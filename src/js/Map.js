@@ -33,7 +33,7 @@ class Map {
 
     pushItem(item) {
         this.itemsOnMap.push(item)
-        console.log('itemsOnMap', this.itemsOnMap)
+        // console.log('itemsOnMap', this.itemsOnMap)
     }
 
     checkCharacterLocation() {

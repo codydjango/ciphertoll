@@ -2,25 +2,10 @@ import Renderable from './Renderable'
 import Utility from './Utility'
 
 
-
 class Moveable extends Renderable {  // movement and placement on the grid
     constructor(map) {
         super()
         this.gotMap = map.getMap()
-    }
-
-    updateLayer(moveableObject) {
-        this.setLayer(this.renderUnit(moveableObject))
-    }
-
-    renderLayer(moveableObject, layerId) {
-        this.updateLayer(moveableObject)
-        this.drawLayer(layerId)
-    }
-
-    drawLayer(layerId) {
-        const el = document.getElementById(layerId)
-        el.innerHTML = this.getLayer()
     }
 
     setInitialGridIndices(gridIndices) {
