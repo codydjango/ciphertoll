@@ -5,6 +5,9 @@ class Item extends Moveable {
     constructor(map, itemObject, generatorIndex) {
         super(map)
         this.item = itemObject
+
+        this.item.identityNumber = generatorIndex
+
         this.item.type = 'item'
         this.item.offMap = false
         this.item.inInventory = false
@@ -18,6 +21,7 @@ class Item extends Moveable {
         this.updateDiv(this.getItem())
         this.createInitialChildElement('item-layer')
         console.log(`item "${this.item.name}" rendered at ${this.initialGridIndices}`)
+        console.log('ITEM CONSTRUCTOR: item x', this.item.x, 'item y', this.item.y)
     }
 
     getItem() {
@@ -58,6 +62,7 @@ class Item extends Moveable {
         this.item.x = null
         this.item.y = null
 
+        this.EM.publish('add-inventory', this.item)
 
         this.renderLayer(this.getItem(), this.item.div)
     }

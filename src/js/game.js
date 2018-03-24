@@ -6,6 +6,7 @@ import ItemGenerator from './ItemGenerator'
 import Status from './Status'
 import UserInput from './UserInput'
 import Blueprints from './Blueprints'
+import Inventory from './Inventory'
 
 
 class Game {
@@ -23,8 +24,7 @@ class Game {
         this.map.setCharacter(this.character)  // gives map reference to character
 
 
-        // eventmanager testing
-        this.EM = new EventManager()  // create only one EM ? or multiple ?
+        this.EM = new EventManager()
 
 
         this.itemGenerator = new ItemGenerator(this.map, this.EM, 6)  // have to pass in EM to generator (inelegant)
@@ -36,6 +36,13 @@ class Game {
         this.status.set('you wake up')
         this.blueprint = Blueprints.random()
         this.status.set(`you are carrying ${this.blueprint.name}`, 4000)
+
+
+        this.inventory = new Inventory(this.blueprint)
+        this.inventory.setEventManager(this.EM)
+
+
+
 
         this.input = this.initUserInput()
     }

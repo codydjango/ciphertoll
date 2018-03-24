@@ -32,7 +32,10 @@ class Map {
     }
 
     pushItem(item) {
+
         this.itemsOnMap.push(item)
+        console.log('MAP.PUSHITEM: item x', item.x, 'item y', item.y)
+
         // console.log('itemsOnMap', this.itemsOnMap)
     }
 
@@ -41,6 +44,7 @@ class Map {
         this.itemsOnMap.forEach(item => {
             if (item.x === char.x && item.y === char.y) {
                 this.EM.publish(`on-${item.name}`, item)
+                this.EM.publish('item-status', item.name)
             } else {
                 this.EM.publish(`off-${item.name}`, item)
             }

@@ -11,28 +11,28 @@ class ItemData {
             description: '',
             div: 'item-miner'
         }
-        const blueprint = {
-            name: 'blueprint',
+        const noiseParser = {
+            name: 'noise parser',
             type: 'item',
             element: '?',
             description: '',
-            div: 'item-blueprint'
+            div: 'item-parser'
         }
-        const artificialMuscle = {
-            name: 'artificial muscle',
+        const psionicInterface = {
+            name: 'psionic interface',
             type: 'item',
             element: '&',
             description: '',
-            div: 'item-muscle'
+            div: 'item-interface'
         }
-        const printer = {
-            name: '3D printer',
+        const molecularPrinter = {
+            name: 'molecular printer',
             type: 'item',
             element: '#',
             description: '',
             div: 'item-printer'
         }
-        return [particleMiner, blueprint, artificialMuscle, printer]
+        return [particleMiner, noiseParser, psionicInterface, molecularPrinter]
     }
 }
 
