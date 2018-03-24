@@ -47,7 +47,7 @@ class Character extends Moveable {  // Character data and actions
 
     setEventManager(eventManager) {
         this.EM = eventManager
-        console.log('character knows about items', this.map.itemsOnMap)
+        // console.log('character knows about items', this.map.itemsOnMap)
         this.map.itemsOnMap.forEach(item => {
             this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
             this.EM.subscribe(`take-${item.name}`, this.takeItem, this, true)
@@ -56,21 +56,21 @@ class Character extends Moveable {  // Character data and actions
     }
 
     onItem(item) {
-        console.log(`character is at ${item.name}!`)
-        item.takeable = true
         this.item = item
+        console.log(`character is at ${item.name}!`)
+        this.item.takeable = true
         this.EM.subscribe(`off-${item.name}`, this.offItem, this, true)
     }
 
     offItem(item) {
         this.item = item
-        console.log(`character is no longer on ${this.item.name}`)
+        // console.log(`character is no longer on ${this.item.name}`)
         this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
-        this.item = null
+        this.item.takeable = false
     }
 
     take() {
-        console.log('attempting to take item...')
+        // console.log('attempting to take item...')
         if (this.item) {
             this.EM.publish(`take-${this.item.name}`, this.item)
         } else {

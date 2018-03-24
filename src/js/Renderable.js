@@ -13,21 +13,21 @@ class Renderable {  // generalized render functions for Scenery, Character
     renderSpan(unit) {
         let cls = ''
         let element = '&nbsp;'
+        let style = ''
         if (unit) {
             cls = unit.cls
             element = unit.element
         }
-        let style = ''
+
         if (unit.top && unit.left) {
             style = `top: ${unit.top}px; left: ${unit.left}px`
         }
         return `<span class="unit ${cls}" style="${style}">${element}</span>`
     }
 
-
     renderDiv(item) {
-        let element = '&nbsp;'
         let div = ''
+        let element = '&nbsp;'
         let style = ''
         if (item) {
             div = item.div
@@ -40,7 +40,6 @@ class Renderable {  // generalized render functions for Scenery, Character
             style += `; display: none`
         }
         return `<div id="${div}" style="${style}">${element}</div>`
-
 }
 
     renderLayer(unit, layerId) {
@@ -61,25 +60,17 @@ class Renderable {  // generalized render functions for Scenery, Character
         this.setLayer(this.renderDiv(item))
     }
 
-
     drawLayer(layerId) {
         const el = document.getElementById(layerId)
         el.innerHTML = this.getLayer()
     }
-
 
     createInitialChildElement(parentLayerId) {
         const el = document.getElementById(parentLayerId)
         const child = document.createElement('div') // creates div id within enclosing div ...
         child.innerHTML = this.getLayer()
         el.appendChild(child)
-
     }
-
-
-
-
-
 }
 
 

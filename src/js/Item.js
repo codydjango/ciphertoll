@@ -7,6 +7,7 @@ class Item extends Moveable {
         this.item = itemObject
         this.item.type = 'item'
         this.item.offMap = false
+        this.item.inInventory = false
         this.initialGridIndices = map.getRandomMapLocation()
         this.setInitialGridIndices(this.initialGridIndices)
         this.setGridIndices()
@@ -16,7 +17,7 @@ class Item extends Moveable {
 
         this.updateDiv(this.getItem())
         this.createInitialChildElement('item-layer')
-        console.log(`item ${this.item.name} rendered at ${this.initialGridIndices}`)
+        console.log(`item "${this.item.name}" rendered at ${this.initialGridIndices}`)
     }
 
     getItem() {
@@ -52,6 +53,11 @@ class Item extends Moveable {
         console.log(`${this.item.name} taken!`)
 
         this.item.offMap = true  //
+        this.item.inInventory = true
+
+        this.item.x = null
+        this.item.y = null
+
 
         this.renderLayer(this.getItem(), this.item.div)
     }

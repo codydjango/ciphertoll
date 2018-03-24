@@ -1,6 +1,7 @@
 class Status {
     constructor(EM) {
         EM.subscribe('character-moved', this.update, this)
+        EM.subscribe('')
     }
 
     update(location) {
