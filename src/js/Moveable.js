@@ -2,39 +2,23 @@ import Renderable from './Renderable'
 import Utility from './Utility'
 
 
-
 class Moveable extends Renderable {  // movement and placement on the grid
-    constructor(map) {
+    constructor() {
         super()
-        this.gotMap = map.getMap()
     }
 
-    createMoveableLayer(moveableObject) {
-        return this.renderUnit(moveableObject)
-    }
-
-    updateLayer(moveableObject) {
-        this.setLayer(this.createMoveableLayer(moveableObject))
-    }
-
-    renderLayer(moveableObject, layerId) {
-        this.updateLayer(moveableObject)
-        this.drawLayer(layerId)
-    }
-
-    drawLayer(layerId) {
-        const el = document.getElementById(layerId)
-        el.innerHTML = this.getLayer();
+    setMap(map) {
+        this.gotMap = map
     }
 
     setInitialGridIndices(gridIndices) {
         this.gridIndices = gridIndices
-        const location = this.gotMap[this.gridIndices[1]][this.gridIndices[0]]
     }
 
     getGridIndices() {
         const x = this.gridIndices[0]
         const y = this.gridIndices[1]
+
         return { x, y }
     }
 
@@ -57,12 +41,17 @@ class Moveable extends Renderable {  // movement and placement on the grid
 
     checkGridIndices(newGridIndices) {
         let locationOnGrid = false
-        if (this.gotMap[newGridIndices[1]]) {
-            const location = this.gotMap[newGridIndices[1]][newGridIndices[0]]
+
+        const x = newGridIndices[1]
+        const y = newGridIndices[0]
+
+        if (this.gotMap[x]) {
+            const location = this.gotMap[x][y]
             if (location) {
                 locationOnGrid = true
             }
         }
+
         return locationOnGrid
     }
 

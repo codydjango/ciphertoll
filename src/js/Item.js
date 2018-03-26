@@ -1,47 +1,117 @@
 import Moveable from './Moveable'
+import Utility from './Utility'
+import eventManager from './eventManager'
 
+
+const ITEMS = {
+    particleMiner: {
+        name: 'particle miner',
+        type: 'item',
+        element: '|',
+        description: '',
+        div: 'item-miner'
+    },
+    noiseParser: {
+        name: 'noise parser',
+        type: 'item',
+        element: '?',
+        description: '',
+        div: 'item-parser'
+    },
+    psionicInterface: {
+        name: 'psionic interface',
+        type: 'item',
+        element: '&',
+        description: '',
+        div: 'item-interface'
+    },
+    molecularPrinter: {
+        name: 'molecular printer',
+        type: 'item',
+        element: '#',
+        description: '',
+        div: 'item-printer'
+    }
+}
 
 class Item extends Moveable {
-    constructor(map, itemObject) {
-        super(map)
-        this.item = itemObject
-        this.initialGridIndices = map.getRandomMapLocation()
-        this.setInitialGridIndices(this.initialGridIndices)
-        this.setGridIndices()
-        this.setCoordinates()
-
-
-        this.renderLayer(this.getItem(), 'item-layer')  // issues with rendering multiple items
-
-        console.log(`item ${this.item.name} rendered at ${this.initialGridIndices}`)
-
+    static getRandomItemConfig() {
+        const allItems = Object.values(ITEMS)
+        return allItems[Utility.randomize(allItems.length)]
     }
 
-    getItem() {
-        return this.item
+    static random() {
+        return new Item(Item.getRandomItemConfig())
+    }
+
+    static generate(number) {
+        const items = []
+        for (let i = 0; i < number; i++) {
+            items.push(Item.random())
+        }
+
+        return items
+    }
+
+    constructor(itemConfig) {
+        super()
+
+        // merge in config properties
+        const target = Object.assign(this, itemConfig)
+
+        // additional properties
+        this.identityNumber = Utility.Id()
+        this.type = 'item'
+        this.offMap = false
+        this.inInventory = false
+
+        this.EM = eventManager
+        this.EM.subscribe(`${this.name} taken`, this.onTake, this, true)
+    }
+
+    setOnMap(map, randomMapLocation) {
+        this.setMap(map)
+        this.setInitialGridIndices(randomMapLocation)
+        this.setCoordinates()
+        this.setGridIndices()
+        this.setDiv(this.getId())
+        this.updateDiv(this)
+        this.createInitialChildElement('item-layer')
+    }
+
+    getId() {
+        return this.identityNumber
     }
 
     setCoordinates() {
         const { cssLeft, cssTop } = this.getCSSCoordinates()
-        this.item.left = cssLeft
-        this.item.top = cssTop
+        this.left = cssLeft
+        this.top = cssTop
     }
 
     setGridIndices() {
-        this.item.x = this.gridIndices[0]
-        this.item.y = this.gridIndices[1]
+        const { x, y } = this.getGridIndices()
+
+        this.x = x
+        this.y = y
     }
 
-    // eventmanager testing
-
-    setEventManager(eventManager) {
-        this.EM = eventManager
-        this.EM.subscribe('item taken', this.onTake, this)
-        console.log('events list', this.EM.getEventsList())
+    setDiv(identityNumber) {
+        this.div = this.div + identityNumber
     }
 
     onTake() {
-        console.log(`${this.item.name} taken!`)
+        console.log(`${this.name} taken!`)
+
+        this.offMap = true  //
+        this.inInventory = true
+
+        this.x = null
+        this.y = null
+
+        this.EM.publish('add-inventory', this.item)
+
+        this.renderLayer(this, this.div)
     }
 }
 

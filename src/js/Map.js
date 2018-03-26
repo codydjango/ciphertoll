@@ -1,5 +1,6 @@
 import MapGenerator from './MapGenerator'
 import Utility from './Utility'
+import eventManager from './eventManager'
 
 
 class Map {
@@ -9,6 +10,7 @@ class Map {
         this.generatedMap = new MapGenerator(col, row)
         this.map = this.generatedMap.getMap()
         this.itemsOnMap = []
+        this.EM = eventManager
     }
 
     getMap() {
@@ -25,25 +27,32 @@ class Map {
 
     setCharacter(character) {
         this.character = character
+        this.character.setMap(this.map)
     }
 
-    setEventManager(eventManager) {
-        this.EM = eventManager
+    setItems(items) {
+        items.map((item, index) => {
+            const randomMapLocation = this.getRandomMapLocation()
+            item.setOnMap(this.map, randomMapLocation)
+            this.pushItem(item)
+        })
     }
 
     pushItem(item) {
         this.itemsOnMap.push(item)
-        console.log('itemsOnMap', this.itemsOnMap)
     }
 
     checkCharacterLocation() {
         const char = this.character.getCharacter()
+
         this.itemsOnMap.forEach(item => {
-            if (item.x === char.x &&
-                item.y === char.y) {
-                // if character is on the same location as an item,
-                // print item description and allow character to interact with item
-                console.log('character is at item!')
+
+            if (item.x === char.x && item.y === char.y) {
+                console.log('checkCharacterLocation', char, item)
+                this.EM.publish(`on-${item.name}`, item)
+                this.EM.publish('item-status', item.name)
+            } else {
+                this.EM.publish(`off-${item.name}`, item)
             }
         })
     }

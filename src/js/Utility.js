@@ -1,3 +1,11 @@
+let id = 0
+
+function generateId() {
+    id = id++
+
+    return id
+}
+
 class Utility {
     static contains(obj, property) {
         return Object.keys(obj).indexOf(String(property)) !== -1
@@ -9,6 +17,10 @@ class Utility {
 
     static randomize(mult) {
         return Math.floor(Math.random() * mult)
+    }
+
+    static Id() {
+        return generateId()
     }
 }
 

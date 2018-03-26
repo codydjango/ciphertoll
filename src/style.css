@@ -28,6 +28,7 @@ body {
     width: 10px;
     height: 10px;
     font-size: 12px;
+    font-weight: bolder;
     line-height: 10px;
 }
 
@@ -39,10 +40,19 @@ body {
 }
 
 #item-layer {
-    position: absolute;
+/*    position: absolute;*/
     left: 0;
     top: 0;
     z-index: 1;
+    color: #FFFFFF;
+/*    display: block;
+    position: absolute;*/
+    position: absolute;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    font-size: 12px;
+    line-height: 10px;
 }
 
 #npc-layer {
@@ -57,47 +67,46 @@ body {
     left: 0;
     top: 0;
     z-index: 3;
-    /*position: absolute;*/
-    /*left: 50;*/
-    /*top: 50;*/
-    /*z-index: 1;*/
 }
 
 
 .character {
-    color: #969392;
+    color: #FFE616;
     display: block;
     position: absolute;
 }
 
-.item {
+/*#item {
     color: #F2516C;
     display: block;
     position: absolute;
-}
-
-
-
+    position: relative;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    font-size: 12px;
+    line-height: 10px;
+}*/
 
 
 .period {
-    color: #2A331D;
+    color: #00F8FF;
 }
 
 .comma {
-    color: #3E4A29;
+    color: #32F6FD;
 }
 
 .semicolon {
-    color: #7D9654;
+    color: #7CF8FF;
 }
 
 .asterisk {
-    color: #485730;
+    color: #AAF8FF;
 }
 
 .grave {
-    color: #B2D678;
+    color: #8BCBD1;
 }
 
 

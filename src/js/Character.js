@@ -1,17 +1,24 @@
 import Moveable from './Moveable'
-import { DIRECTIONS } from './constants'
-
+import { DIRECTIONS } from './Constants'
+import eventManager from './eventManager'
 
 class Character extends Moveable {  // Character data and actions
     constructor(map) {
         super(map)
         this.map = map
-        this.EM = null
+        this.item = null
+        this.EM = eventManager
         this.initialGridIndices = map.getMapCenter()
-
         this.setInitialGridIndices(this.initialGridIndices)
         this.renderLayer(this.getCharacter(), 'character-layer')
         console.log('character rendered')
+    }
+
+    subscribeItemsToMap() {
+        this.map.itemsOnMap.forEach(item => {
+            this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
+            this.EM.subscribe(`take-${item.name}`, this.takeItem, this, true)
+        })
     }
 
     getCharacter() {
@@ -19,6 +26,7 @@ class Character extends Moveable {  // Character data and actions
         const { x, y } = this.getGridIndices()
         const character = {
             name: 'character',
+            type: 'actor',
             element: '@',
             cls: 'character',
             left: cssLeft,
@@ -34,28 +42,41 @@ class Character extends Moveable {  // Character data and actions
     }
 
     move(direction) {
-        // console.log(`${direction}`)
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
-        // const char = this.getCharacter()
-        // console.log('location', this.location)
         this.map.checkCharacterLocation()
-
-        if (this.EM) {
-            this.EM.publish('character-moved', this.location)
-        }
+        this.EM.publish('character-moved', this.location)
 
         this.renderLayer(this.getCharacter(), 'character-layer')
     }
 
-    // eventmanager testing
-    setEventManager(eventManager) {
-        this.EM = eventManager
+    onItem(item) {
+        this.item = item
+        console.log(`character is at ${item.name}!`)
+        this.item.takeable = true
+        this.EM.subscribe(`off-${item.name}`, this.offItem, this, true)
     }
 
-    takeItem() {
+    offItem(item) {
+        this.item = item
+        console.log(`character is no longer on ${this.item.name}`)
+        this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
+        this.item.takeable = false
+    }
+
+    take() {
         console.log('attempting to take item...')
-        this.EM.publish('item taken')
-        console.log('events remaining:', this.EM.getEventsList())
+        if (this.item) {
+            this.EM.publish(`take-${this.item.name}`, this.item)
+        } else {
+            console.log('nothing to take!')
+        }
+    }
+
+    takeItem(item) {
+        if (item.takeable) {
+            this.EM.publish(`${item.name} taken`)
+            console.log('events remaining:', this.EM.getEventsList())
+        }
     }
 }
 
