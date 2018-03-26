@@ -1,5 +1,7 @@
+import eventManager from './eventManager'
+
 class Status {
-    constructor(eventManager) {
+    constructor() {
         this.EM = eventManager
         this.EM.subscribe('character-moved', this.update, this)
         this.EM.subscribe('item-status', this.displayItem, this)

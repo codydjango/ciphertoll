@@ -40,7 +40,7 @@ class Renderable {  // generalized render functions for Scenery, Character
             style += `; display: none`
         }
         return `<div id="${div}" style="${style}">${element}</div>`
-}
+    }
 
     renderLayer(unit, layerId) {
         if (unit.type === 'actor') {

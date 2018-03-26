@@ -1,12 +1,12 @@
 import Map from './Map'
 import Scenery from './Scenery'
 import Character from './Character'
-import EventManager from './EventManager'
-import ItemGenerator from './ItemGenerator'
+import eventManager from './eventManager'
 import Status from './Status'
 import UserInput from './UserInput'
 import Blueprints from './Blueprints'
 import Inventory from './Inventory'
+import Item from './Item'
 
 
 class Game {
@@ -18,49 +18,43 @@ class Game {
     initGame() {
         this.spaces = []
         this.gameOver = false
-        this.map = new Map(60, 60)
-        this.scenery = new Scenery(this.map)
-        this.character = new Character(this.map)
-        this.map.setCharacter(this.character)  // gives map reference to character
 
+        this.status = new Status()
+        const map = new Map(60, 60)
+        const items = Item.generate(5)
 
-        this.EM = new EventManager()
+        this.scenery = new Scenery(map)
 
+        map.setItems(items)
 
-        this.itemGenerator = new ItemGenerator(this.map, this.EM, 6)  // have to pass in EM to generator (inelegant)
+        const character = new Character(map)
+        this.character = character
 
-        this.character.setEventManager(this.EM)
-        this.map.setEventManager(this.EM)
+        map.setCharacter(character) // gives map reference to character
+        character.subscribeItemsToMap()  // event manager handling
 
-        this.status = new Status(this.EM)
-        this.status.set('you wake up')
         this.blueprint = Blueprints.random()
+
+
+        this.status.set('you wake up')
         this.status.set(`you are carrying ${this.blueprint.name}`, 4000)
 
-
         this.inventory = new Inventory(this.blueprint)
-        this.inventory.setEventManager(this.EM)
 
-
-
-
-        this.input = this.initUserInput()
+        this.input = this.initUserInput(character)
     }
 
-    initUserInput() {
+    initUserInput(character) {
         return new UserInput({
-            '38': this.character.getAction('move', 'north'),
-            '37': this.character.getAction('move', 'west'),
-            '39': this.character.getAction('move', 'east'),
-            '40': this.character.getAction('move', 'south'),
-
-            '84': this.character.getAction('take', 'item') // (t)ake item
+            '38': character.getAction('move', 'north'),
+            '37': character.getAction('move', 'west'),
+            '39': character.getAction('move', 'east'),
+            '40': character.getAction('move', 'south'),
+            '84': character.getAction('take', 'item') // (t)ake item
         })
     }
 
-    startGame() {
-        console.log('start!')
-    }
+    startGame() {}
 
     gameIsOver() {
         return this.gameOver

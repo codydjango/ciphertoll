@@ -1,17 +1,24 @@
 import Moveable from './Moveable'
 import { DIRECTIONS } from './Constants'
-
+import eventManager from './eventManager'
 
 class Character extends Moveable {  // Character data and actions
     constructor(map) {
         super(map)
         this.map = map
-        this.EM = null
         this.item = null
+        this.EM = eventManager
         this.initialGridIndices = map.getMapCenter()
         this.setInitialGridIndices(this.initialGridIndices)
         this.renderLayer(this.getCharacter(), 'character-layer')
         console.log('character rendered')
+    }
+
+    subscribeItemsToMap() {
+        this.map.itemsOnMap.forEach(item => {
+            this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
+            this.EM.subscribe(`take-${item.name}`, this.takeItem, this, true)
+        })
     }
 
     getCharacter() {
@@ -37,22 +44,9 @@ class Character extends Moveable {  // Character data and actions
     move(direction) {
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
         this.map.checkCharacterLocation()
-
-        if (this.EM) {
-            this.EM.publish('character-moved', this.location)
-        }
+        this.EM.publish('character-moved', this.location)
 
         this.renderLayer(this.getCharacter(), 'character-layer')
-    }
-
-    setEventManager(eventManager) {
-        this.EM = eventManager
-        // console.log('character knows about items', this.map.itemsOnMap)
-        this.map.itemsOnMap.forEach(item => {
-            this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
-            this.EM.subscribe(`take-${item.name}`, this.takeItem, this, true)
-
-        })
     }
 
     onItem(item) {
@@ -64,13 +58,13 @@ class Character extends Moveable {  // Character data and actions
 
     offItem(item) {
         this.item = item
-        // console.log(`character is no longer on ${this.item.name}`)
+        console.log(`character is no longer on ${this.item.name}`)
         this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
         this.item.takeable = false
     }
 
     take() {
-        // console.log('attempting to take item...')
+        console.log('attempting to take item...')
         if (this.item) {
             this.EM.publish(`take-${this.item.name}`, this.item)
         } else {
@@ -81,7 +75,7 @@ class Character extends Moveable {  // Character data and actions
     takeItem(item) {
         if (item.takeable) {
             this.EM.publish(`${item.name} taken`)
-            // console.log('events remaining:', this.EM.getEventsList())
+            console.log('events remaining:', this.EM.getEventsList())
         }
     }
 }

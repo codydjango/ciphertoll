@@ -42,4 +42,4 @@ class EventManager {
 }
 
 
-export default EventManager
+export default new EventManager()

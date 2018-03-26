@@ -1,11 +1,11 @@
+import eventManager from './eventManager'
+
 class Inventory {
     constructor(blueprint) {
         this.blueprint = blueprint
         this.inventory = [this.blueprint]
         console.log('inventory', this.inventory)
-    }
 
-    setEventManager(eventManager) {
         this.EM = eventManager
         this.EM.subscribe('add-inventory', this.add, this)
         this.EM.subscribe('remove-inventory', this.remove, this)
