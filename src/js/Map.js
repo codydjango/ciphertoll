@@ -41,21 +41,6 @@ class Map {
     pushItem(item) {
         this.itemsOnMap.push(item)
     }
-
-    checkCharacterLocation() {
-        const char = this.character.getCharacter()
-
-        this.itemsOnMap.forEach(item => {
-
-            if (item.x === char.x && item.y === char.y) {
-                console.log('checkCharacterLocation', char, item)
-                this.EM.publish(`on-${item.name}`, item)
-                this.EM.publish('item-status', item.name)
-            } else {
-                this.EM.publish(`off-${item.name}`, item)
-            }
-        })
-    }
 }
 
 export default Map

@@ -1,13 +1,15 @@
 import Moveable from './Moveable'
 import { DIRECTIONS } from './Constants'
 import eventManager from './eventManager'
+import inventory from './inventory'
+
 
 class Character extends Moveable {  // Character data and actions
     constructor(map) {
         super(map)
         this.map = map
-        this.item = null
         this.EM = eventManager
+        this.inventory = inventory.contents
         this.initialGridIndices = map.getMapCenter()
         this.setInitialGridIndices(this.initialGridIndices)
         this.renderLayer(this.getCharacter(), 'character-layer')
@@ -15,10 +17,11 @@ class Character extends Moveable {  // Character data and actions
     }
 
     subscribeItemsToMap() {
-        this.map.itemsOnMap.forEach(item => {
-            this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
-            this.EM.subscribe(`take-${item.name}`, this.takeItem, this, true)
-        })
+        // NOT REQUIRED AT THE MOMENT
+
+        // this.map.itemsOnMap.forEach(item => {
+        //     this.EM.subscribe(`${item.name}-${item.identityNumber} taken`, this.takeItem, this, true)
+        // })
     }
 
     getCharacter() {
@@ -43,40 +46,44 @@ class Character extends Moveable {  // Character data and actions
 
     move(direction) {
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
-        this.map.checkCharacterLocation()
-        this.EM.publish('character-moved', this.location)
-
+        this.printLocalStatus()
         this.renderLayer(this.getCharacter(), 'character-layer')
     }
 
-    onItem(item) {
-        this.item = item
-        console.log(`character is at ${item.name}!`)
-        this.item.takeable = true
-        this.EM.subscribe(`off-${item.name}`, this.offItem, this, true)
+    printLocalStatus() {
+        this.EM.publish('character-moved', this.location)
+        const localItem = this.localItem()
+        if (localItem) {
+            this.EM.publish('display-item', localItem.name)
+        }
     }
 
-    offItem(item) {
-        this.item = item
-        console.log(`character is no longer on ${this.item.name}`)
-        this.EM.subscribe(`on-${item.name}`, this.onItem, this, true)
-        this.item.takeable = false
+    localItem() {
+        const char = this.getCharacter()
+        let localItem = null
+        this.map.itemsOnMap.forEach(item => {
+            if (item.x === char.x && item.y === char.y) {
+                localItem = item
+            }})
+        return localItem
     }
+
 
     take() {
-        console.log('attempting to take item...')
-        if (this.item) {
-            this.EM.publish(`take-${this.item.name}`, this.item)
+        const localItem = this.localItem()
+        if (localItem) {
+            this.EM.publish(`${localItem.name}-${localItem.identityNumber} taken`)
+            this.EM.publish('status', `${localItem.name} taken`)
         } else {
-            console.log('nothing to take!')
+            this.EM.publish('status', 'there is nothing here worth taking')
         }
     }
 
-    takeItem(item) {
-        if (item.takeable) {
-            this.EM.publish(`${item.name} taken`)
-            console.log('events remaining:', this.EM.getEventsList())
-        }
+
+    checkInventory() {
+        const carrying = this.inventory.map(item => item.name).join(' | ')
+        const text = `you are carrying: ${carrying}`
+        this.EM.publish('status', text)
     }
 }
 

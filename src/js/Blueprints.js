@@ -3,19 +3,19 @@ import Utility from './Utility'
 
 const blueprintData = {
     artificialMuscle: {
-        name: 'Artificial Muscle',
+        name: 'artificial muscle (blueprint)',
         description: '',
         abilities: '',
         requirements: ''
     },
     retinalDisplay: {
-        name: 'Retinal Display',
+        name: 'retinal display (blueprint)',
         description: '',
         abilities: '',
         requirements: ''
     },
     prostheticArm: {
-        name: 'Prosthetic Arm',
+        name: 'prosthetic arm (blueprint)',
         description: '',
         abilities: '',
         requirements: ''

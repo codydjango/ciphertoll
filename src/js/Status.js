@@ -4,16 +4,38 @@ class Status {
     constructor() {
         this.EM = eventManager
         this.EM.subscribe('character-moved', this.update, this)
-        this.EM.subscribe('item-status', this.displayItem, this)
+        this.EM.subscribe('display-item', this.displayItem, this)
+        this.EM.subscribe('status', this.default, this)
     }
 
     update(location) {
         this.set(location.description)
     }
 
+    beginsWithVowel(text) {
+        const firstLetter = text[0]
+        const vowels = ['a', 'e', 'i', 'o', 'u']
+        let beginsWithVowel = false
+        vowels.forEach(vowel => {
+            if (firstLetter === vowel) {
+                beginsWithVowel = true
+            }})
+        return beginsWithVowel
+    }
+
     displayItem(itemName) {
-        this.set(`you see ${itemName} here`, 10)
-        this.EM.subscribe('character-moved', this.update, this)
+        const beginsWithVowel = this.beginsWithVowel(itemName)
+        let text = ''
+        if (beginsWithVowel) {
+            text = `you see an ${itemName} here`
+        } else {
+            text = `you see a ${itemName} here`
+        }
+        this.set(text, 10)
+    }
+
+    default(response) {
+        this.set(response, 10)
     }
 
     set(description, delay=0) {

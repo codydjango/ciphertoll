@@ -5,7 +5,7 @@ import eventManager from './eventManager'
 import Status from './Status'
 import UserInput from './UserInput'
 import Blueprints from './Blueprints'
-import Inventory from './Inventory'
+import inventory from './inventory'
 import Item from './Item'
 
 
@@ -16,8 +16,8 @@ class Game {
     }
 
     initGame() {
-        this.spaces = []
-        this.gameOver = false
+        // this.spaces = []
+        // this.gameOver = false
 
         this.status = new Status()
         const map = new Map(60, 60)
@@ -30,16 +30,13 @@ class Game {
         const character = new Character(map)
         this.character = character
 
-        map.setCharacter(character) // gives map reference to character
-        character.subscribeItemsToMap()  // event manager handling
+        map.setCharacter(character)
+        // character.subscribeItemsToMap()  // not currently necessary
 
         this.blueprint = Blueprints.random()
 
-
-        this.status.set('you wake up')
-        this.status.set(`you are carrying ${this.blueprint.name}`, 4000)
-
-        this.inventory = new Inventory(this.blueprint)
+        this.inventory = inventory
+        this.inventory.add(this.blueprint)
 
         this.input = this.initUserInput(character)
     }
@@ -50,19 +47,23 @@ class Game {
             '37': character.getAction('move', 'west'),
             '39': character.getAction('move', 'east'),
             '40': character.getAction('move', 'south'),
-            '84': character.getAction('take', 'item') // (t)ake item
+            '84': character.getAction('take'), // (t)ake item
+            '73': character.getAction('checkInventory') // check (i)nventory
         })
     }
 
-    startGame() {}
-
-    gameIsOver() {
-        return this.gameOver
+    startGame() {
+        this.status.set('you wake up')
+        this.status.set(`you are carrying ${this.blueprint.name}`, 4000)
     }
 
-    explore() {
-        console.log(`exploring the ${this.kind} zone!`)
-    }
+    // gameIsOver() {
+    //     return this.gameOver
+    // }
+
+    // explore() {
+    //     console.log(`exploring the ${this.kind} zone!`)
+    // }
 }
 
 

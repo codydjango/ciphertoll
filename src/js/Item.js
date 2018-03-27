@@ -4,32 +4,32 @@ import eventManager from './eventManager'
 
 
 const ITEMS = {
-    particleMiner: {
+    miner: {
         name: 'particle miner',
         type: 'item',
         element: '|',
-        description: '',
+        description: 'mines, divides, and stores ambient chemical elements and larger compounds found within a 100 meter radius. 97% accuracy rate.',
         div: 'item-miner'
     },
-    noiseParser: {
+    parser: {
         name: 'noise parser',
         type: 'item',
         element: '?',
-        description: '',
+        description: 'prototype. parses atmospheric data for latent information. signal-to-noise ratio not guaranteed.',
         div: 'item-parser'
     },
-    psionicInterface: {
+    interface: {
         name: 'psionic interface',
         type: 'item',
         element: '&',
-        description: '',
+        description: `connects seamlessly to a standard-issue bioport. facilitates sundry interactions performed via PSI-NET.`,
         div: 'item-interface'
     },
-    molecularPrinter: {
+    printer: {
         name: 'molecular printer',
         type: 'item',
         element: '#',
-        description: '',
+        description: 'generates objects according to a blueprint. molecules not included.',
         div: 'item-printer'
     }
 }
@@ -66,7 +66,7 @@ class Item extends Moveable {
         this.inInventory = false
 
         this.EM = eventManager
-        this.EM.subscribe(`${this.name} taken`, this.onTake, this, true)
+        this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this, true)
     }
 
     setOnMap(map, randomMapLocation) {
@@ -101,15 +101,13 @@ class Item extends Moveable {
     }
 
     onTake() {
-        console.log(`${this.name} taken!`)
-
-        this.offMap = true  //
+        this.offMap = true
         this.inInventory = true
 
         this.x = null
         this.y = null
 
-        this.EM.publish('add-inventory', this.item)
+        this.EM.publish('add-inventory', this)
 
         this.renderLayer(this, this.div)
     }

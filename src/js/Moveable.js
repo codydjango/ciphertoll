@@ -1,10 +1,13 @@
 import Renderable from './Renderable'
 import Utility from './Utility'
+import eventManager from './eventManager'
+
 
 
 class Moveable extends Renderable {  // movement and placement on the grid
     constructor() {
         super()
+        this.EM = eventManager
     }
 
     setMap(map) {
@@ -33,7 +36,7 @@ class Moveable extends Renderable {  // movement and placement on the grid
         } else {
             location = this.gotMap[this.gridIndices[1], this.gridIndices[0]]
             if (actor.name === 'character') {
-                console.log("you've reached the map's edge")
+                this.EM.publish('status', "you've reached the map's edge")
             }
         }
         return location

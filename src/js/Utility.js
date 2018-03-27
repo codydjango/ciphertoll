@@ -1,8 +1,7 @@
 let id = 0
 
 function generateId() {
-    id = id++
-
+    id = id + 1
     return id
 }
 
