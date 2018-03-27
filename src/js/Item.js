@@ -10,28 +10,28 @@ const ITEMS = {
         element: '|',
         description: 'mines, divides, and stores ambient chemical elements and larger compounds found within a 100 meter radius. 97% accuracy rate.',
         div: 'item-miner'
-    },
-    parser: {
-        name: 'noise parser',
-        type: 'item',
-        element: '?',
-        description: 'prototype. parses atmospheric data for latent information. signal-to-noise ratio not guaranteed.',
-        div: 'item-parser'
-    },
-    interface: {
-        name: 'psionic interface',
-        type: 'item',
-        element: '&',
-        description: `connects seamlessly to a standard-issue bioport. facilitates sundry interactions performed via PSI-NET.`,
-        div: 'item-interface'
-    },
-    printer: {
-        name: 'molecular printer',
-        type: 'item',
-        element: '#',
-        description: 'generates objects according to a blueprint. molecules not included.',
-        div: 'item-printer'
-    }
+    }//,
+    // parser: {
+    //     name: 'noise parser',
+    //     type: 'item',
+    //     element: '?',
+    //     description: 'prototype. parses atmospheric data for latent information. signal-to-noise ratio not guaranteed.',
+    //     div: 'item-parser'
+    // },
+    // interface: {
+    //     name: 'psionic interface',
+    //     type: 'item',
+    //     element: '&',
+    //     description: `connects seamlessly to a standard-issue bioport. facilitates sundry interactions performed via PSI-NET.`,
+    //     div: 'item-interface'
+    // },
+    // printer: {
+    //     name: 'molecular printer',
+    //     type: 'item',
+    //     element: '#',
+    //     description: 'generates objects according to a blueprint. molecules not included.',
+    //     div: 'item-printer'
+    // }
 }
 
 class Item extends Moveable {
@@ -69,9 +69,9 @@ class Item extends Moveable {
         this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this, true)
     }
 
-    setOnMap(map, randomMapLocation) {
+    setOnMap(map, location) {
         this.setMap(map)
-        this.setInitialGridIndices(randomMapLocation)
+        this.setInitialGridIndices(location)
         this.setCoordinates()
         this.setGridIndices()
         this.setDiv(this.getId())
@@ -101,15 +101,22 @@ class Item extends Moveable {
     }
 
     onTake() {
-        this.offMap = true
-        this.inInventory = true
-
         this.x = null
         this.y = null
 
         this.EM.publish('add-inventory', this)
-
+        // this.EM.subscribe('remove-inventory', this.onDrop, this)
         this.renderLayer(this, this.div)
+    }
+
+    onDrop() {
+    //     this.x = args.x
+    //     this.y = args.y
+
+
+        this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this, true)
+    //     this.renderLayer(this, this.div)
+
     }
 }
 

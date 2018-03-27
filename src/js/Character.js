@@ -85,6 +85,33 @@ class Character extends Moveable {  // Character data and actions
         const text = `you are carrying: ${carrying}`
         this.EM.publish('status', text)
     }
+
+
+    mine() {
+        let miner = false
+        const char = this.getCharacter()
+        const location = [char.x, char.y]
+
+        this.inventory.forEach(item => {
+            if (item.name === 'particle miner') {
+                miner = item
+            }
+        })
+
+        if (miner) {
+            console.log('miner', miner)
+            console.log('this.map.map', this.map.map)
+            console.log('location', location)
+
+            miner.setOnMap(this.map.map, location)
+            this.EM.publish('remove-inventory', miner)
+        } else {
+            this.EM.publish('status', 'you do not have any particle miners')
+        }
+
+    }
+
+
 }
 
 

@@ -17,11 +17,12 @@ class Inventory {
 // untested
 
     remove(item) {
-        this.contents.forEach((item, i) => {
-            if (this.contents[i].item === item) {
+        const theItem = item
+        this.contents.forEach((item, i, array) => {
+            if (array[i] === theItem) {
                 this.contents.splice(i, 1)
-            } else {
-                // item not in inventory
+            // } else {
+                // console.log('item not in inventory')
             }})
 
     }
