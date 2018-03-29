@@ -39,20 +39,10 @@ class Renderable {  // generalized render functions for Scenery, Character
         if (item.offMap) {
             style += `; display: none`
         }
-        return `<div id="${div}" style="${style}">${element}</div>`
-    }
-
-    renderLayer(unit, layerId) {
-        if (unit.type === 'actor') {
-            this.updateSpan(unit)
-            this.drawLayer(layerId)
-            console.log('render actor')
-        } else if (unit.type === 'item') {
-            this.updateDiv(unit)
-            this.drawLayer(layerId)
-        } else {
-            console.log('rewrite yr renderLayer code lol')
+        if (item.mining) {
+            style += `; animation-name: mining; animation-duration: 4s; animation-iteration-count: infinite`
         }
+        return `<div id="${div}" style="${style}">${element}</div>`
     }
 
     updateSpan(actor) {
@@ -66,10 +56,7 @@ class Renderable {  // generalized render functions for Scenery, Character
     drawLayer(layerId) {
         const el = document.getElementById(layerId)
         el.innerHTML = this.getLayer()
-        // el.outerHTML = this.getLayer()
     }
-
-
 
     createInitialChildElement(parentLayerId) {
         const el = document.getElementById(parentLayerId)

@@ -34,8 +34,8 @@ class Status {
         this.set(text, 10)
     }
 
-    default(response) {
-        this.set(response, 10)
+    default(text) {
+        this.set(text, 10)
     }
 
     set(description, delay=0) {

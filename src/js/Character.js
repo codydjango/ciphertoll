@@ -16,6 +16,13 @@ class Character extends Moveable {  // Character data and actions
         console.log('character rendered')
     }
 
+    renderLayer(unit, layerId) {
+        if (unit.type === 'actor') {
+            this.updateSpan(unit)
+            this.drawLayer(layerId)
+        }
+    }
+
     subscribeItemsToMap() {
         // NOT REQUIRED AT THE MOMENT
 
@@ -54,7 +61,11 @@ class Character extends Moveable {  // Character data and actions
         this.EM.publish('character-moved', this.location)
         const localItem = this.localItem()
         if (localItem) {
-            this.EM.publish('display-item', localItem.name)
+            if (localItem.mining) {
+                this.EM.publish('status', 'a miner pulls compounds from the region')
+            } else {
+                this.EM.publish('display-item', localItem.name)
+            }
         }
     }
 
@@ -87,27 +98,35 @@ class Character extends Moveable {  // Character data and actions
     }
 
 
+    findInventoryItem(itemName) {
+        let foundItem = null
+        this.inventory.forEach(item => {
+            if (item.name === itemName) {
+                foundItem = item
+            }
+        })
+        return foundItem
+    }
+
     mine() {
-        // let miner = false
-        // const char = this.getCharacter()
-        // const location = [char.x, char.y]
 
-        // this.inventory.forEach(item => {
-        //     if (item.name === 'particle miner') {
-        //         miner = item
-        //     }
-        // })
+        const char = this.getCharacter()
+        const miner = this.findInventoryItem('particle miner')
+        const location = [char.x, char.y]
 
-        // if (miner) {
-        //     console.log('miner', miner)
-        //     console.log('this.map.map', this.map.map)
-        //     console.log('location', location)
 
-        //     miner.setOnMap(this.map.map, location)
-        //     this.EM.publish('remove-inventory', miner)
-        // } else {
-        //     this.EM.publish('status', 'you do not have any particle miners')
-        // }
+        if (miner) {
+            miner.offMap = false
+            miner.mining = true
+            miner.setOnMap(this.map.map, location)
+            miner.drawLayer(miner.div)
+            this.EM.publish('remove-inventory', miner)
+
+        } else {
+
+            this.EM.publish('status', 'you do not have any particle miners')
+
+        }
 
     }
 

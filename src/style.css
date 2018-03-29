@@ -4,6 +4,7 @@ body {
     overflow: hidden;
     background-color: black;
     font-family: monospace;
+    font-weight: normal;
 }
 
 #map {
@@ -53,6 +54,7 @@ body {
     height: 10px;
     font-size: 12px;
     line-height: 10px;
+    font-weight: 900;
 }
 
 #npc-layer {
@@ -110,3 +112,8 @@ body {
 }
 
 
+@keyframes mining {
+    0%   {color: lime}
+    50%  {color: white}
+    100% {color: lime}
+}

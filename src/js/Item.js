@@ -66,7 +66,7 @@ class Item extends Moveable {
         // this.inInventory = false
 
         this.EM = eventManager
-        this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this, true)
+        this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this)
     }
 
     setOnMap(map, location) {
@@ -77,7 +77,8 @@ class Item extends Moveable {
         this.setDiv(this.getId())
         this.updateDiv(this)
 
-        this.createInitialChildElement('item-layer')
+// moved this out so we are not creating children each time we want to place on map
+        // this.createInitialChildElement('item-layer')
     }
 
     getId() {
@@ -98,15 +99,30 @@ class Item extends Moveable {
     }
 
     setDiv(identityNumber) {
-        this.div = this.div + identityNumber
+        if (!this.divSet) {
+            this.div = this.div + identityNumber
+        }
+        this.divSet = true
     }
 
 
     // specific to item drawing: use outerHTML
     drawLayer(layerId) {
+        console.log('layerId', layerId)
         const el = document.getElementById(layerId)
+        console.log('el in drawLayer', el)
         el.outerHTML = this.getLayer()
     }
+
+
+
+    renderLayer(unit, layerId) {
+        if (unit.type === 'item') {
+            this.updateDiv(unit)
+            this.drawLayer(layerId)
+        }
+    }
+
 
     onTake() {
         this.x = null

@@ -34,6 +34,7 @@ class Map {
         items.map((item, index) => {
             const randomMapLocation = this.getRandomMapLocation()
             item.setOnMap(this.map, randomMapLocation)
+            item.createInitialChildElement('item-layer')  // moved childElement creation out of 'setOnMap'
             this.pushItem(item)
         })
     }

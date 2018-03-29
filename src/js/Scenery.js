@@ -5,17 +5,17 @@ class Scenery extends Renderable {  // Scenery-specific rendering functions
     constructor(map) {
         super()
         this.gotMap = map.getMap()
-        this.renderGridLayer()
+        this.renderLayer()
         console.log('scenery rendered')
     }
 
-    renderGridLayer() {
+    renderLayer() {
         const grid = this.gotMap.map(arr => { return arr.slice() })
-        this.setLayer(this.createGridLayer(grid))
-        this.drawGridLayer()
+        this.setLayer(this.createLayer(grid))
+        this.drawLayer()
     }
 
-    createGridLayer(grid) {
+    createLayer(grid) {
         const sceneryGrid = []
         for (let i = 0; i < grid.length; i++) {
             const rowItems = grid[i]
@@ -28,7 +28,7 @@ class Scenery extends Renderable {  // Scenery-specific rendering functions
         return sceneryGrid
     }
 
-    drawGridLayer() {
+    drawLayer() {
         const layer = this.getLayer()
         const gridToHTML = layer.join('<br />')  // using HTML breaks for now
         const el = document.getElementById('landscape-layer')
