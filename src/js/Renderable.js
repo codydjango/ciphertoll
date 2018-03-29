@@ -46,9 +46,12 @@ class Renderable {  // generalized render functions for Scenery, Character
         if (unit.type === 'actor') {
             this.updateSpan(unit)
             this.drawLayer(layerId)
-        } else {
+            console.log('render actor')
+        } else if (unit.type === 'item') {
             this.updateDiv(unit)
             this.drawLayer(layerId)
+        } else {
+            console.log('rewrite yr renderLayer code lol')
         }
     }
 
@@ -63,7 +66,10 @@ class Renderable {  // generalized render functions for Scenery, Character
     drawLayer(layerId) {
         const el = document.getElementById(layerId)
         el.innerHTML = this.getLayer()
+        // el.outerHTML = this.getLayer()
     }
+
+
 
     createInitialChildElement(parentLayerId) {
         const el = document.getElementById(parentLayerId)

@@ -63,7 +63,7 @@ class Item extends Moveable {
         this.identityNumber = Utility.Id()
         this.type = 'item'
         this.offMap = false
-        this.inInventory = false
+        // this.inInventory = false
 
         this.EM = eventManager
         this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this, true)
@@ -76,6 +76,7 @@ class Item extends Moveable {
         this.setGridIndices()
         this.setDiv(this.getId())
         this.updateDiv(this)
+
         this.createInitialChildElement('item-layer')
     }
 
@@ -100,9 +101,17 @@ class Item extends Moveable {
         this.div = this.div + identityNumber
     }
 
+
+    // specific to item drawing: use outerHTML
+    drawLayer(layerId) {
+        const el = document.getElementById(layerId)
+        el.outerHTML = this.getLayer()
+    }
+
     onTake() {
         this.x = null
         this.y = null
+        this.offMap = true // changes css display to 'none'
 
         this.EM.publish('add-inventory', this)
         // this.EM.subscribe('remove-inventory', this.onDrop, this)
