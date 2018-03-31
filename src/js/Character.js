@@ -118,6 +118,7 @@ class Character extends Moveable {  // Character data and actions
         if (miner) {
             miner.offMap = false
             miner.mining = true
+            miner.spinning = true
             miner.setOnMap(this.map.map, location)
             miner.drawLayer(miner.div)
             this.EM.publish('remove-inventory', miner)

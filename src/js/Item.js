@@ -128,6 +128,7 @@ class Item extends Moveable {
         this.x = null
         this.y = null
         this.offMap = true // changes css display to 'none'
+        this.mining = false
 
         this.EM.publish('add-inventory', this)
         // this.EM.subscribe('remove-inventory', this.onDrop, this)

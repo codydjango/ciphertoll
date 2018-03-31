@@ -40,8 +40,11 @@ class Renderable {  // generalized render functions for Scenery, Character
             style += `; display: none`
         }
         if (item.mining) {
-            style += `; animation-name: mining; animation-duration: 4s; animation-iteration-count: infinite`
+            style += `; animation: mining 3s infinite`
         }
+        // if (item.spinning) {
+        //     style += `; animation: spinning 1s infinite`
+        // }
         return `<div id="${div}" style="${style}">${element}</div>`
     }
 
