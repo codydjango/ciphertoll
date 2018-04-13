@@ -1,58 +1,40 @@
-import Moveable from './Moveable'
-import Utility from './Utility'
-import eventManager from './eventManager'
+import Moveable from 'js/Moveable'
+import Utility from 'js/Utility'
+import eventManager from 'js/eventManager'
 
 
-const ITEMS = {
-    miner: {
-        name: 'particle miner',
-        type: 'item',
-        element: '|',
-        description: 'mines, divides, and stores ambient chemical elements and larger compounds found within a 100 meter radius. 97% accuracy rate.',
-        div: 'item-miner'
-    }//,
-    // parser: {
-    //     name: 'noise parser',
-    //     type: 'item',
-    //     element: '?',
-    //     description: 'prototype. parses atmospheric data for latent information. signal-to-noise ratio not guaranteed.',
-    //     div: 'item-parser'
-    // },
-    // interface: {
-    //     name: 'psionic interface',
-    //     type: 'item',
-    //     element: '&',
-    //     description: `connects seamlessly to a standard-issue bioport. facilitates sundry interactions performed via PSI-NET.`,
-    //     div: 'item-interface'
-    // },
-    // printer: {
-    //     name: 'molecular printer',
-    //     type: 'item',
-    //     element: '#',
-    //     description: 'generates objects according to a blueprint. molecules not included.',
-    //     div: 'item-printer'
-    // }
-}
+// const ITEMS = {
+//     miner: {
+//         name: 'particle miner',
+//         type: 'item',
+//         element: '|',
+//         description: 'mines, divides, and stores ambient chemical elements and larger compounds found within a 100 meter radius. 97% accuracy rate.',
+//         div: 'item-miner'
+//     },
+//     parser: {
+//         name: 'noise parser',
+//         type: 'item',
+//         element: '?',
+//         description: 'prototype. parses atmospheric data for latent information. signal-to-noise ratio not guaranteed.',
+//         div: 'item-parser'
+//     },
+//     interface: {
+//         name: 'psionic interface',
+//         type: 'item',
+//         element: '&',
+//         description: `connects seamlessly to a standard-issue bioport. facilitates sundry interactions performed via PSI-NET.`,
+//         div: 'item-interface'
+//     },
+//     printer: {
+//         name: 'molecular printer',
+//         type: 'item',
+//         element: '#',
+//         description: 'generates objects according to a blueprint. molecules not included.',
+//         div: 'item-printer'
+//     }
+// }
 
 class Item extends Moveable {
-    static getRandomItemConfig() {
-        const allItems = Object.values(ITEMS)
-        return allItems[Utility.randomize(allItems.length)]
-    }
-
-    static random() {
-        return new Item(Item.getRandomItemConfig())
-    }
-
-    static generate(number) {
-        const items = []
-        for (let i = 0; i < number; i++) {
-            items.push(Item.random())
-        }
-
-        return items
-    }
-
     constructor(itemConfig) {
         super()
 

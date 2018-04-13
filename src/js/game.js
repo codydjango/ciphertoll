@@ -6,7 +6,7 @@ import Status from './Status'
 import UserInput from './UserInput'
 import Blueprints from './Blueprints'
 import inventory from './inventory'
-import Item from './Item'
+import { generateItems } from './items'
 
 
 class Game {
@@ -21,7 +21,7 @@ class Game {
 
         this.status = new Status()
         const map = new Map(60, 60)
-        const items = Item.generate(5)
+        const items = generateItems(5)
 
         this.scenery = new Scenery(map)
 
