@@ -127,7 +127,7 @@ class MapGenerator {
             for (let direction in DIRECTIONS) {
                 const directionValues = DIRECTIONS[direction]
                 const nextGenSeed = Object.assign({}, originalSeed)
-                if (this.probability(nextGenSeed.probability)) {
+                if (Utility.probability(nextGenSeed.probability)) {
                     for (let key in directionValues) {
                         if (key === 'x') {
                         nextGenSeed.x = originalSeed.x + directionValues[key]
@@ -143,16 +143,16 @@ class MapGenerator {
         return nextGenSeeds
     }
 
-    probability(percentage) {
-        const probabilityArray = []
-        for (let i = 0; i < percentage; i++) {
-            probabilityArray.push(true)
-        }
-        for (let i = 0; i < 100 - percentage; i++) {
-            probabilityArray.push(false)
-        }
-        return probabilityArray[Utility.randomize(100)]
-    }
+    // probability(percentage) {
+    //     const probabilityArray = []
+    //     for (let i = 0; i < percentage; i++) {
+    //         probabilityArray.push(true)
+    //     }
+    //     for (let i = 0; i < 100 - percentage; i++) {
+    //         probabilityArray.push(false)
+    //     }
+    //     return probabilityArray[Utility.randomize(100)]
+    // }
 }
 
 export default MapGenerator

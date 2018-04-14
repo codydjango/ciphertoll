@@ -5,12 +5,12 @@ import inventory from './inventory'
 
 
 class Character extends Moveable {  // Character data and actions
-    constructor(map) {
-        super(map)
-        this.map = map
+    constructor(mapInstance) {
+        super(mapInstance)
+        this.mapInstance = mapInstance
         this.EM = eventManager
         this.inventory = inventory.contents
-        this.initialGridIndices = map.getMapCenter()
+        this.initialGridIndices = mapInstance.getMapCenter()
         this.setInitialGridIndices(this.initialGridIndices)
         this.renderLayer(this.getCharacter(), 'character-layer')
         console.log('character rendered')
@@ -72,7 +72,7 @@ class Character extends Moveable {  // Character data and actions
     localItem() {
         const char = this.getCharacter()
         let localItem = null
-        this.map.itemsOnMap.forEach(item => {
+        this.mapInstance.itemsOnMap.forEach(item => {
             if (item.x === char.x && item.y === char.y) {
                 localItem = item
             }})
@@ -116,11 +116,7 @@ class Character extends Moveable {  // Character data and actions
 
 
         if (miner) {
-            miner.offMap = false
-            miner.mining = true
-            miner.spinning = true
-            miner.setOnMap(this.map.map, location)
-            miner.drawLayer(miner.div)
+            miner.mine(location)
             this.EM.publish('remove-inventory', miner)
 
         } else {

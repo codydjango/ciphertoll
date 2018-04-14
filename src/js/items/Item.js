@@ -39,7 +39,7 @@ class Item extends Moveable {
         super()
 
         // merge in config properties
-        const target = Object.assign(this, itemConfig)
+        // const target = Object.assign(this, itemConfig)
 
         // additional properties
         this.identityNumber = Utility.Id()
@@ -48,7 +48,6 @@ class Item extends Moveable {
         // this.inInventory = false
 
         this.EM = eventManager
-        this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this)
     }
 
     setOnMap(map, location) {
@@ -90,9 +89,7 @@ class Item extends Moveable {
 
     // specific to item drawing: use outerHTML
     drawLayer(layerId) {
-        console.log('layerId', layerId)
         const el = document.getElementById(layerId)
-        console.log('el in drawLayer', el)
         el.outerHTML = this.getLayer()
     }
 
@@ -118,9 +115,6 @@ class Item extends Moveable {
     }
 
     onDrop() {
-    //     this.x = args.x
-    //     this.y = args.y
-
 
         this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this, true)
     //     this.renderLayer(this, this.div)

@@ -11,7 +11,7 @@ class Moveable extends Renderable {  // movement and placement on the grid
     }
 
     setMap(map) {
-        this.gotMap = map
+        this.map = map
     }
 
     setInitialGridIndices(gridIndices) {
@@ -29,12 +29,12 @@ class Moveable extends Renderable {  // movement and placement on the grid
         const newGridIndices = [this.gridIndices[0] + move.x, this.gridIndices[1] + move.y]
         let location = ''
         if (this.checkGridIndices(newGridIndices)) {
-            location = this.gotMap[newGridIndices[1]][newGridIndices[0]]
+            location = this.map[newGridIndices[1]][newGridIndices[0]]
             this.gridIndices = newGridIndices
             actor.x = newGridIndices[0]
             actor.y = newGridIndices[1]
         } else {
-            location = this.gotMap[this.gridIndices[1], this.gridIndices[0]]
+            location = this.map[this.gridIndices[1], this.gridIndices[0]]
             if (actor.name === 'character') {
                 this.EM.publish('status', "you've reached the map's edge")
             }
@@ -48,8 +48,8 @@ class Moveable extends Renderable {  // movement and placement on the grid
         const x = newGridIndices[1]
         const y = newGridIndices[0]
 
-        if (this.gotMap[x]) {
-            const location = this.gotMap[x][y]
+        if (this.map[x]) {
+            const location = this.map[x][y]
             if (location) {
                 locationOnGrid = true
             }

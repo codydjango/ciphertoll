@@ -21,6 +21,17 @@ class Utility {
     static Id() {
         return generateId()
     }
+
+    static probability(percentage) {
+        const probabilityArray = []
+        for (let i = 0; i < percentage; i++) {
+            probabilityArray.push(true)
+        }
+        for (let i = 0; i < 100 - percentage; i++) {
+            probabilityArray.push(false)
+        }
+        return probabilityArray[Utility.randomize(100)]
+    }
 }
 
 

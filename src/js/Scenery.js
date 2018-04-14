@@ -4,13 +4,13 @@ import Renderable from './Renderable'
 class Scenery extends Renderable {  // Scenery-specific rendering functions
     constructor(map) {
         super()
-        this.gotMap = map.getMap()
+        this.map = map.getMap()
         this.renderLayer()
         console.log('scenery rendered')
     }
 
     renderLayer() {
-        const grid = this.gotMap.map(arr => { return arr.slice() })
+        const grid = this.map.map(arr => { return arr.slice() })
         this.setLayer(this.createLayer(grid))
         this.drawLayer()
     }
