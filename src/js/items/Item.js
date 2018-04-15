@@ -107,7 +107,12 @@ class Item extends Moveable {
         this.x = null
         this.y = null
         this.offMap = true // changes css display to 'none'
-        this.mining = false
+
+        switch (this.name) {
+            case 'particle miner':
+                this.haltMining()
+                break
+        }
 
         this.EM.publish('add-inventory', this)
         // this.EM.subscribe('remove-inventory', this.onDrop, this)
