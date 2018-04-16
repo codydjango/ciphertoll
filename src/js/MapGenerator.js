@@ -4,23 +4,27 @@ import { DIRECTIONS } from './Constants'
 
 
 class MapGenerator {
-    constructor(col, row) {
+    constructor() {}
+
+    generate({ col, row }) {
         console.log('generating map')
+        this.col = col
+        this.row = row
+
         this.landscapeSeeds = new LandscapeData()
-        const grid = this.init(col, row)
+        const grid = this.makeGrid()
         const seededGrid = this.seed(grid)
         this.seededGrid = seededGrid
         this.grow()
-        console.log('map generated')
-    }
 
-    getMap() {
+        console.log('map generated')
+
         return this.seededGrid
     }
 
-    init(col, row) {
-        this.col = col
-        this.row = row
+    makeGrid() {
+        const col = this.col
+        const row = this.row
         const grid = []
         for (let i = 0; i < row; i++) {
             grid[i] = []
@@ -28,6 +32,7 @@ class MapGenerator {
                 grid[i].push(this.landscapeSeeds.bare)
             }
         }
+
         return grid
     }
 

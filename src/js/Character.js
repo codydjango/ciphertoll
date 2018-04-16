@@ -5,13 +5,20 @@ import inventory from './inventory'
 
 
 class Character extends Moveable {  // Character data and actions
-    constructor(mapInstance) {
+    constructor(mapInstance, initialPosition) {
         super(mapInstance)
         this.mapInstance = mapInstance
         this.EM = eventManager
         this.inventory = inventory.contents
-        this.initialGridIndices = mapInstance.getMapCenter()
-        this.setInitialGridIndices(this.initialGridIndices)
+
+        let position
+        if (initialPosition) {
+            position = initialPosition
+        } else {
+            position = mapInstance.getMapCenter()
+        }
+
+        this.setInitialGridIndices(position)
         this.renderLayer(this.getCharacter(), 'character-layer')
         console.log('character rendered')
     }
@@ -29,6 +36,10 @@ class Character extends Moveable {  // Character data and actions
         // this.map.itemsOnMap.forEach(item => {
         //     this.EM.subscribe(`${item.name}-${item.identityNumber} taken`, this.takeItem, this, true)
         // })
+    }
+
+    getPosition() {
+        return this.gridIndices
     }
 
     getCharacter() {
@@ -60,6 +71,7 @@ class Character extends Moveable {  // Character data and actions
     printLocalStatus() {
         this.EM.publish('character-moved', this.location)
         const localItem = this.localItem()
+
         if (localItem) {
             if (localItem.mining) {
                 this.EM.publish('status', 'a miner pulls compounds from the region')
@@ -72,6 +84,7 @@ class Character extends Moveable {  // Character data and actions
     localItem() {
         const char = this.getCharacter()
         let localItem = null
+
         this.mapInstance.itemsOnMap.forEach(item => {
             if (item.x === char.x && item.y === char.y) {
                 localItem = item
@@ -79,9 +92,9 @@ class Character extends Moveable {  // Character data and actions
         return localItem
     }
 
-
     take() {
         const localItem = this.localItem()
+
         if (localItem) {
             this.EM.publish(`${localItem.name}-${localItem.identityNumber} taken`)
             this.EM.publish('status', `${localItem.name} taken`)
@@ -90,44 +103,36 @@ class Character extends Moveable {  // Character data and actions
         }
     }
 
-
     checkInventory() {
         const carrying = this.inventory.map(item => item.name).join(' | ')
         const text = `you are carrying: ${carrying}`
         this.EM.publish('status', text)
     }
 
-
     findInventoryItem(itemName) {
         let foundItem = null
+
         this.inventory.forEach(item => {
             if (item.name === itemName) {
                 foundItem = item
             }
         })
+
         return foundItem
     }
 
     mine() {
-
         const char = this.getCharacter()
         const miner = this.findInventoryItem('particle miner')
         const location = [char.x, char.y]
 
-
         if (miner) {
             miner.mine(location)
             this.EM.publish('remove-inventory', miner)
-
         } else {
-
             this.EM.publish('status', 'you do not have any particle miners')
-
         }
-
     }
-
-
 }
 
 

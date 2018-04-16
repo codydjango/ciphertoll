@@ -7,42 +7,82 @@ import UserInput from './UserInput'
 import Blueprints from './Blueprints'
 import inventory from './inventory'
 import { generateItems } from './items'
+import store from './store'
 
+const COL = 60
+const ROW = 60
+const ITEM_NUM = 5
 
 class Game {
     constructor() {
         this.initGame()
-        this.startGame()
     }
 
     initGame() {
-        // this.spaces = []
-        // this.gameOver = false
+        let settings
 
-        this.status = new Status()
-        const map = new Map(60, 60)
-        const items = generateItems(5)
+        if (this.hasGameInProgress()) {
+            settings = this.resumeSettings()
+        } else {
+            settings = this.generateSettings()
+        }
 
-        this.scenery = new Scenery(map)
+        this.loadSettings(settings)
+        this.startGame()
+    }
+
+    hasGameInProgress() {
+        return store.has('map')
+    }
+
+    resumeSettings() {
+        const settings = {
+            mapData: store.get('map')
+        }
+
+        return settings
+    }
+
+    generateSettings() {
+        const settings = {}
+
+        settings.mapData = Map.generate({ col: COL, row:  ROW })
+
+        store.set('map', settings.mapData)
+
+        return settings
+    }
+
+    loadSettings(settings) {
+        const blueprint = this.blueprint = Blueprints.random()
+        const items = this.items = generateItems(ITEM_NUM)
+
+        const status = this.status = new Status()
+
+        const map = this.map = new Map(settings.mapData)
+        const scenery = this.scenery = new Scenery(map)
+        const character = this.character = new Character(map)
 
         map.setItems(items)
-
-        const character = new Character(map)
-        this.character = character
-
         map.setCharacter(character)
-        // character.subscribeItemsToMap()  // not currently necessary
-
-        this.blueprint = Blueprints.random()
 
         this.inventory = inventory
-        this.inventory.add(this.blueprint)
+        this.inventory.add(blueprint)
 
         this.input = this.initUserInput(character)
     }
 
+    reset() {
+        console.log('reset map!')
+
+        store.clear()
+
+        this.initGame()
+    }
+
     initUserInput(character) {
         return new UserInput({
+            '82': this.reset.bind(this), // (r) reset map
             '38': character.getAction('move', 'north'),
             '37': character.getAction('move', 'west'),
             '39': character.getAction('move', 'east'),
@@ -57,14 +97,6 @@ class Game {
         this.status.set('you wake up')
         this.status.set(`you are carrying ${this.blueprint.name}`, 4000)
     }
-
-    // gameIsOver() {
-    //     return this.gameOver
-    // }
-
-    // explore() {
-    //     console.log(`exploring the ${this.kind} zone!`)
-    // }
 }
 
 

@@ -1,16 +1,31 @@
-import MapGenerator from './MapGenerator'
 import Utility from './Utility'
 import eventManager from './eventManager'
-
+import MapGenerator from './MapGenerator'
 
 class Map {
-    constructor(col, row) {
-        this.col = col
-        this.row = row
-        this.generatedMap = new MapGenerator(col, row)
-        this.map = this.generatedMap.getMap()
+    constructor(mapData) {
+        console.log('map constructor', mapData)
+
+        this.map = mapData
+        this.col = Map.getCol(mapData)
+        this.row = Map.getRow(mapData)
+
         this.itemsOnMap = []
         this.EM = eventManager
+    }
+
+    static getCol(mapData) {
+        return mapData.length
+    }
+
+    static getRow(mapData) {
+        return mapData[0].length
+    }
+
+    static generate({ col, row }) {
+        const mapGenerator = new MapGenerator()
+
+        return mapGenerator.generate({ col, row})
     }
 
     getMap() {
