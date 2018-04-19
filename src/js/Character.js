@@ -66,6 +66,13 @@ class Character extends Moveable {  // Character data and actions
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
         this.printLocalStatus()
         this.renderLayer(this.getCharacter(), 'character-layer')
+
+        const position = {
+            x: this.location.x,
+            y: this.location.y
+        }
+
+        this.EM.publish('moved-to', position)
     }
 
     printLocalStatus() {

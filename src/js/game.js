@@ -27,6 +27,10 @@ class Game {
             settings = this.generateSettings()
         }
 
+
+        const moved = (location) => {console.log('location', location)}
+        eventManager.subscribe('moved-to', moved)
+
         this.loadSettings(settings)
         this.startGame()
     }

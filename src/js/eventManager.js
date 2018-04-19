@@ -7,6 +7,7 @@ class EventManager {
         if (typeof thisValue === 'undefined') {   // if no thisValue provided, binds the fn to the fn??
             thisValue = fn
         }
+
         this.eventsList.push({      // create objects linking events + functions to perform
             event: event,           // push em to the array
             fn: fn,
