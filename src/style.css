@@ -23,6 +23,29 @@ body {
     color: white;
 }
 
+/*#inventoryDisplay {
+    display: block;
+    position: relative;
+    text-align: left;
+    color: white;
+    float: right;
+    width: ;
+    overflow: auto;
+    overflow-wrap: normal;*/
+
+
+#inventoryDisplay {
+    display: block;
+    position: absolute;
+    left: 700;
+    color: white;
+    top: 50;
+/*    overflow: auto;
+    overflow-wrap: normal;*/
+    width: 200;
+
+}
+
 .unit {
     position: relative;
     display: inline-block;
@@ -34,20 +57,16 @@ body {
 }
 
 #landscape-layer {
-    /*position: absolute;*/
     left: 0;
     top: 0;
     z-index: 0;
 }
 
 #item-layer {
-/*    position: absolute;*/
     left: 0;
     top: 0;
     z-index: 1;
     color: #FFFFFF;
-/*    display: block;
-    position: absolute;*/
     position: absolute;
     display: inline-block;
     width: 10px;

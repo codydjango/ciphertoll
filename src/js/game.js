@@ -8,6 +8,7 @@ import Blueprints from './Blueprints'
 import inventory from './inventory'
 import { generateItems } from './items'
 import store from './store'
+import InventoryDisplay from './InventoryDisplay'
 
 const COL = 60
 const ROW = 60
@@ -62,6 +63,7 @@ class Game {
         const items = this.items = generateItems(ITEM_NUM)
 
         const status = this.status = new Status()
+        const inventoryDisplay = this.inventoryDisplay = new InventoryDisplay()
 
         const map = this.map = new Map(settings.mapData)
         const scenery = this.scenery = new Scenery(map)

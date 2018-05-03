@@ -13,7 +13,10 @@ class ParticleMiner extends Item {
         // must subscribe the item directly, not on the abstract class
         this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this)
 
-        this.minedParticles = {}
+        this.minedParticles = {
+            ID: this.identityNumber
+        }
+
     }
 
     mine(location) {
@@ -53,35 +56,29 @@ class ParticleMiner extends Item {
         } else {
             this.minedParticles[randomParticle]++
         }
+        const minedObj = this.minedParticles
+        console.log('in Particleminer', minedObj)
+        this.EM.publish('add-mined', minedObj)
 
-        this.displayParticlesMined()
+        // this.displayParticlesMined()
 
     }
-
-
-    displayParticlesMined() {
-
-        const str = this.cleanJSONString(JSON.stringify(this.minedParticles))
-        this.EM.publish('status', str)
-
-        console.log('particles mined', this.minedParticles)
-    }
-
-    cleanJSONString(string) {
-        string = string.replace(/"/g, '')
-        string = string.replace(/:/g, ' ')
-        string = string.replace(/{/g, '')
-        string = string.replace(/}/g, '')
-        string = string.replace(/,/g, ' | ')
-        return string
-    }
-
-
 
     haltMining() {
         this.mining = false
         window.clearInterval(this.cancellationKey)
     }
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
