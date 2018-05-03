@@ -9,7 +9,6 @@ class Inventory {
         this.EM.subscribe('add-mined', this.addMined, this)
 
         this.storeMining = {}
-
         this.miningStateObj = {}
 
     }
@@ -31,9 +30,6 @@ class Inventory {
             this.updateMiningState(currentObj)
         }
 
-        console.log('miningStateObject: ', this.miningStateObj)
-        console.log('storeMining:', this.storeMining)
-
         const displayParticles = this.storeMining
         this.EM.publish('display-mined', displayParticles)
 }
@@ -41,7 +37,7 @@ class Inventory {
 
     checkMiningState(currentObj) {
         const checkedObj = {}
-        for (let key in currentObj) {
+        Object.keys(currentObj).forEach(key => {
             if (!checkedObj[key]) {
                 checkedObj[key] = 0
             }
@@ -49,18 +45,18 @@ class Inventory {
                 this.miningStateObj[currentObj.ID][key] = 0
             }
             checkedObj[key] = currentObj[key] - this.miningStateObj[currentObj.ID][key]
-        }
+        })
         return checkedObj
     }
 
 
     incrementStorage(particleObj) {
-        for (let key in particleObj) {
+        Object.keys(particleObj).forEach(key => {
             if (!this.storeMining[key]) {
                 this.storeMining[key] = 0
             }
             this.storeMining[key] += particleObj[key]
-        }
+        })
     }
 
 
@@ -71,25 +67,13 @@ class Inventory {
 
     stripID(currentObj) {
         const particleObj = {}
-        for (let key in currentObj) {
+        Object.keys(currentObj).forEach(key => {
             if (key !== 'ID') {
                 particleObj[key] = currentObj[key]
             }
-        }
+        })
         return particleObj
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // untested

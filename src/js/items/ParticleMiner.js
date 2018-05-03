@@ -57,7 +57,6 @@ class ParticleMiner extends Item {
             this.minedParticles[randomParticle]++
         }
         const minedObj = this.minedParticles
-        console.log('in Particleminer', minedObj)
         this.EM.publish('add-mined', minedObj)
 
         // this.displayParticlesMined()

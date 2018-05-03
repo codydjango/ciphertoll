@@ -11,21 +11,22 @@ class InventoryDisplay {
 
     displayMined(minedElementsObject) {
 
-        const str = this.cleanJSONString(JSON.stringify(minedElementsObject))
+        let str = this.cleanJSONString(JSON.stringify(minedElementsObject))
 
-        this.set(str, 10)
+        str = 'PARTICLES MINED <br><br>' + str
+
+        this.set(str)
     }
 
 
-    cleanJSONString(string) {
-        string = string.replace(/"/g, '')
-        string = string.replace(/:/g, ' ')
-        string = string.replace(/{/g, '')
-        string = string.replace(/}/g, '')
-        // string = string.replace(/,/g, ' | ')
-        string = string.replace(/,/g, '<br>')
+    cleanJSONString(str) {
+        str = str.replace(/"/g, '')
+        str = str.replace(/:/g, ' ')
+        str = str.replace(/{/g, '')
+        str = str.replace(/}/g, '')
+        str = str.replace(/,/g, '<br>')
 
-        return string
+        return str
     }
 
 
