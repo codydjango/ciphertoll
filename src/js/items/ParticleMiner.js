@@ -20,37 +20,43 @@ class ParticleMiner extends Item {
     }
 
     mine(location) {
+        // try setting the location immediately, using THIS
+
+        this.locale = this.map[location[1]][location[0]]
+
         this.setMiningConfig()
 
+        // calculate ratios once, rather than w every interval
+        this.determineParticleRatios()
+        this.checkParticleAmounts()
         this.cancellationKey = window.setInterval(() => {
-            this.extractParticles(this.determineParticleAmounts(location))
+            this.checkParticleAmounts()
         }, 3000)
 
         this.setOnMap(this.map, location)
-        this.drawLayer(this.div)
+        this.render()
     }
 
     setMiningConfig() {
         this.offMap = false
-        this.mining = true
-        // this.spinning = true
+        if (!this.mining) {
+            this.mining = 'full'
+        }
     }
 
-    determineParticleAmounts(location) {
-        const localParticles = this.map[location[1]][location[0]].particles
-        const allParticles = []
-        Object.keys(localParticles).forEach(particle => {
-            let numberOfParticles = localParticles[particle]
+    determineParticleRatios() {
+        this.allParticles = []
+        Object.keys(this.locale.particles).forEach(particle => {
+            let numberOfParticles = this.locale.particles[particle]
             while (numberOfParticles) {
-                allParticles.push(particle)
+                this.allParticles.push(particle)
                 numberOfParticles--
         }})
-        return allParticles
     }
 
 
-    extractParticles(allParticles) {
-        const randomParticle = allParticles[Utility.randomize(allParticles.length)]
+    extractParticles() {
+        const randomParticle = this.allParticles[Utility.randomize(this.allParticles.length)]
         if (!this.minedParticles[randomParticle]) {
             this.minedParticles[randomParticle] = 1
         } else {
@@ -58,22 +64,36 @@ class ParticleMiner extends Item {
         }
         const minedObj = this.minedParticles
         this.EM.publish('add-mined', minedObj)
-
-        // this.displayParticlesMined()
-
     }
+
+
+
+    checkParticleAmounts() {
+        if (this.locale.particleAmount === 0) {
+                this.mining = 'empty'
+            } else if (this.locale.particleAmount >= (this.locale.maxParticles / 2)) {
+                this.mining = 'full'
+                this.locale.particleAmount--
+                this.extractParticles()
+            } else if (this.locale.particleAmount < (this.locale.maxParticles / 2)) {
+                this.mining = 'half'
+                this.locale.particleAmount--
+                this.extractParticles()
+            }
+            this.render()
+    }
+
+
+    render() {
+        this.updateDiv(this)
+        this.drawLayer(this.div)
+    }
+
 
     haltMining() {
-        this.mining = false
+        // this.mining = false
         window.clearInterval(this.cancellationKey)
     }
-
-
-
-
-
-
-
 
 
 

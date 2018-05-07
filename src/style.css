@@ -131,10 +131,22 @@ body {
 }
 
 
-@keyframes mining {
+@keyframes mining-full {
     0%   {color: lime}
     99%  {color: black}
     100% {color: lime}
+}
+
+@keyframes mining-half {
+    0%   {color: yellow}
+    99%  {color: black}
+    100% {color: yellow}
+}
+
+@keyframes mining-empty {
+    0%   {color: red}
+    99%  {color: black}
+    100% {color: red}
 }
 
 @keyframes spinning {

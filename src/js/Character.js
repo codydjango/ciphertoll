@@ -80,7 +80,9 @@ class Character extends Moveable {  // Character data and actions
         const localItem = this.localItem()
 
         if (localItem) {
-            if (localItem.mining) {
+            if (localItem.mining === 'empty') {
+                this.EM.publish('status', 'mining has been exhausted for this region')
+            } else if (localItem.mining) {
                 this.EM.publish('status', 'a miner pulls compounds from the region')
             } else {
                 this.EM.publish('display-item', localItem.name)

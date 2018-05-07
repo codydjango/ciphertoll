@@ -19,7 +19,9 @@ class LandscapeData {
                 hydrocarbons: 15,
                 silicon: 10,
                 ceramic: 10
-            }
+            },
+            particleAmount: 10,
+            maxParticles: 10
         }
         const comma = {
             element: ',',
@@ -35,7 +37,10 @@ class LandscapeData {
                 hydrocarbons: 15,
                 glass: 30,
                 carbon: 20
-            }
+            },
+            particleAmount: 10,
+            maxParticles: 10
+
         }
         const semicolon = {
             element: ';',
@@ -51,7 +56,9 @@ class LandscapeData {
                 ozone: 15,
                 glass: 30,
                 carbon: 20
-            }
+            },
+            particleAmount: 10,
+            maxParticles: 10
 
         }
         const grave = {
@@ -68,7 +75,9 @@ class LandscapeData {
                 benzene: 20,
                 glass: 30,
                 ceramic: 10
-            }
+            },
+            particleAmount: 10,
+            maxParticles: 10
 
         }
         const asterisk = {
@@ -85,7 +94,10 @@ class LandscapeData {
                 benzene: 20,
                 silicon: 10,
                 carbon: 20
-            }
+            },
+            particleAmount: 10,
+            maxParticles: 10
+
         }
         return [period, comma, semicolon, semicolon, asterisk, asterisk, grave, grave]
     }
@@ -95,6 +107,8 @@ class LandscapeData {
             element: '&nbsp;',
             description: 'concrete and twisted rebar stretch to the horizon',
             cls: 'blank',
+            particleAmount: 10,
+            maxParticles: 10,
             particles: {
                 iron: 30,
                 copper: 10,
@@ -107,6 +121,7 @@ class LandscapeData {
                 uranium: 10,
                 carbon: 20
             }
+
         }
         return bare
     }

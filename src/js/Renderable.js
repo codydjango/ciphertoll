@@ -39,12 +39,19 @@ class Renderable {  // generalized render functions for Scenery, Character
         if (item.offMap) {
             style += `; display: none`
         }
-        if (item.mining) {
-            style += `; animation: mining 3s infinite`
+
+        switch (item.mining) {
+            case 'full':
+                style += `; animation: mining-full 3s infinite`
+                break
+            case 'half':
+                style += `; animation: mining-half 3s infinite`
+                break
+            case 'empty':
+                style += `; animation: mining-empty 3s infinite`
+                break
         }
-        // if (item.spinning) {
-        //     style += `; animation: spinning 1s infinite`
-        // }
+
         return `<div id="${div}" style="${style}">${element}</div>`
     }
 
