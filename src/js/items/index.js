@@ -10,7 +10,7 @@ function randomItem() {
     return new ITEMS[Utility.randomize(ITEMS.length)]
 }
 
-function generateItems(number = 1) {
+function generateItems(number=1) {
     const items = []
     for (let i = 0; i < number; i++) {
         items.push(randomItem())

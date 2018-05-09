@@ -112,32 +112,34 @@ class Character extends Moveable {  // Character data and actions
         }
     }
 
-    checkInventory() {
-        const carrying = this.inventory.map(item => item.name).join(' | ')
-        const text = `you are carrying: ${carrying}`
-        this.EM.publish('status', text)
-    }
+    // checkInventory() {
+    //     const carrying = this.inventory.map(item => item.name).join(' | ')
+    //     const text = `you are carrying: ${carrying}`
+    //     this.EM.publish('status', text)
+    // }
 
     findInventoryItem(itemName) {
         let foundItem = null
-
         this.inventory.forEach(item => {
             if (item.name === itemName) {
                 foundItem = item
             }
         })
-
         return foundItem
     }
 
-    mine() {
+    getItemLocation(itemName) {
         const char = this.getCharacter()
-        const miner = this.findInventoryItem('particle miner')
+        const itself = this.findInventoryItem(itemName)
         const location = [char.x, char.y]
+        return { itself, location }
+    }
 
-        if (miner) {
-            miner.mine(location)
-            this.EM.publish('remove-inventory', miner)
+    mine() {
+        const miner = this.getItemLocation('particle miner')
+        if (miner.itself) {
+            miner.itself.mine(miner.location)
+            this.EM.publish('remove-inventory', miner.itself)
         } else {
             this.EM.publish('status', 'you do not have any particle miners')
         }

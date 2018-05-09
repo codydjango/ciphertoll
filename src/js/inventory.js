@@ -15,7 +15,26 @@ class Inventory {
 
     add(item) {
         this.contents.push(item)
+        this.update()
     }
+
+    remove(item) {
+        const theItem = item
+        this.contents.forEach((item, i, array) => {
+            if (array[i] === theItem) {
+                this.contents.splice(i, 1)
+                console.log('inventory item removed')
+                this.update()
+            }})
+    }
+
+    update() {
+        this.EM.publish('display-inventory', this.contents)
+    }
+
+
+
+
 
 
     addMined(currentObj) {
@@ -73,20 +92,6 @@ class Inventory {
             }
         })
         return particleObj
-    }
-
-
-// untested
-
-    remove(item) {
-        const theItem = item
-        this.contents.forEach((item, i, array) => {
-            if (array[i] === theItem) {
-                this.contents.splice(i, 1)
-            // } else {
-                // console.log('item not in inventory')
-            }})
-
     }
 
 }

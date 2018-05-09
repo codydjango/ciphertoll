@@ -34,7 +34,7 @@ body {
     overflow-wrap: normal;*/
 
 
-#inventoryDisplay {
+#inventory-status {
     display: block;
     position: absolute;
     left: 700;
@@ -45,6 +45,19 @@ body {
     width: 200;
 
 }
+
+#mining-status {
+    display: block;
+    position: absolute;
+    left: 700;
+    color: white;
+    top: 300;
+/*    overflow: auto;
+    overflow-wrap: normal;*/
+    width: 200;
+
+}
+
 
 .unit {
     position: relative;
