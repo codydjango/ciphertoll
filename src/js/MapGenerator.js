@@ -77,26 +77,37 @@ class MapGenerator {
     generateNextSeedBatch() {
         this.nextGenSeeds = []
         this.seeds.forEach((originalSeed) => {
-            for (let direction in DIRECTIONS) {
-                const directionValues = DIRECTIONS[direction]
-                const newSeed = Object.assign({}, originalSeed)
-                if (this.checkProbability(newSeed)) {
-                    for (let key in directionValues) {
-                        if (key === 'x') {
-                        newSeed.x = originalSeed.x + directionValues[key]
-                        } else if (key === 'y') {
-                        newSeed.y = originalSeed.y + directionValues[key]
-                        }
-                    }
-                    this.nextGenSeeds.push(newSeed)
-                }
-            }
+            this.originalSeed = originalSeed
+            this.getNewSeed()
         })
+    }
+
+
+    getNewSeed() {
+       for (let key in DIRECTIONS) {
+            this.newSeed = Object.assign({}, this.originalSeed)
+            this.direction = DIRECTIONS[key]
+            if (this.checkProbability(this.newSeed)) {
+                this.createNewSeedCoordinates()
+                this.nextGenSeeds.push(this.newSeed)
+            }
+        }
     }
 
     checkProbability(newSeed) {
         return Utility.probability(newSeed.probability)
     }
+
+    createNewSeedCoordinates() {
+        for (let key in this.direction) {
+            if (key === 'x') {
+            this.newSeed.x = this.originalSeed.x + this.direction[key]
+            } else if (key === 'y') {
+            this.newSeed.y = this.originalSeed.y + this.direction[key]
+            }
+        }
+    }
+
 
     outOfSeeds() {
         return !this.nextGenSeeds.length
@@ -126,11 +137,6 @@ class MapGenerator {
         return this.grid[seed.y][seed.x].cls !== 'blank'
     }
 
-    // isWaitingToBeSeeded(seed) {
-    //     for (let i; i < this.goodSeeds.length; i++) {
-    //         if ((seed.x === this.goodSeeds[i].x) && (seed.y === this.goodSeeds[i].y)) return null
-    //     }
-    // }
 
     plantSeeds() {
         this.goodSeeds.forEach((goodSeed) => {

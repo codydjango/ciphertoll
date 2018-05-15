@@ -32,7 +32,15 @@ class Inventory {
         this.EM.publish('display-inventory', this.contents)
     }
 
-
+    retrieveItem(itemName) {
+        let foundItem = null
+        this.contents.forEach(item => {
+            if (item.name === itemName) {
+                foundItem = item
+            }
+        })
+        return foundItem
+    }
 
 
 

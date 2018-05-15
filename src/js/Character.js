@@ -7,39 +7,31 @@ import inventory from './inventory'
 class Character extends Moveable {  // Character data and actions
     constructor(mapInstance, initialPosition) {
         super(mapInstance)
+
         this.mapInstance = mapInstance
-        this.EM = eventManager
-        this.inventory = inventory.contents
+        this.initialPosition = initialPosition
 
-        let position
-        if (initialPosition) {
-            position = initialPosition
-        } else {
-            position = mapInstance.getMapCenter()
-        }
+        this.initSettings()
+        this.render()
 
-        this.setInitialGridIndices(position)
-        this.renderLayer(this.getCharacter(), 'character-layer')
         console.log('character rendered')
     }
 
-    renderLayer(unit, layerId) {
-        if (unit.type === 'actor') {
-            this.updateSpan(unit)
-            this.drawLayer(layerId)
-        }
+    initSettings() {
+        this.EM = eventManager
+        this.inventory = inventory
+        this.setInitialGridIndices(this.getPosition())
     }
 
-    subscribeItemsToMap() {
-        // NOT REQUIRED AT THE MOMENT
-
-        // this.map.itemsOnMap.forEach(item => {
-        //     this.EM.subscribe(`${item.name}-${item.identityNumber} taken`, this.takeItem, this, true)
-        // })
+    render() {
+        this.updateSpan(this.getCharacter())
+        this.drawLayer('character-layer')
     }
 
     getPosition() {
-        return this.gridIndices
+        let position
+        this.initialPosition ? position = this.initialPosition : position = this.mapInstance.getMapCenter()
+        return position
     }
 
     getCharacter() {
@@ -79,7 +71,7 @@ class Character extends Moveable {  // Character data and actions
 
     printLocalStatus() {
         this.EM.publish('character-moved', this.location)
-        const localItem = this.localItem()
+        const localItem = this.getLocalItem()
 
         if (localItem) {
             if (localItem.mining === 'empty') {
@@ -92,10 +84,9 @@ class Character extends Moveable {  // Character data and actions
         }
     }
 
-    localItem() {
+    getLocalItem() {
         const char = this.getCharacter()
         let localItem = null
-
         this.mapInstance.itemsOnMap.forEach(item => {
             if (item.x === char.x && item.y === char.y) {
                 localItem = item
@@ -104,7 +95,7 @@ class Character extends Moveable {  // Character data and actions
     }
 
     take() {
-        const localItem = this.localItem()
+        const localItem = this.getLocalItem()
 
         if (localItem) {
             this.EM.publish(`${localItem.name}-${localItem.identityNumber} taken`)
@@ -114,25 +105,9 @@ class Character extends Moveable {  // Character data and actions
         }
     }
 
-    // checkInventory() {
-    //     const carrying = this.inventory.map(item => item.name).join(' | ')
-    //     const text = `you are carrying: ${carrying}`
-    //     this.EM.publish('status', text)
-    // }
-
-    findInventoryItem(itemName) {
-        let foundItem = null
-        this.inventory.forEach(item => {
-            if (item.name === itemName) {
-                foundItem = item
-            }
-        })
-        return foundItem
-    }
-
     getItemLocation(itemName) {
         const char = this.getCharacter()
-        const itself = this.findInventoryItem(itemName)
+        const itself = this.inventory.retrieveItem(itemName)
         const location = [char.x, char.y]
         return { itself, location }
     }
