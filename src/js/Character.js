@@ -118,10 +118,12 @@ class Character extends Moveable {  // Character data and actions
     //     this.EM.publish('status', text)
     // }
 
-    findInventoryItem(itemName) {
+    findInventoryItemByNameOrType(itemName) {
         let foundItem = null
         this.inventory.forEach(item => {
             if (item.name === itemName) {
+                foundItem = item
+            } else if (item.type === itemName) {
                 foundItem = item
             }
         })
@@ -130,7 +132,7 @@ class Character extends Moveable {  // Character data and actions
 
     getItemLocation(itemName) {
         const char = this.getCharacter()
-        const itself = this.findInventoryItem(itemName)
+        const itself = this.findInventoryItemByNameOrType(itemName)
         const location = [char.x, char.y]
         return { itself, location }
     }
@@ -142,6 +144,16 @@ class Character extends Moveable {  // Character data and actions
             this.EM.publish('remove-inventory', miner.itself)
         } else {
             this.EM.publish('status', 'you do not have any particle miners')
+        }
+    }
+
+    print() {
+        const printer = this.findInventoryItemByNameOrType('molecular printer')
+        const blueprint = this.findInventoryItemByNameOrType('blueprint')
+
+
+        if (printer) {
+            printer.print(blueprint)
         }
     }
 }

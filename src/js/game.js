@@ -9,6 +9,7 @@ import inventory from './inventory'
 import { generateItems } from './items'
 import store from './store'
 import InventoryDisplay from './InventoryDisplay'
+import Printer from './Printer'
 
 const COL = 60
 const ROW = 60
@@ -60,6 +61,7 @@ class Game {
 
     loadSettings(settings) {
         const blueprint = this.blueprint = Blueprints.random()
+        const printer = this.printer = new Printer()
         const items = this.items = generateItems(ITEM_NUM)
 
         const status = this.status = new Status()
@@ -74,6 +76,7 @@ class Game {
 
         this.inventory = inventory
         this.inventory.add(blueprint)
+        this.inventory.add(printer)
 
         this.input = this.initUserInput(character)
     }
@@ -95,7 +98,8 @@ class Game {
             '40': character.getAction('move', 'south'),
             '84': character.getAction('take'), // (t)ake item
             // '73': character.getAction('checkInventory'), // check (i)nventory
-            '77': character.getAction('mine') // deploy particle (m)iner
+            '77': character.getAction('mine'), // deploy particle (m)iner
+            '80': character.getAction('print') // use printer
         })
     }
 
