@@ -67,6 +67,8 @@ class Character extends Moveable {  // Character data and actions
         this.printLocalStatus()
         this.renderLayer(this.getCharacter(), 'character-layer')
 
+        console.log('this.location', this.location)
+
         const position = {
             x: this.location.x,
             y: this.location.y

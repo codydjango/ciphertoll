@@ -7,49 +7,50 @@ class MapGenerator {
     constructor() {}
 
     generate({ col, row }) {
-        console.log('generating map')
+
         this.col = col
         this.row = row
 
         this.landscapeSeeds = new LandscapeData()
-        const grid = this.makeGrid()
-        const seededGrid = this.seed(grid)
-        this.seededGrid = seededGrid
+
+        this.makeGrid()
+        this.seed()
         this.grow()
 
         console.log('map generated')
 
-        return this.seededGrid
+        return this.grid
     }
 
     makeGrid() {
-        const col = this.col
-        const row = this.row
-        const grid = []
-        for (let i = 0; i < row; i++) {
-            grid[i] = []
-            for (let j = 0; j < col; j++) {
-                grid[i].push(this.landscapeSeeds.bare)
+        this.grid = []
+        for (let i = 0; i < this.row; i++) {
+            this.grid[i] = []
+            for (let j = 0; j < this.col; j++) {
+                let newCell = Object.assign({}, this.landscapeSeeds.bare)
+                newCell = this.assignCoordinates(newCell, j, i)
+                this.grid[i].push(newCell)
             }
         }
-
-        return grid
     }
 
-    seed(grid) {
+    assignCoordinates(cell, xCoord, yCoord) {
+        cell.x = xCoord
+        cell.y = yCoord
+        return cell
+   }
+
+    seed() {
         const randomElements = []
         for (let i = 0; i < this.getNumberOfElementSeeds(); i++) {
             randomElements.push(this.landscapeSeeds.features[Utility.randomize(this.landscapeSeeds.features.length)])
         }
-        const seeds = this.generateSeedLocations(randomElements)
-        seeds.map(seed => grid[seed.y][seed.x] = seed)
-        this._seeds = seeds
-        return grid
+        this.seeds = this.generateSeedLocations(randomElements)
+        this.seeds.map(seed => this.grid[seed.y][seed.x] = seed)
+
     }
 
     getNumberOfElementSeeds() {
-        //  return 1        // test setting
-        // return ((this.col * this.row) / (this._col + this.row))  // sparse initial seeding
         return (this.col + this.row)  // rich initial seeding
     }
 
@@ -62,102 +63,92 @@ class MapGenerator {
     }
 
     grow() {
-        let seeds = this._seeds
         let mapPopulated = false
 
         while (!mapPopulated) {
-            if (!this.nextGenerationSeeds(seeds).length) {
-                mapPopulated = true
-            }
-            let goodSeeds = []
-            this.goodSeeds = goodSeeds
-            this.nextGenerationSeeds(seeds).forEach((seed) => {
-                if (this.checkSeed(seed)) {
-                    goodSeeds.push(this.checkSeed(seed))
-                }
-            })
-            for (let goodSeed of goodSeeds) {
-                if (this.seededGrid[goodSeed.y][goodSeed.x] === this.landscapeSeeds.bare) {
-                    this.seededGrid[goodSeed.y][goodSeed.x] = goodSeed
-                }
-            }
-            if (!this.countUnseededLocations()) {
-                mapPopulated = true
-            } else {
-                seeds = goodSeeds
-            }
+            this.generateNextSeedBatch()
+            if (this.outOfSeeds()) mapPopulated = true
+            this.filterBadSeeds()
+            this.plantSeeds()
+            this.hasUnseededLocations() ? this.seeds = this.goodSeeds : mapPopulated = true
         }
     }
 
-    countUnseededLocations() {
-        const flattenedGrid = [].concat.apply([], this.seededGrid)
+    generateNextSeedBatch() {
+        this.nextGenSeeds = []
+        this.seeds.forEach((originalSeed) => {
+            for (let direction in DIRECTIONS) {
+                const directionValues = DIRECTIONS[direction]
+                const newSeed = Object.assign({}, originalSeed)
+                if (this.checkProbability(newSeed)) {
+                    for (let key in directionValues) {
+                        if (key === 'x') {
+                        newSeed.x = originalSeed.x + directionValues[key]
+                        } else if (key === 'y') {
+                        newSeed.y = originalSeed.y + directionValues[key]
+                        }
+                    }
+                    this.nextGenSeeds.push(newSeed)
+                }
+            }
+        })
+    }
+
+    checkProbability(newSeed) {
+        return Utility.probability(newSeed.probability)
+    }
+
+    outOfSeeds() {
+        return !this.nextGenSeeds.length
+    }
+
+    filterBadSeeds() {
+        this.goodSeeds = []
+        this.nextGenSeeds.forEach((seed) => {
+            if (this.checkSeed(seed)) {
+                this.goodSeeds.push(this.checkSeed(seed))
+            }
+        })
+    }
+
+    checkSeed(seed) {
+        if (this.ifOffMap(seed)) return null
+        if (this.isAlreadySeeded(seed)) return null
+        // if (this.isWaitingToBeSeeded(seed)) return null
+        return seed
+    }
+
+    ifOffMap(seed) {
+        return !((seed.x < this.col && seed.x >= 0) && (seed.y < this.row && seed.y >= 0))
+    }
+
+    isAlreadySeeded(seed) {
+        return this.grid[seed.y][seed.x].cls !== 'blank'
+    }
+
+    // isWaitingToBeSeeded(seed) {
+    //     for (let i; i < this.goodSeeds.length; i++) {
+    //         if ((seed.x === this.goodSeeds[i].x) && (seed.y === this.goodSeeds[i].y)) return null
+    //     }
+    // }
+
+    plantSeeds() {
+        this.goodSeeds.forEach((goodSeed) => {
+            if (this.grid[goodSeed.y][goodSeed.x].cls === 'blank') {
+                this.grid[goodSeed.y][goodSeed.x] = goodSeed
+            }
+        })
+    }
+
+    hasUnseededLocations() {
+        const flattenedGrid = [].concat.apply([], this.grid)
         let count = 0
         for (let i of flattenedGrid) {
-            if (i === this.landscapeSeeds.bare) {
-                count++
-            }
+            if (i.cls === 'blank') count++
         }
         return count
     }
 
-    checkSeed(seed) {
-        let seedSucceeds = false
-        if ((seed.x < this.col && seed.x >= 0) &&
-            (seed.y < this.row && seed.y >= 0)) {
-            seedSucceeds = true
-        } else {
-            return null
-        }
-        if (this.seededGrid[seed.y][seed.x] !== this.landscapeSeeds.bare) {
-            seedSucceeds = false
-        }
-
-        this.goodSeeds.forEach(goodSeed => {
-            if ((seed.x === goodSeed.x) &&
-                (seed.y === goodSeed.y)) {
-                seedSucceeds = false
-            }
-        })
-
-        if (seedSucceeds) {
-            return seed
-        } else {
-            return null
-        }
-    }
-
-    nextGenerationSeeds(seeds) {
-        const nextGenSeeds = []
-        seeds.forEach((originalSeed) => {
-            for (let direction in DIRECTIONS) {
-                const directionValues = DIRECTIONS[direction]
-                const nextGenSeed = Object.assign({}, originalSeed)
-                if (Utility.probability(nextGenSeed.probability)) {
-                    for (let key in directionValues) {
-                        if (key === 'x') {
-                        nextGenSeed.x = originalSeed.x + directionValues[key]
-                        } else if (key === 'y') {
-                        nextGenSeed.y = originalSeed.y + directionValues[key]
-                        }
-                    }
-                    nextGenSeeds.push(nextGenSeed)
-                }
-            }
-        })
-        this.nextGenSeeds = nextGenSeeds
-        return nextGenSeeds
-    }
-
-    // probability(percentage) {
-    //     const probabilityArray = []
-    //     for (let i = 0; i < percentage; i++) {
-    //         probabilityArray.push(true)
-    //     }
-    //     for (let i = 0; i < 100 - percentage; i++) {
-    //         probabilityArray.push(false)
-    //     }
-    //     return probabilityArray[Utility.randomize(100)]
-    // }
 }
 
 export default MapGenerator
