@@ -57,7 +57,7 @@ class Character extends Moveable {  // Character data and actions
     move(direction) {
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
         this.printLocalStatus()
-        this.renderLayer(this.getCharacter(), 'character-layer')
+        this.render()
 
         console.log('this.location', this.location)
 

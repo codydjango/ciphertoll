@@ -9,6 +9,7 @@ import inventory from './inventory'
 import { generateItems } from './items'
 import store from './store'
 import InventoryDisplay from './InventoryDisplay'
+import miningInventory from './miningInventory'
 
 const COL = 60
 const ROW = 60
@@ -74,6 +75,7 @@ class Game {
 
         this.inventory = inventory
         this.inventory.add(blueprint)
+        this.miningInventory = miningInventory
 
         this.input = this.initUserInput(character)
     }
