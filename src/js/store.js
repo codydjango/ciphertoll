@@ -2,8 +2,6 @@ import eventManager from './eventManager'
 
 class Store {
     constructor() {
-        this.EM = eventManager
-
         if (typeof window.localStorage === 'undefined') {
             console.log('no localstorage, saving disabled')
             window.alert('saving disabled')
@@ -12,6 +10,8 @@ class Store {
             this.disabled = false
             this.storage = window.localStorage
         }
+
+        eventManager.subscribe('reset', this.clear, this)
     }
 
     clear() {

@@ -17,6 +17,8 @@ const ITEM_NUM = 5
 
 class Game {
     constructor() {
+        //
+
         this.initGame()
     }
 
@@ -81,9 +83,9 @@ class Game {
     }
 
     reset() {
-        console.log('reset map!')
+        console.log('reset game!')
 
-        store.clear()
+        eventManager.publish('reset')
 
         this.initGame()
     }

@@ -3,9 +3,14 @@ import eventManager from './eventManager'
 class Inventory {
     constructor() {
         this.contents = []
-        this.EM = eventManager
-        this.EM.subscribe('add-inventory', this.add, this)
-        this.EM.subscribe('remove-inventory', this.remove, this)
+
+        eventManager.subscribe('add-inventory', this.add, this)
+        eventManager.subscribe('remove-inventory', this.remove, this)
+        eventManager.subscribe('reset', this.clear, this)
+    }
+
+    clear() {
+        this.contents = []
     }
 
     add(item) {
@@ -24,7 +29,7 @@ class Inventory {
     }
 
     update() {
-        this.EM.publish('display-inventory', this.contents)
+        eventManager.publish('display-inventory', this.contents)
     }
 
     retrieveItem(itemName) {
