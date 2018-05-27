@@ -90,7 +90,7 @@ class Game {
 
     initUserInput(character) {
         return new UserInput({
-            '82': this.reset.bind(this), // (r) reset map
+            '78': this.reset.bind(this), // (r) reset map
             '38': character.getAction('move', 'north'),
             '37': character.getAction('move', 'west'),
             '39': character.getAction('move', 'east'),
