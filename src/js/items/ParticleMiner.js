@@ -4,7 +4,10 @@ import Utility from 'js/Utility'
 class ParticleMiner extends Item {
     constructor() {
         super()
+        this.initSettings()
+    }
 
+    initSettings() {
         this.name = 'particle miner'
         this.type = 'item'
         this.element = '|'
@@ -16,14 +19,11 @@ class ParticleMiner extends Item {
         this.minedParticles = {
             ID: this.identityNumber
         }
-
     }
 
     mine(location) {
-        // try setting the location immediately, using THIS
 
         this.locale = this.map[location[1]][location[0]]
-
         this.setMiningConfig()
 
         // calculate ratios once, rather than w every interval

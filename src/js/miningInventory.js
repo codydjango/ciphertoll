@@ -4,62 +4,62 @@ import eventManager from './eventManager'
 class MiningInventory {
     constructor() {
         this.EM = eventManager
-        this.EM.subscribe('add-mined', this.addMined, this)
-        this.storeMining = {}
-        this.miningStateObj = {}
+        this.EM.subscribe('add-mined', this.add, this)
+        this.storage = {}
+        this.state = {}
     }
 
-    addMined(currentObj) {
+    add(current) {
         // if state object doesn't exist, add all particles to storage
-        if (!this.miningStateObj[currentObj.ID]) {
-            this.updateMiningState(currentObj)
-            this.incrementStorage(this.stripID(currentObj))
+        if (!this.state[current.ID]) {
+            this.updateState(current)
+            this.incrementStorage(this.stripID(current))
 
         // if it does exist, check curr vs state and add only the right particles
         } else {
-            this.incrementStorage(this.stripID(this.checkMiningState(currentObj)))
-            this.updateMiningState(currentObj)
+            this.incrementStorage(this.stripID(this.checkState(current)))
+            this.updateState(current)
         }
 
-        const displayParticles = this.storeMining
-        this.EM.publish('display-mined', displayParticles)
+        const displayableParticles = this.storage
+        this.EM.publish('display-mined', displayableParticles)
 }
 
-    checkMiningState(currentObj) {
-        const checkedObj = {}
-        Object.keys(currentObj).forEach(key => {
-            if (!checkedObj[key]) {
-                checkedObj[key] = 0
+    checkState(current) {
+        const checked = {}
+        Object.keys(current).forEach(key => {
+            if (!checked[key]) {
+                checked[key] = 0
             }
-            if (!this.miningStateObj[currentObj.ID][key]) {
-                this.miningStateObj[currentObj.ID][key] = 0
+            if (!this.state[current.ID][key]) {
+                this.state[current.ID][key] = 0
             }
-            checkedObj[key] = currentObj[key] - this.miningStateObj[currentObj.ID][key]
+            checked[key] = current[key] - this.state[current.ID][key]
         })
-        return checkedObj
+        return checked
     }
 
-    incrementStorage(particleObj) {
-        Object.keys(particleObj).forEach(key => {
-            if (!this.storeMining[key]) {
-                this.storeMining[key] = 0
+    incrementStorage(particles) {
+        Object.keys(particles).forEach(key => {
+            if (!this.storage[key]) {
+                this.storage[key] = 0
             }
-            this.storeMining[key] += particleObj[key]
+            this.storage[key] += particles[key]
         })
     }
 
-    updateMiningState(currentObj) {
-        this.miningStateObj[currentObj.ID] = Object.assign({}, currentObj)
+    updateState(current) {
+        this.state[current.ID] = Object.assign({}, current)
     }
 
-    stripID(currentObj) {
-        const particleObj = {}
-        Object.keys(currentObj).forEach(key => {
+    stripID(current) {
+        const particles = {}
+        Object.keys(current).forEach(key => {
             if (key !== 'ID') {
-                particleObj[key] = currentObj[key]
+                particles[key] = current[key]
             }
         })
-        return particleObj
+        return particles
     }
 }
 

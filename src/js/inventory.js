@@ -28,13 +28,13 @@ class Inventory {
     }
 
     retrieveItem(itemName) {
-        let foundItem = null
+        let retrieved = null
         this.contents.forEach(item => {
             if (item.name === itemName) {
-                foundItem = item
+                retrieved = item
             }
         })
-        return foundItem
+        return retrieved
     }
 }
 

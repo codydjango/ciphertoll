@@ -96,7 +96,6 @@ class Game {
             '39': character.getAction('move', 'east'),
             '40': character.getAction('move', 'south'),
             '84': character.getAction('take'), // (t)ake item
-            // '73': character.getAction('checkInventory'), // check (i)nventory
             '77': character.getAction('mine') // deploy particle (m)iner
         })
     }
