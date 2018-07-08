@@ -11,6 +11,29 @@ class Inventory {
         this.storeMining = {}
         this.miningStateObj = {}
 
+        // testing printer with stocked particles
+
+        this.storeMining = {
+            copper: 100,
+            chrome: 100,
+            lead: 100,
+            iron: 100,
+            styrofoam: 100,
+            acrylic: 100,
+            latex: 100,
+            wood: 100,
+            fiber: 100,
+            bone: 100,
+            glass: 100,
+            silicon: 100,
+            ceramic: 100,
+            mercury: 100,
+            carbon: 100,
+            ozone: 100,
+            benzene: 100,
+            uranium: 100
+        }
+
     }
 
     add(item) {

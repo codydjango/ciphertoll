@@ -16,7 +16,7 @@ class LandscapeData {
                 lead: 30,
                 styrofoam: 30,
                 acrylic: 20,
-                hydrocarbons: 15,
+                ozone: 15,
                 silicon: 10,
                 ceramic: 10
             },
@@ -34,7 +34,7 @@ class LandscapeData {
                 mercury: 10,
                 latex: 15,
                 wood: 20,
-                hydrocarbons: 15,
+                ozone: 15,
                 glass: 30,
                 carbon: 20
             },
@@ -117,7 +117,7 @@ class LandscapeData {
                 mercury: 10,
                 styrofoam: 30,
                 bone: 10,
-                hydrocarbons: 15,
+                benzene: 15,
                 uranium: 10,
                 carbon: 20
             }

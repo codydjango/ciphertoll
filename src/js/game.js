@@ -30,7 +30,7 @@ class Game {
         }
 
 
-        const moved = (location) => {console.log('location', location)}
+        const moved = (location) => {} // {console.log('location', location)}
         eventManager.subscribe('moved-to', moved)
 
         this.loadSettings(settings)

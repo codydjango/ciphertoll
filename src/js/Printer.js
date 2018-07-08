@@ -8,7 +8,8 @@ class Printer {
 
         this.EM = eventManager
         this.particleData = particleData
-        this.inventoryItems = inventory.contents
+        // this.inventoryItems = inventory.contents
+        this.inventory = inventory
         this.inventoryParticles = inventory.storeMining
 
         this.printed = {}
@@ -18,118 +19,127 @@ class Printer {
         this.element = '#'
         this.description = 'generates objects according to a blueprint. molecules not included.'
         this.div = 'item-printer'
-
-
     }
 
 
-    getBlueprint() {
 
+
+
+    initSettings(blueprint) {
+        this.blueprint = blueprint
+        this.requirementTypes = Object.keys(this.blueprint.requirements)
+        this.inventoryArr = Object.keys(this.inventoryParticles)
+        this.printing = true
+        this.found = {}
     }
 
+    confirmInventory() {
+        if (this.inventoryArr.length === 0) {
+            console.log('you have no particles')
+            this.printing = false
+        }
+    }
 
     checkRequirements() {
 
-        const requirementTypes = Object.keys(this.blueprint.requirements)
-        this.particlesRequiredByType = []
-        this.specialParticlesRequired = []
+        // possibly refactor type / special arrangements
+        // currently breaks when one type match occurs
 
-// rethink this with NEW PARTICLEDATA info (all particles as objects)
-
-        requirementTypes.forEach(particleType => {
+        this.requirementTypes.forEach(type => {
+            this.found[type] = null
             for (let particle in this.particleData) {
-                if (this.particleData[particle].type === particleType) {
-                    this.particlesRequiredByType.push(this.particleData[particle])
-                } else if (particle === particleType) {
-                    this.specialParticlesRequired.push(this.particleData[particle])
+                if (this.particleData[particle].type === type) {
+                    this.checkParticleByType(particle, type)
+                } else if (particle === type) {
+                    this.checkSpecialParticle(particle)
                 }
             }
         })
+    }
 
-        console.log('requirementTypes', requirementTypes)
-        console.log('particlesRequiredByType', this.particlesRequiredByType)
-        console.log('specialParticlesRequired', this.specialParticlesRequired)
+    confirmRequirements() {
+        this.requirementTypes.forEach(type => {
+            if (!this.found[type]) {
+                this.printing = false
+            }
+        })
+    }
 
+    checkParticleByType(particle, type) {
+        this.inventoryArr.some(ownedParticle => {  // 'some' loop breaks when return = true
+            if (ownedParticle === particle) {
+                this.checkAmountByType(particle, type)
+            }
+            return this.found[type] // break out of loop when found
+        })
+    }
+
+    checkAmountByType(particle, type) {
+        if (this.inventoryParticles[particle] >= this.blueprint.requirements[type]) {
+            console.log(`you have enough ${particle}!`)
+            this.found[type] = { [particle]: this.blueprint.requirements[type] }
+        } else {
+            console.log(`you don't have enough ${particle}!`)
+        }
+    }
+
+    checkSpecialParticle(particle) {
+        this.inventoryArr.some(ownedParticle => {
+            if (ownedParticle === particle) {
+                this.checkSpecialAmount(particle)
+            }
+            return this.found[particle]
+        })
+    }
+
+    checkSpecialAmount(particle) {
+        if (this.inventoryParticles[particle] >= this.blueprint.requirements[particle]) {
+            console.log(`you have enough ${particle}!`)
+            this.found[particle] = { [particle]: this.blueprint.requirements[particle] }
+        } else {
+            console.log(`you don't have enough ${particle}!`)
+        }
     }
 
 
-    checkParticlesByType() {
-        const particleArr = Object.keys(this.inventoryParticles)
-        this.particlesRequiredByType.forEach(requiredParticle => {
 
-            particleArr.forEach(ownedParticle => {
-                console.log('got here')
 
-                if (requiredParticle.name === ownedParticle) {
-                    this.checkParticleAmounts(ownedParticle)
-                }
-            })
+
+    getParticles() {
+        const particlesFound = Object.values(this.found)
+        particlesFound.forEach(particleObj => {
+            const particleArr = Object.keys(particleObj)
+            const particle = particleArr[0]
+            console.log(`deducting ${particleObj[particle]} from ${particle}`)
+
+            this.inventoryParticles[particle] -= particleObj[particle]
+            console.log(`${particle} left: ${this.inventoryParticles[particle]}`)
+
+
+        // this.EM.publish('display-mined') // currently need to update display
+
 
         })
     }
 
-    checkParticleAmounts(ownedParticle) {
-        console.log('owned', ownedParticle)
-        console.log('')
-
-
-        // particles req by type is ARR not OBJ
-
-        const requiredType = this.particlesRequiredByType[ownedParticle].type // fails
-
-        if (this.inventoryParticles[ownedParticle] >= this.blueprint.requirements[requiredType]) {
-            console.log(`you have enough ${ownedParticle}!`)
-        } else {
-            console.log(`you don't have enough ${ownedParticle}!`)
-        }
-
-    }
-
-
-
-
-
-    checkSpecialParticles() {
-
-    }
-
-
-    checkParticleInventory() {
-
-        this.inventoryParticles
-        this.particlesRequiredByType
-        this.specialParticlesRequired
-        this.blueprint.requirements
-
-
-
-        // for (let particle in this.blueprint.requirements) {
-        //     if (particle === this.inventoryParticles[particle])
-        // }
-
-
-        // console.log('inventory particles', this.inventoryParticles)
-    }
-
-
-    getParticles() {
-
-
-
-    }
 
 
     print(blueprint) {
-        this.blueprint = blueprint
+        console.log('attempting to print', blueprint.name)
 
-        this.checkRequirements()
-        this.checkParticlesByType()
+        this.initSettings(blueprint)
+        this.confirmInventory()
 
-        // const particleInventory = this.checkParticleInventory(requiredParticles)
-        this.getParticles()
+        if (this.printing) {
+            this.checkRequirements()
+            this.confirmRequirements()
+        }
+
+        console.log('particles ready to print', this.found)
+
+        if (this.printing) this.getParticles()
+
     }
-
-
 
 
 }

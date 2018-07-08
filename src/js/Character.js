@@ -152,7 +152,7 @@ class Character extends Moveable {  // Character data and actions
         const blueprint = this.findInventoryItemByNameOrType('blueprint')
 
 
-        if (printer) {
+        if (printer && blueprint) {
             printer.print(blueprint)
         }
     }
