@@ -1,6 +1,4 @@
 class Renderable {  // generalized render functions for Scenery, Character
-    constructor() {
-    }
 
     setLayer(layer) {
         this.layer = layer

@@ -1,4 +1,3 @@
-
 import eventManager from './eventManager'
 
 class MiningInventory {

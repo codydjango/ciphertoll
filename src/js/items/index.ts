@@ -1,6 +1,7 @@
-import ParticleMiner from './ParticleMiner'
-import Utility from 'js/Utility'
+import Utility from '../Utility'
 import Item from './Item'
+import ParticleMiner from './ParticleMiner'
+
 
 const ITEMS = [
     ParticleMiner

@@ -1,6 +1,6 @@
-import Moveable from 'js/Moveable'
-import Utility from 'js/Utility'
-import eventManager from 'js/eventManager'
+import eventManager from '../eventManager'
+import Moveable from '../Moveable'
+import Utility from '../Utility'
 
 
 // const ITEMS = {

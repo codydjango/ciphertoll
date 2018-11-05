@@ -1,5 +1,5 @@
+import Utility from '../Utility'
 import Item from './Item'
-import Utility from 'js/Utility'
 
 class ParticleMiner extends Item {
     constructor() {

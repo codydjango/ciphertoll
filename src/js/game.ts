@@ -1,26 +1,22 @@
-import Map from './Map'
-import Scenery from './Scenery'
+import Blueprints from './Blueprints'
 import Character from './Character'
 import eventManager from './eventManager'
+import inventory from './inventory'
+import InventoryDisplay from './InventoryDisplay'
+import { generateItems } from './items'
+import Map from './Map'
+import miningInventory from './miningInventory'
+import Scenery from './Scenery'
 import Status from './Status'
 import UserInput from './UserInput'
-import Blueprints from './Blueprints'
-import inventory from './inventory'
-import { generateItems } from './items'
-import store from './store'
-import InventoryDisplay from './InventoryDisplay'
-import miningInventory from './miningInventory'
+
 
 const COL = 60
 const ROW = 60
 const ITEM_NUM = 5
 
 class Game {
-    constructor() {
-        //
 
-        this.initGame()
-    }
 
     initGame() {
         let settings
@@ -109,4 +105,4 @@ class Game {
 }
 
 
-export default new Game();
+export default Game;

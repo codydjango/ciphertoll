@@ -1,18 +1,9 @@
-import Utility from './Utility'
 import eventManager from './eventManager'
 import MapGenerator from './MapGenerator'
+import Utility from './Utility'
+
 
 class Map {
-    constructor(mapData) {
-        console.log('map constructor', mapData)
-
-        this.map = mapData
-        this.col = Map.getCol(mapData)
-        this.row = Map.getRow(mapData)
-
-        this.itemsOnMap = []
-        this.EM = eventManager
-    }
 
     static getCol(mapData) {
         return mapData.length
@@ -26,6 +17,17 @@ class Map {
         const mapGenerator = new MapGenerator()
 
         return mapGenerator.generate({ col, row})
+    }
+
+    constructor(mapData) {
+        console.log('map constructor', mapData)
+
+        this.map = mapData
+        this.col = Map.getCol(mapData)
+        this.row = Map.getRow(mapData)
+
+        this.itemsOnMap = []
+        this.EM = eventManager
     }
 
     getMap() {

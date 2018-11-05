@@ -1,6 +1,6 @@
+import eventManager from './eventManager'
 import Renderable from './Renderable'
 import Utility from './Utility'
-import eventManager from './eventManager'
 
 
 

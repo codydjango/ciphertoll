@@ -24,10 +24,6 @@ const blueprintData = {
 
 
 class Blueprint {
-    constructor(name, description) {
-        this.name = name
-        this.description = description
-    }
 
     static random() {
         const blueprintValues = Object.values(blueprintData)
@@ -37,6 +33,18 @@ class Blueprint {
 
         return new Blueprint(randomBlueprint.name, randomBlueprint.description)
     }
+
+    // type declaration
+    
+    name: any
+    description: any
+
+    constructor(name: any, description: any) {
+        this.name = name
+        this.description = description
+    }
+
+
 }
 
 

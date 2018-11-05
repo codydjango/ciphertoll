@@ -1,7 +1,7 @@
-import Moveable from './Moveable'
 import { DIRECTIONS } from './Constants'
 import eventManager from './eventManager'
 import inventory from './inventory'
+import Moveable from './Moveable'
 
 
 class Character extends Moveable {  // Character data and actions

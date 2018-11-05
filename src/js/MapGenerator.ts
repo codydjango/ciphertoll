@@ -1,6 +1,8 @@
-import Utility from './Utility'
-import LandscapeData from './LandscapeData'
 import { DIRECTIONS } from './Constants'
+import LandscapeData from './LandscapeData'
+import Utility from './Utility'
+
+
 
 
 class MapGenerator {
