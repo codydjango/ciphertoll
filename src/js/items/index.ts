@@ -1,5 +1,5 @@
 import Utility from '../Utility'
-import Item from './Item'
+// import Item from './Item'
 import ParticleMiner from './ParticleMiner'
 
 
@@ -11,9 +11,9 @@ function randomItem() {
     return new ITEMS[Utility.randomize(ITEMS.length)]
 }
 
-function generateItems(number=1) {
+function generateItems(num=1) {
     const items = []
-    for (let i = 0; i < number; i++) {
+    for (let i = 0; i < num; i++) {
         items.push(randomItem())
     }
     return items

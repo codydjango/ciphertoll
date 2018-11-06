@@ -1,4 +1,5 @@
 root = true
+editor.formatonsave = true
 
 [*]
 indent_style = space

@@ -35,7 +35,21 @@ import Utility from '../Utility'
 // }
 
 class Item extends Moveable {
-    constructor(itemConfig) {
+
+    public identityNumber: any
+    public type: any
+    public offMap: any
+    public EM: any
+    public left: any
+    public top: any
+    public x: any
+    public y: any
+    public div: any
+    public name: any
+    public divSet: any
+
+
+    constructor() { // removed itemConfig param from constructor
         super()
 
         // merge in config properties
@@ -50,7 +64,7 @@ class Item extends Moveable {
         this.EM = eventManager
     }
 
-    setOnMap(map, location) {
+    public setOnMap(map: any, location: any) {
         this.setMap(map)
         this.setInitialGridIndices(location)
         this.setCoordinates()
@@ -62,24 +76,24 @@ class Item extends Moveable {
         // this.createInitialChildElement('item-layer')
     }
 
-    getId() {
+    public getId() {
         return this.identityNumber
     }
 
-    setCoordinates() {
+    public setCoordinates() {
         const { cssLeft, cssTop } = this.getCSSCoordinates()
         this.left = cssLeft
         this.top = cssTop
     }
 
-    setGridIndices() {
+    public setGridIndices() {
         const { x, y } = this.getGridIndices()
 
         this.x = x
         this.y = y
     }
 
-    setDiv(identityNumber) {
+    public setDiv(identityNumber: any) {
         if (!this.divSet) {
             this.div = this.div + identityNumber
         }
@@ -88,14 +102,14 @@ class Item extends Moveable {
 
 
     // specific to item drawing: use outerHTML
-    drawLayer(layerId) {
-        const el = document.getElementById(layerId)
+    public drawLayer(layerId: any) {
+        const el = document.getElementById(layerId)!
         el.outerHTML = this.getLayer()
     }
 
 
 
-    renderLayer(unit, layerId) {
+    public renderLayer(unit: any, layerId: any) {
         if (unit.type === 'item') {
             this.updateDiv(unit)
             this.drawLayer(layerId)
@@ -103,14 +117,15 @@ class Item extends Moveable {
     }
 
 
-    onTake() {
+    public onTake() {
         this.x = null
         this.y = null
         this.offMap = true // changes css display to 'none'
 
         switch (this.name) {
             case 'particle miner':
-                this.haltMining()
+                // this.haltMining()
+                console.log('call haltMining here') // cannot call child method from parent class ...
                 break
         }
 
@@ -119,7 +134,7 @@ class Item extends Moveable {
         this.renderLayer(this, this.div)
     }
 
-    onDrop() {
+    public onDrop() {
 
         this.EM.subscribe(`${this.name}-${this.identityNumber} taken`, this.onTake, this, true)
     //     this.renderLayer(this, this.div)

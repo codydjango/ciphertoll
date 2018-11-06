@@ -1,18 +1,21 @@
 class EventManager {
+    
+    public eventsList: any
+    
     constructor() {
         this.eventsList = []        // create array of events
     }
 
-    subscribe(event, fn, thisValue, once=false) {
+    public subscribe(event: any, fn: any, thisValue?: any, once=false) {
         if (typeof thisValue === 'undefined') {   // if no thisValue provided, binds the fn to the fn??
             thisValue = fn
         }
 
         this.eventsList.push({      // create objects linking events + functions to perform
-            event: event,           // push em to the array
-            fn: fn,
-            once: once,
-            thisValue: thisValue
+            event,           // push em to the array
+            fn,
+            once,
+            thisValue,
         })
     }
 
@@ -25,7 +28,7 @@ class EventManager {
     //     }
     // }
 
-    publish(event, arg) {
+    public publish(event: any, arg?: any) {
         for (let i = 0; i < this.eventsList.length; i++) {
             if (this.eventsList[i].event === event) {
                 const { thisValue, fn, once } = this.eventsList[i]
@@ -37,7 +40,7 @@ class EventManager {
         }
     }
 
-    getEventsList() {
+    public getEventsList() {
         return this.eventsList
     }
 }

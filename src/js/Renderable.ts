@@ -1,14 +1,16 @@
 class Renderable {  // generalized render functions for Scenery, Character
 
-    setLayer(layer) {
+    public layer: any
+
+    public setLayer(layer: any) {
         this.layer = layer
     }
 
-    getLayer() {
+    public getLayer() {
         return this.layer
     }
 
-    renderSpan(unit) {
+    public renderSpan(unit: any) {
         let cls = ''
         let element = '&nbsp;'
         let style = ''
@@ -23,7 +25,7 @@ class Renderable {  // generalized render functions for Scenery, Character
         return `<span class="unit ${cls}" style="${style}">${element}</span>`
     }
 
-    renderDiv(item) {
+    public renderDiv(item: any) {
         let div = ''
         let element = '&nbsp;'
         let style = ''
@@ -53,21 +55,21 @@ class Renderable {  // generalized render functions for Scenery, Character
         return `<div id="${div}" style="${style}">${element}</div>`
     }
 
-    updateSpan(actor) {
+    public updateSpan(actor: any) {
         this.setLayer(this.renderSpan(actor))
     }
 
-    updateDiv(item) {
+    public updateDiv(item: any) {
         this.setLayer(this.renderDiv(item))
     }
 
-    drawLayer(layerId) {
-        const el = document.getElementById(layerId)
+    public drawLayer(layerId: any) {
+        const el = document.getElementById(layerId)!
         el.innerHTML = this.getLayer()
     }
 
-    createInitialChildElement(parentLayerId) {
-        const el = document.getElementById(parentLayerId)
+    public createInitialChildElement(parentLayerId: any) {
+        const el = document.getElementById(parentLayerId)! // force non-null
         const child = document.createElement('div') // creates div id within enclosing div ...
         child.innerHTML = this.getLayer()
         el.appendChild(child)

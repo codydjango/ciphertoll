@@ -5,22 +5,33 @@ import Utility from './Utility'
 
 class Map {
 
-    static getCol(mapData) {
+    public static getCol(mapData: any) {
         return mapData.length
     }
 
-    static getRow(mapData) {
+    public static getRow(mapData: any) {
         return mapData[0].length
     }
 
-    static generate({ col, row }) {
+    public static generate(obj: any) { // originally this came from destructured { col, row }
+        
+        const col = obj.col
+        const row = obj.row
         const mapGenerator = new MapGenerator()
 
         return mapGenerator.generate({ col, row})
     }
 
-    constructor(mapData) {
-        console.log('map constructor', mapData)
+    public  map: any
+    public col: any
+    public row: any
+    public itemsOnMap: any
+    public EM: any
+    public character: any
+
+
+    constructor(mapData: any) {
+        // console.log('map constructor', mapData)
 
         this.map = mapData
         this.col = Map.getCol(mapData)
@@ -30,25 +41,25 @@ class Map {
         this.EM = eventManager
     }
 
-    getMap() {
+    public getMap() {
         return this.map
     }
 
-    getMapCenter() {
+    public getMapCenter() {
         return [Math.floor(this.col/2), Math.floor(this.row/2)]
     }
 
-    getRandomMapLocation() {
+    public getRandomMapLocation() {
         return [Utility.randomize(this.row - 1), Utility.randomize(this.col - 1)]
     }
 
-    setCharacter(character) {
+    public setCharacter(character: any) {
         this.character = character
         this.character.setMap(this.map)
     }
 
-    setItems(items) {
-        items.map((item, index) => {
+    public setItems(items: any) {
+        items.map((item: any) => {
             const randomMapLocation = this.getRandomMapLocation()
             item.setOnMap(this.map, randomMapLocation)
             item.createInitialChildElement('item-layer')  // moved childElement creation out of 'setOnMap'
@@ -56,7 +67,7 @@ class Map {
         })
     }
 
-    pushItem(item) {
+    public pushItem(item: any) {
         this.itemsOnMap.push(item)
     }
 }

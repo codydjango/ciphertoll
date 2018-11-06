@@ -6,23 +6,23 @@ function generateId() {
 }
 
 class Utility {
-    static contains(obj, property) {
+    public static contains(obj: any, property: any) {
         return Object.keys(obj).indexOf(String(property)) !== -1
     }
 
-    static stringToNumber(string) {
-        return string.match(/\d+/)[0]
+    public static stringToNumber(str: any) {
+        return str.match(/\d+/)[0]
     }
 
-    static randomize(mult) {
+    public static randomize(mult: any) {
         return Math.floor(Math.random() * mult)
     }
 
-    static Id() {
+    public static Id() {
         return generateId()
     }
 
-    static probability(percentage) {
+    public static probability(percentage: any) {
         const probabilityArray = []
         for (let i = 0; i < percentage; i++) {
             probabilityArray.push(true)

@@ -1,6 +1,9 @@
 import eventManager from './eventManager'
 
 class Status {
+
+    public EM: any
+
     constructor() {
         this.EM = eventManager
         this.EM.subscribe('character-moved', this.update, this)
@@ -8,11 +11,11 @@ class Status {
         this.EM.subscribe('status', this.default, this)
     }
 
-    update(location) {
+    public update(location: any) {
         this.set(location.description)
     }
 
-    beginsWithVowel(text) {
+    public beginsWithVowel(text: any) {
         const firstLetter = text[0]
         const vowels = ['a', 'e', 'i', 'o', 'u']
         let beginsWithVowel = false
@@ -23,7 +26,7 @@ class Status {
         return beginsWithVowel
     }
 
-    displayItem(itemName) {
+    public displayItem(itemName: any) {
         const beginsWithVowel = this.beginsWithVowel(itemName)
         let text = ''
         if (beginsWithVowel) {
@@ -34,13 +37,13 @@ class Status {
         this.set(text, 10)
     }
 
-    default(text) {
+    public default(text: any) {
         this.set(text, 10)
     }
 
-    set(description, delay=0) {
+    public set(description: any, delay=0) {
         window.setTimeout(() => {
-            document.getElementById('status').innerHTML = description
+            document.getElementById('status')!.innerHTML = description
         }, delay)
     }
 }

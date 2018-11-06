@@ -1,6 +1,9 @@
 import eventManager from './eventManager'
 
 class Inventory {
+
+    public contents: any
+
     constructor() {
         this.contents = []
 
@@ -9,32 +12,31 @@ class Inventory {
         eventManager.subscribe('reset', this.clear, this)
     }
 
-    clear() {
+    public clear() {
         this.contents = []
     }
 
-    add(item) {
+    public add(item: any) {
         this.contents.push(item)
         this.update()
     }
 
-    remove(item) {
-        const theItem = item
-        this.contents.forEach((item, i, array) => {
-            if (array[i] === theItem) {
+    public remove(itemtoRemove: any) {
+        this.contents.forEach((item: any, i: any, array: any) => {
+            if (array[i] === itemtoRemove) {
                 this.contents.splice(i, 1)
-                console.log('inventory item removed')
+                console.log('inventory item removed', item)
                 this.update()
             }})
     }
 
-    update() {
+    public update() {
         eventManager.publish('display-inventory', this.contents)
     }
 
-    retrieveItem(itemName) {
+    public retrieveItem(itemName: any) {
         let retrieved = null
-        this.contents.forEach(item => {
+        this.contents.forEach((item: any) => {
             if (item.name === itemName) {
                 retrieved = item
             }

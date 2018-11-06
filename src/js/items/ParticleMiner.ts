@@ -2,12 +2,21 @@ import Utility from '../Utility'
 import Item from './Item'
 
 class ParticleMiner extends Item {
+
+    public element: any
+    public description: any
+    public minedParticles: any
+    public locale: any
+    public mining: any
+    public allParticles: any
+    public cancellationKey: any
+
     constructor() {
         super()
         this.initSettings()
     }
 
-    initSettings() {
+    public initSettings() {
         this.name = 'particle miner'
         this.type = 'item'
         this.element = '|'
@@ -21,7 +30,7 @@ class ParticleMiner extends Item {
         }
     }
 
-    mine(location) {
+    public mine(location: any) {
 
         this.locale = this.map[location[1]][location[0]]
         this.setMiningConfig()
@@ -37,14 +46,14 @@ class ParticleMiner extends Item {
         this.render()
     }
 
-    setMiningConfig() {
+    public setMiningConfig() {
         this.offMap = false
         if (!this.mining) {
             this.mining = 'full'
         }
     }
 
-    determineParticleRatios() {
+    public determineParticleRatios() {
         this.allParticles = []
         Object.keys(this.locale.particles).forEach(particle => {
             let numberOfParticles = this.locale.particles[particle]
@@ -55,7 +64,7 @@ class ParticleMiner extends Item {
     }
 
 
-    extractParticles() {
+    public extractParticles() {
         const randomParticle = this.allParticles[Utility.randomize(this.allParticles.length)]
         if (!this.minedParticles[randomParticle]) {
             this.minedParticles[randomParticle] = 1
@@ -68,7 +77,7 @@ class ParticleMiner extends Item {
 
 
 
-    checkParticleAmounts() {
+    public checkParticleAmounts() {
         if (this.locale.particleAmount === 0) {
                 this.mining = 'empty'
             } else if (this.locale.particleAmount >= (this.locale.maxParticles / 2)) {
@@ -84,13 +93,13 @@ class ParticleMiner extends Item {
     }
 
 
-    render() {
+    public render() {
         this.updateDiv(this)
         this.drawLayer(this.div)
     }
 
 
-    haltMining() {
+    public haltMining() {
         // this.mining = false
         window.clearInterval(this.cancellationKey)
     }

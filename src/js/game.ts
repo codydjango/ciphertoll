@@ -8,6 +8,7 @@ import Map from './Map'
 import miningInventory from './miningInventory'
 import Scenery from './Scenery'
 import Status from './Status'
+import store from './store'
 import UserInput from './UserInput'
 
 
@@ -18,7 +19,18 @@ const ITEM_NUM = 5
 class Game {
 
 
-    initGame() {
+    public blueprint: any
+    public items: any
+    public status: any
+    public map: any
+    public scenery: any
+    public character: any
+    public inventory: any
+    public miningInventory: any
+    public input: any
+    public inventoryDisplay: any
+
+    public initGame() {
         let settings
 
         if (this.hasGameInProgress()) {
@@ -28,18 +40,18 @@ class Game {
         }
 
 
-        const moved = (location) => {console.log('location', location)}
+        const moved = (location: any) => {console.log('location', location)}
         eventManager.subscribe('moved-to', moved)
 
         this.loadSettings(settings)
         this.startGame()
     }
 
-    hasGameInProgress() {
+    public hasGameInProgress() {
         return store.has('map')
     }
 
-    resumeSettings() {
+    public resumeSettings() {
         const settings = {
             mapData: store.get('map')
         }
@@ -47,8 +59,10 @@ class Game {
         return settings
     }
 
-    generateSettings() {
-        const settings = {}
+    public generateSettings() {
+        const settings = {
+            mapData: {}
+        }
 
         settings.mapData = Map.generate({ col: COL, row:  ROW })
 
@@ -57,15 +71,15 @@ class Game {
         return settings
     }
 
-    loadSettings(settings) {
+    public loadSettings(settings: any) {
         const blueprint = this.blueprint = Blueprints.random()
         const items = this.items = generateItems(ITEM_NUM)
 
-        const status = this.status = new Status()
-        const inventoryDisplay = this.inventoryDisplay = new InventoryDisplay()
+        this.status = new Status()
+        this.inventoryDisplay = new InventoryDisplay()
 
         const map = this.map = new Map(settings.mapData)
-        const scenery = this.scenery = new Scenery(map)
+        this.scenery = new Scenery(map)
         const character = this.character = new Character(map)
 
         map.setItems(items)
@@ -78,7 +92,7 @@ class Game {
         this.input = this.initUserInput(character)
     }
 
-    reset() {
+    public reset() {
         console.log('reset game!')
 
         eventManager.publish('reset')
@@ -86,7 +100,7 @@ class Game {
         this.initGame()
     }
 
-    initUserInput(character) {
+    public initUserInput(character: any) {
         return new UserInput({
             '78': this.reset.bind(this), // (r) reset map
             '38': character.getAction('move', 'north'),
@@ -98,7 +112,7 @@ class Game {
         })
     }
 
-    startGame() {
+    public startGame() {
         this.status.set('you wake up')
         this.status.set(`you are carrying ${this.blueprint.name}`, 4000)
     }

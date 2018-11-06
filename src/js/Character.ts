@@ -5,7 +5,13 @@ import Moveable from './Moveable'
 
 
 class Character extends Moveable {  // Character data and actions
-    constructor(mapInstance, initialPosition) {
+    public mapInstance: any
+    public initialPosition: any
+    public EM: any
+    public inventory: any
+    public location: any
+    
+    constructor(mapInstance: any, initialPosition?: any) {
         super(mapInstance)
 
         this.mapInstance = mapInstance
@@ -17,24 +23,24 @@ class Character extends Moveable {  // Character data and actions
         console.log('character rendered')
     }
 
-    initSettings() {
+    public initSettings() {
         this.EM = eventManager
         this.inventory = inventory
         this.setInitialGridIndices(this.getPosition())
     }
 
-    render() {
+    public render() {
         this.updateSpan(this.getCharacter())
         this.drawLayer('character-layer')
     }
 
-    getPosition() {
+    public getPosition(): any {
         let position
         this.initialPosition ? position = this.initialPosition : position = this.mapInstance.getMapCenter()
         return position
     }
 
-    getCharacter() {
+    public getCharacter(): any {
         const { cssLeft, cssTop } = this.getCSSCoordinates()
         const { x, y } = this.getGridIndices()
         const character = {
@@ -44,17 +50,17 @@ class Character extends Moveable {  // Character data and actions
             cls: 'character',
             left: cssLeft,
             top: cssTop,
-            x: x,
-            y: y
+            x,
+            y,
         }
         return character
     }
 
-    getAction(fnName, arg) {
+    public  getAction(fnName: any, arg: any): any {
         return this[fnName].bind(this, arg)
     }
 
-    move(direction) {
+    public move(direction: any) {
         this.location = this.updateGridIndices(this.getCharacter(), DIRECTIONS[direction])
         this.printLocalStatus()
         this.render()
@@ -67,7 +73,7 @@ class Character extends Moveable {  // Character data and actions
         this.EM.publish('moved-to', position)
     }
 
-    printLocalStatus() {
+    public printLocalStatus() {
         this.EM.publish('character-moved', this.location)
         const localItem = this.getLocalItem()
 
@@ -82,17 +88,17 @@ class Character extends Moveable {  // Character data and actions
         }
     }
 
-    getLocalItem() {
+    public getLocalItem(): any {
         const char = this.getCharacter()
         let localItem = null
-        this.mapInstance.itemsOnMap.forEach(item => {
+        this.mapInstance.itemsOnMap.forEach((item: any) => {
             if (item.x === char.x && item.y === char.y) {
                 localItem = item
             }})
         return localItem
     }
 
-    take() {
+    public take() {
         const localItem = this.getLocalItem()
 
         if (localItem) {
@@ -103,14 +109,14 @@ class Character extends Moveable {  // Character data and actions
         }
     }
 
-    getItemLocation(itemName) {
+    public getItemLocation(itemName: any): any {
         const char = this.getCharacter()
         const itself = this.inventory.retrieveItem(itemName)
         const location = [char.x, char.y]
         return { itself, location }
     }
 
-    mine() {
+    public mine() {
         const miner = this.getItemLocation('particle miner')
         if (miner.itself) {
             miner.itself.mine(miner.location)

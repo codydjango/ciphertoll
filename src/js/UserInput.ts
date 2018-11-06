@@ -2,13 +2,16 @@ import Utility from './Utility'
 
 
 class UserInput {
-    constructor(keyActionMap) {
+
+    public keyActionMap: any
+    
+    constructor(keyActionMap: any) {
         this.keyActionMap = keyActionMap
 
         document.onkeydown = this.tryActionForEvent.bind(this)
     }
 
-    tryActionForEvent(event) {
+    public tryActionForEvent(event: any) {
         if (!Utility.contains(this.keyActionMap, event.keyCode)) {
             console.log(`not a valid keycode: ${event.keyCode}`)
         } else {

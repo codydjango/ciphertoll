@@ -3,29 +3,29 @@ import Utility from './Utility'
 
 const blueprintData = {
     artificialMuscle: {
+        abilities: '',
+        description: '',
         name: 'artificial muscle (blueprint)',
-        description: '',
-        abilities: '',
-        requirements: ''
-    },
-    retinalDisplay: {
-        name: 'retinal display (blueprint)',
-        description: '',
-        abilities: '',
         requirements: ''
     },
     prostheticArm: {
-        name: 'prosthetic arm (blueprint)',
-        description: '',
         abilities: '',
+        description: '',
+        name: 'prosthetic arm (blueprint)',
         requirements: ''
-    }
+    },
+    retinalDisplay: {
+        abilities: '',
+        description: '',
+        name: 'retinal display (blueprint)',
+        requirements: '',
+    },
 }
 
 
 class Blueprint {
 
-    static random() {
+    public static random() {
         const blueprintValues = Object.values(blueprintData)
         const index = Utility.randomize(blueprintValues.length)
 
@@ -36,8 +36,8 @@ class Blueprint {
 
     // type declaration
     
-    name: any
-    description: any
+    public name: any
+    public description: any
 
     constructor(name: any, description: any) {
         this.name = name

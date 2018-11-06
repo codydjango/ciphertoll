@@ -1,6 +1,11 @@
 import eventManager from './eventManager'
 
 class MiningInventory {
+
+    public EM: any
+    public storage: any
+    public state: any
+
     constructor() {
         this.EM = eventManager
         this.EM.subscribe('add-mined', this.add, this)
@@ -8,7 +13,7 @@ class MiningInventory {
         this.state = {}
     }
 
-    add(current) {
+    public add(current: any) {
         // if state object doesn't exist, add all particles to storage
         if (!this.state[current.ID]) {
             this.updateState(current)
@@ -24,7 +29,7 @@ class MiningInventory {
         this.EM.publish('display-mined', displayableParticles)
 }
 
-    checkState(current) {
+public checkState(current: any) {
         const checked = {}
         Object.keys(current).forEach(key => {
             if (!checked[key]) {
@@ -38,7 +43,7 @@ class MiningInventory {
         return checked
     }
 
-    incrementStorage(particles) {
+    public incrementStorage(particles: any) {
         Object.keys(particles).forEach(key => {
             if (!this.storage[key]) {
                 this.storage[key] = 0
@@ -47,11 +52,11 @@ class MiningInventory {
         })
     }
 
-    updateState(current) {
+    public updateState(current: any) {
         this.state[current.ID] = Object.assign({}, current)
     }
 
-    stripID(current) {
+    public stripID(current: any) {
         const particles = {}
         Object.keys(current).forEach(key => {
             if (key !== 'ID') {

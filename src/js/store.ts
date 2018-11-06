@@ -1,6 +1,10 @@
 import eventManager from './eventManager'
 
 class Store {
+
+    public disabled: any
+    public storage: any
+
     constructor() {
         if (typeof window.localStorage === 'undefined') {
             console.log('no localstorage, saving disabled')
@@ -14,21 +18,21 @@ class Store {
         eventManager.subscribe('reset', this.clear, this)
     }
 
-    clear() {
+    public clear() {
         this.storage.clear()
     }
 
-    has(key) {
+    public has(key: any) {
         return (this.storage.getItem(key) !== null)
     }
 
-    set(key, value) {
+    public set(key: any, value: any) {
         console.log('store.set', key)
 
         this.storage.setItem(key, JSON.stringify(value))
     }
 
-    get(key) {
+    public get(key: any): any {
         console.log('store.get', key)
 
         return JSON.parse(this.storage.getItem(key))
