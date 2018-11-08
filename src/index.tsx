@@ -7,17 +7,14 @@
 // import registerServiceWorker from './registerServiceWorker';
 
 // game imports
-import Game from './js/game';
-import './style.css';
+import "./game.css";
+import Game from "./js/game";
 
-const game = new Game;
+const game = new Game();
 game.initGame();
-
 
 // ReactDOM.render(
 //   <App />,
 //   document.getElementById('root') as HTMLElement
 // );
 // registerServiceWorker();
-
-

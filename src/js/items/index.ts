@@ -1,25 +1,19 @@
-import Utility from '../Utility'
+import Utility from "../Utility";
 // import Item from './Item'
-import ParticleMiner from './ParticleMiner'
+import ParticleMiner from "./ParticleMiner";
 
-
-const ITEMS = [
-    ParticleMiner
-]
+const ITEMS = [ParticleMiner];
 
 function randomItem() {
-    return new ITEMS[Utility.randomize(ITEMS.length)]
+    return new ITEMS[(Utility.randomize(ITEMS.length))]();
 }
 
-function generateItems(num=1) {
-    const items = []
+const generateItems = (num = 1) => {
+    const items: ParticleMiner[] = [];
     for (let i = 0; i < num; i++) {
-        items.push(randomItem())
+        items.push(randomItem());
     }
-    return items
-}
+    return items;
+};
 
-
-export {
-    generateItems
-}
+export { generateItems };
