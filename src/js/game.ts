@@ -6,25 +6,31 @@ import inventory from "./inventory";
 import InventoryDisplay from "./InventoryDisplay";
 import { generateItems } from "./items";
 import ParticleMiner from "./items/ParticleMiner";
+import { ILandscape } from "./LandscapeData";
 import Map from "./Map";
 import miningInventory from "./miningInventory";
 import Scenery from "./Scenery";
 import Status from "./Status";
-import store from "./store";
+import { store } from "./store";
 import UserInput from "./UserInput";
 
 const COL = 60;
 const ROW = 60;
 const ITEM_NUM = 5;
 
-interface IMapSize {
+export interface IMapSize {
     col: number;
     row: number;
 }
 
-class Game {
+interface ISettings {
+    mapData: ILandscape[][];
+}
+
+export class Game {
     public blueprint: Blueprint;
     public items: ParticleMiner[];
+    public settings: ISettings;
     public status: any;
     public map: any;
     public scenery: any;
@@ -35,12 +41,10 @@ class Game {
     public inventoryDisplay: any;
 
     public initGame() {
-        let settings;
-
         if (this.hasGameInProgress()) {
-            settings = this.resumeSettings();
+            this.resumeSettings();
         } else {
-            settings = this.generateSettings();
+            this.generateSettings();
         }
 
         const moved = (location: any) => {
@@ -48,7 +52,7 @@ class Game {
         };
         eventManager.subscribe("moved-to", moved);
 
-        this.loadSettings(settings);
+        this.loadSettings(this.settings);
         this.startGame();
     }
 
@@ -57,29 +61,25 @@ class Game {
     }
 
     public resumeSettings() {
-        const settings = {
+        this.settings = {
             mapData: store.get("map")
         };
-
-        return settings;
     }
 
     public generateSettings() {
-        const settings = {
-            mapData: {}
+        this.settings = {
+            mapData: []
         };
 
         const mapSize: IMapSize = { col: COL, row: ROW };
-        settings.mapData = Map.generate(mapSize);
+        this.settings.mapData = Map.generate(mapSize);
 
-        store.set("map", settings.mapData);
-
-        return settings;
+        store.set("map", this.settings.mapData);
     }
 
     // started typing here
 
-    public loadSettings(settings: any) {
+    public loadSettings(settings: ISettings) {
         const blueprint = (this.blueprint = Blueprints.random());
         const items = (this.items = generateItems(ITEM_NUM));
 
@@ -125,5 +125,3 @@ class Game {
         this.status.set(`you are carrying ${this.blueprint.name}`, 4000);
     }
 }
-
-export default Game;

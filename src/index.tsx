@@ -8,7 +8,7 @@
 
 // game imports
 import "./game.css";
-import Game from "./js/game";
+import { Game } from "./js/game";
 
 const game = new Game();
 game.initGame();

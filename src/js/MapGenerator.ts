@@ -1,23 +1,23 @@
 import { DIRECTIONS } from "./Constants";
+import { IMapSize } from "./game";
 import { bare, features, ILandscape } from "./LandscapeData";
 import Utility from "./Utility";
 
-// duplicate interface???
-export interface IMapSize {
-    col: number;
-    row: number;
+interface IDirection {
+    x: number;
+    y: number;
 }
 
 class MapGenerator {
     public col: number;
     public row: number;
     public grid: ILandscape[][];
-    public seeds: any;
-    public goodSeeds: any;
-    public newSeed: any;
-    public originalSeed: any;
-    public direction: any;
-    public nextGenSeeds: any;
+    public seeds: ILandscape[];
+    public nextGenSeeds: ILandscape[];
+    public newSeed: ILandscape;
+    public originalSeed: ILandscape;
+    public direction: IDirection;
+    public goodSeeds: ILandscape[];
 
     public generate({ col, row }: IMapSize) {
         this.col = col;
@@ -54,6 +54,33 @@ class MapGenerator {
         return cell;
     }
 
+    private seed() {
+        const randomElements: ILandscape[] = [];
+        for (let i = 0; i < this.getNumberOfElementSeeds(); i++) {
+            randomElements.push(features[Utility.randomize(features.length)]);
+        }
+        this.seeds = this.generateSeedLocations(randomElements);
+        this.seeds.map(seed => {
+            if (seed.x && seed.y) {
+                this.grid[seed.y][seed.x] = seed;
+            }
+        });
+    }
+
+    private getNumberOfElementSeeds() {
+        return this.col + this.row; // rich initial seeding
+    }
+
+    private generateSeedLocations(randomElements: ILandscape[]) {
+        return randomElements.map(el => {
+            el.x = Utility.randomize(this.row - 1);
+            el.y = Utility.randomize(this.col - 1);
+            return el;
+        });
+    }
+
+    /////////////
+
     private grow() {
         let mapPopulated = false;
 
@@ -70,30 +97,9 @@ class MapGenerator {
         }
     }
 
-    private seed() {
-        const randomElements = [];
-        for (let i = 0; i < this.getNumberOfElementSeeds(); i++) {
-            randomElements.push(features[Utility.randomize(features.length)]);
-        }
-        this.seeds = this.generateSeedLocations(randomElements);
-        this.seeds.map((seed: any) => (this.grid[seed.y][seed.x] = seed));
-    }
-
-    private getNumberOfElementSeeds() {
-        return this.col + this.row; // rich initial seeding
-    }
-
-    private generateSeedLocations(randomElements: any) {
-        return randomElements.map((el: any) => {
-            el.x = Utility.randomize(this.row - 1);
-            el.y = Utility.randomize(this.col - 1);
-            return el;
-        });
-    }
-
     private generateNextSeedBatch() {
         this.nextGenSeeds = [];
-        this.seeds.forEach((originalSeed: any) => {
+        this.seeds.forEach(originalSeed => {
             this.originalSeed = originalSeed;
             this.getNewSeed();
         });
@@ -112,15 +118,15 @@ class MapGenerator {
         }
     }
 
-    private checkProbability(newSeed: any) {
+    private checkProbability(newSeed: ILandscape) {
         return Utility.probability(newSeed.probability);
     }
 
     private createNewSeedCoordinates() {
         for (const key in this.direction) {
-            if (key === "x") {
+            if (key === "x" && this.originalSeed.x) {
                 this.newSeed.x = this.originalSeed.x + this.direction[key];
-            } else if (key === "y") {
+            } else if (key === "y" && this.originalSeed.y) {
                 this.newSeed.y = this.originalSeed.y + this.direction[key];
             }
         }
@@ -132,46 +138,56 @@ class MapGenerator {
 
     private filterBadSeeds() {
         this.goodSeeds = [];
-        this.nextGenSeeds.forEach((seed: any) => {
-            if (this.checkSeed(seed)) {
-                this.goodSeeds.push(this.checkSeed(seed));
+        this.nextGenSeeds.forEach(seed => {
+            const checkedSeed = this.checkSeed(seed);
+            if (checkedSeed) {
+                this.goodSeeds.push(checkedSeed);
             }
         });
     }
 
-    private checkSeed(seed: any) {
+    private checkSeed(seed: ILandscape) {
         if (this.ifOffMap(seed)) {
             return null;
-        }
-        if (this.isAlreadySeeded(seed)) {
+        } else if (this.isAlreadySeeded(seed)) {
             return null;
+        } else {
+            return seed;
         }
-        // if (this.isWaitingToBeSeeded(seed)) return null
-        return seed;
     }
 
-    private ifOffMap(seed: any) {
-        return !(
-            seed.x < this.col &&
-            seed.x >= 0 &&
-            (seed.y < this.row && seed.y >= 0)
-        );
+    private ifOffMap(seed: ILandscape) {
+        if (seed.x && seed.y) {
+            return !(
+                seed.x < this.col &&
+                seed.x >= 0 &&
+                (seed.y < this.row && seed.y >= 0)
+            );
+        } else {
+            return true;
+        }
     }
 
-    private isAlreadySeeded(seed: any) {
-        return this.grid[seed.y][seed.x].cls !== "blank";
+    private isAlreadySeeded(seed: ILandscape) {
+        if (seed.x && seed.y) {
+            return this.grid[seed.y][seed.x].cls !== "blank";
+        } else {
+            return true;
+        }
     }
 
     private plantSeeds() {
-        this.goodSeeds.forEach((goodSeed: any) => {
-            if (this.grid[goodSeed.y][goodSeed.x].cls === "blank") {
-                this.grid[goodSeed.y][goodSeed.x] = goodSeed;
+        this.goodSeeds.forEach(goodSeed => {
+            if (goodSeed.x && goodSeed.y) {
+                if (this.grid[goodSeed.y][goodSeed.x].cls === "blank") {
+                    this.grid[goodSeed.y][goodSeed.x] = goodSeed;
+                }
             }
         });
     }
 
     private hasUnseededLocations() {
-        const flattenedGrid = [].concat.apply([], this.grid);
+        const flattenedGrid: ILandscape[] = [].concat.apply([], this.grid);
         let count = 0;
         for (const i of flattenedGrid) {
             if (i.cls === "blank") {

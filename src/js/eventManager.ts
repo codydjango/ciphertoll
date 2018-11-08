@@ -1,11 +1,23 @@
+interface IEvent {
+    event: string;
+    fn: () => void;
+    once: boolean;
+    thisValue: any;
+}
+
 class EventManager {
-    public eventsList: any;
+    public eventsList: IEvent[];
 
     constructor() {
         this.eventsList = []; // create array of events
     }
 
-    public subscribe(event: any, fn: any, thisValue?: any, once = false) {
+    public subscribe(
+        event: string,
+        fn: (p?: any) => void,
+        thisValue?: any,
+        once = false
+    ) {
         if (typeof thisValue === "undefined") {
             // if no thisValue provided, binds the fn to the fn??
             thisValue = fn;

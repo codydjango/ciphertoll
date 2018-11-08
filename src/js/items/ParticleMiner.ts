@@ -1,3 +1,4 @@
+import eventManager from "../eventManager";
 import Utility from "../Utility";
 import Item from "./Item";
 
@@ -29,7 +30,7 @@ class ParticleMiner extends Item {
             "mines, divides, and stores ambient chemical elements and larger compounds found within a 100 meter radius. 97% accuracy rate.";
         this.div = "item-miner";
         // must subscribe the item directly, not on the abstract class
-        this.EM.subscribe(
+        eventManager.subscribe(
             `${this.name}-${this.identityNumber} taken`,
             this.onTake,
             this
@@ -83,7 +84,7 @@ class ParticleMiner extends Item {
             this.minedParticles[randomParticle]++;
         }
         const minedObj = this.minedParticles;
-        this.EM.publish("add-mined", minedObj);
+        eventManager.publish("add-mined", minedObj);
     }
 
     public checkParticleAmounts() {

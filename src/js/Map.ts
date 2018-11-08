@@ -1,38 +1,30 @@
-import eventManager from "./eventManager";
+import { IMapSize } from "./game";
+import { ILandscape } from "./LandscapeData";
 import MapGenerator from "./MapGenerator";
 import Utility from "./Utility";
 
-// duplicate interface???
-interface IMapSize {
-    col: number;
-    row: number;
-}
-
 class Map {
-    public static getCol(mapData: any) {
+    public static getCol(mapData: ILandscape[][]) {
         return mapData.length;
     }
 
-    public static getRow(mapData: any) {
+    public static getRow(mapData: ILandscape[][]) {
         return mapData[0].length;
     }
 
     public static generate({ col, row }: IMapSize) {
-        // const col = obj.col;
-        // const row = obj.row;
         const mapGenerator = new MapGenerator();
 
         return mapGenerator.generate({ col, row });
     }
 
-    public map: any;
-    public col: any;
-    public row: any;
-    public itemsOnMap: any;
-    public EM: any;
+    public map: ILandscape[][];
+    public col: number;
+    public row: number;
+    public itemsOnMap: any[];
     public character: any;
 
-    constructor(mapData: any) {
+    constructor(mapData: ILandscape[][]) {
         // console.log('map constructor', mapData)
 
         this.map = mapData;
@@ -40,7 +32,6 @@ class Map {
         this.row = Map.getRow(mapData);
 
         this.itemsOnMap = [];
-        this.EM = eventManager;
     }
 
     public getMap() {

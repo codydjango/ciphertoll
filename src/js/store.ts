@@ -1,43 +1,44 @@
-import eventManager from './eventManager'
+import eventManager from "./eventManager";
 
 class Store {
-
-    public disabled: any
-    public storage: any
+    public disabled: boolean;
+    public storage: Storage;
 
     constructor() {
-        if (typeof window.localStorage === 'undefined') {
-            console.log('no localstorage, saving disabled')
-            window.alert('saving disabled')
-            this.disabled = true
+        if (typeof window.localStorage === "undefined") {
+            console.log("no localstorage, saving disabled");
+            window.alert("saving disabled");
+            this.disabled = true;
         } else {
-            this.disabled = false
-            this.storage = window.localStorage
+            this.disabled = false;
+            this.storage = window.localStorage;
         }
 
-        eventManager.subscribe('reset', this.clear, this)
+        eventManager.subscribe("reset", this.clear, this);
     }
 
     public clear() {
-        this.storage.clear()
+        this.storage.clear();
     }
 
-    public has(key: any) {
-        return (this.storage.getItem(key) !== null)
+    public has(key: string) {
+        return this.storage.getItem(key) !== null;
     }
 
-    public set(key: any, value: any) {
-        console.log('store.set', key)
+    // how to use different types for 'value' here?
+    // currently only ILandscape[][] is being stored,
+    // but will include other objects later...
+    public set(key: string, value: any) {
+        console.log("store.set", key);
 
-        this.storage.setItem(key, JSON.stringify(value))
+        this.storage.setItem(key, JSON.stringify(value));
     }
 
-    public get(key: any): any {
-        console.log('store.get', key)
+    public get(key: string) {
+        console.log("store.get", key);
 
-        return JSON.parse(this.storage.getItem(key))
+        return JSON.parse(this.storage.getItem(key)!);
     }
 }
 
-
-export default new Store()
+export const store = new Store();

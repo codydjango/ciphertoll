@@ -1,45 +1,39 @@
-import eventManager from './eventManager'
+import eventManager from "./eventManager";
 
 class InventoryDisplay {
-
-    public EM: any
-
     constructor() {
-        this.EM = eventManager
-        this.EM.subscribe('display-inventory', this.render, this)
-        this.EM.subscribe('display-mined', this.renderMined, this)
+        eventManager.subscribe("display-inventory", this.render, this);
+        eventManager.subscribe("display-mined", this.renderMined, this);
     }
 
     public render(inventoryObject: any) {
-        let str = inventoryObject.map((item: any) => item.name).join('<br>')
-        str = 'INVENTORY <br><br>' + str
-        this.set(str, 'inventory-status')
+        let str = inventoryObject.map((item: any) => item.name).join("<br>");
+        str = "INVENTORY <br><br>" + str;
+        this.set(str, "inventory-status");
     }
 
     public renderMined(minedElementsObject: any) {
-        let str = this.cleanJSONString(JSON.stringify(minedElementsObject))
-        str = 'PARTICLES MINED <br><br>' + str
-        this.set(str, 'mining-status')
+        let str = this.cleanJSONString(JSON.stringify(minedElementsObject));
+        str = "PARTICLES MINED <br><br>" + str;
+        this.set(str, "mining-status");
     }
 
     public cleanJSONString(str: any) {
-        str = str.replace(/"/g, '')
-        str = str.replace(/:/g, ' ')
-        str = str.replace(/{/g, '')
-        str = str.replace(/}/g, '')
-        str = str.replace(/,/g, '<br>')
+        str = str.replace(/"/g, "");
+        str = str.replace(/:/g, " ");
+        str = str.replace(/{/g, "");
+        str = str.replace(/}/g, "");
+        str = str.replace(/,/g, "<br>");
 
-        return str
+        return str;
     }
 
-    public set(description: any, elementID: string, delay=0) {
-        const el: HTMLElement = document.getElementById(elementID)! // ! forces compiler to accept non-null reference
-            window.setTimeout(() => {
-                el.innerHTML = description
-            }, delay)
+    public set(description: any, elementID: string, delay = 0) {
+        const el: HTMLElement = document.getElementById(elementID)!; // ! forces compiler to accept non-null reference
+        window.setTimeout(() => {
+            el.innerHTML = description;
+        }, delay);
     }
 }
 
-
-
-export default InventoryDisplay
+export default InventoryDisplay;

@@ -37,7 +37,6 @@ class Item extends Moveable {
     public identityNumber: number;
     public type: string;
     public offMap: boolean;
-    public EM: any;
     public left: number;
     public top: number;
     public x: any;
@@ -58,8 +57,6 @@ class Item extends Moveable {
         this.type = "item";
         this.offMap = false;
         // this.inInventory = false
-
-        this.EM = eventManager;
     }
 
     public setOnMap(map: any, location: any) {
@@ -123,13 +120,13 @@ class Item extends Moveable {
                 break;
         }
 
-        this.EM.publish("add-inventory", this);
-        // this.EM.subscribe('remove-inventory', this.onDrop, this)
+        eventManager.publish("add-inventory", this);
+        // eventManager.subscribe('remove-inventory', this.onDrop, this)
         this.renderLayer(this, this.div);
     }
 
     public onDrop() {
-        this.EM.subscribe(
+        eventManager.subscribe(
             `${this.name}-${this.identityNumber} taken`,
             this.onTake,
             this,
