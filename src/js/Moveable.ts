@@ -1,22 +1,30 @@
+import { IActor } from "./Character";
 import eventManager from "./eventManager";
+import { ILandscape } from "./LandscapeData";
+import { Map } from "./Map";
 import Renderable from "./Renderable";
 import Utility from "./Utility";
+
+interface IMove {
+    x: number;
+    y: number;
+}
 
 class Moveable extends Renderable {
     // movement and placement on the grid
 
-    public map: any;
-    public gridIndices: any;
+    public landscape: ILandscape[][];
+    public gridIndices: number[];
 
-    constructor(mapInstance?: any) {
+    constructor(map?: Map) {
         super();
     }
 
-    public setMap(map: any) {
-        this.map = map;
+    public setMap(landscape: ILandscape[][]) {
+        this.landscape = landscape;
     }
 
-    public setInitialGridIndices(gridIndices: any) {
+    public setInitialGridIndices(gridIndices: number[]) {
         this.gridIndices = gridIndices;
     }
 
@@ -27,34 +35,34 @@ class Moveable extends Renderable {
         return { x, y };
     }
 
-    public updateGridIndices(actor: any, move: any) {
+    public updateGridIndices(actor: IActor, move: IMove) {
         const newGridIndices = [
             this.gridIndices[0] + move.x,
             this.gridIndices[1] + move.y
         ];
-        let location = "";
+        let location: ILandscape = this.landscape[this.gridIndices[1]][
+            this.gridIndices[0]
+        ];
         if (this.checkGridIndices(newGridIndices)) {
-            location = this.map[newGridIndices[1]][newGridIndices[0]];
+            location = this.landscape[newGridIndices[1]][newGridIndices[0]];
             this.gridIndices = newGridIndices;
             actor.x = newGridIndices[0];
             actor.y = newGridIndices[1];
-        } else {
-            location = this.map[this.gridIndices[1]][this.gridIndices[0]];
-            if (actor.name === "character") {
-                eventManager.publish("status", "you've reached the map's edge");
-            }
+        } else if (actor.name === "character") {
+            eventManager.publish("status", "you've reached the map's edge");
         }
+
         return location;
     }
 
-    public checkGridIndices(newGridIndices: any) {
+    public checkGridIndices(newGridIndices: number[]) {
         let locationOnGrid = false;
 
         const x = newGridIndices[1];
         const y = newGridIndices[0];
 
-        if (this.map[x]) {
-            const location = this.map[x][y];
+        if (this.landscape[x]) {
+            const location = this.landscape[x][y];
             if (location) {
                 locationOnGrid = true;
             }
@@ -75,6 +83,10 @@ class Moveable extends Renderable {
 
     public getCSSCoordinates() {
         const css = this.getCSSHeightAndWidth();
+        // +1 to gridIndices prevents left-side bug in movement display,
+        // but shifts the character's display grid over to the left and down ...
+        // possibly try shifting entire grid over ???
+        // so that we're not mulitplying the css.width etc by ZERO
         const cssLeft = this.gridIndices[0] * css.height;
         const cssTop = this.gridIndices[1] * css.width;
         return { cssLeft, cssTop };

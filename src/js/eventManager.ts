@@ -41,7 +41,7 @@ class EventManager {
     //     }
     // }
 
-    public publish(event: any, arg?: any) {
+    public publish(event: string, arg?: any) {
         for (let i = 0; i < this.eventsList.length; i++) {
             if (this.eventsList[i].event === event) {
                 const { thisValue, fn, once } = this.eventsList[i];

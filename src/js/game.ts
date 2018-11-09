@@ -1,13 +1,13 @@
 import Blueprints from "./Blueprints";
 import Blueprint from "./Blueprints";
-import Character from "./Character";
+import { Character } from "./Character";
 import eventManager from "./eventManager";
 import inventory from "./inventory";
 import InventoryDisplay from "./InventoryDisplay";
 import { generateItems } from "./items";
 import ParticleMiner from "./items/ParticleMiner";
 import { ILandscape } from "./LandscapeData";
-import Map from "./Map";
+import { Map } from "./Map";
 import miningInventory from "./miningInventory";
 import Scenery from "./Scenery";
 import Status from "./Status";
@@ -31,14 +31,15 @@ export class Game {
     public blueprint: Blueprint;
     public items: ParticleMiner[];
     public settings: ISettings;
-    public status: any;
-    public map: any;
-    public scenery: any;
-    public character: any;
+    public status: Status;
+    public map: Map;
+    public character: Character;
+
+    public scenery: Scenery;
     public inventory: any;
     public miningInventory: any;
-    public input: any;
-    public inventoryDisplay: any;
+    public input: UserInput;
+    public inventoryDisplay: InventoryDisplay;
 
     public initGame() {
         if (this.hasGameInProgress()) {

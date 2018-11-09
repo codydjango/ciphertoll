@@ -1,21 +1,23 @@
-import Renderable from './Renderable'
+import { ILandscape } from "./LandscapeData";
+import { Map } from "./Map";
+import Renderable from "./Renderable";
 
+class Scenery extends Renderable {
+    // Scenery-specific rendering functions
 
-class Scenery extends Renderable {  // Scenery-specific rendering functions
-    
-    public map: any
+    public map: ILandscape[][];
 
-    constructor(map: any) {
-        super()
-        this.map = map.getMap()
-        this.renderLayer()
-        console.log('scenery rendered')
+    constructor(map: Map) {
+        super();
+        this.map = map.getMap();
+        this.renderLayer();
+        console.log("scenery rendered");
     }
 
     public renderLayer() {
-        const grid = this.map.map((arr: any) => arr.slice())
-        this.setLayer(this.createLayer(grid))
-        this.drawLayer()
+        const grid = this.map.map(arr => arr.slice());
+        this.setLayer(this.createStringifiedLayer(grid));
+        this.drawLayer();
     }
 
     // old version, linter does not like simple for loops
@@ -33,37 +35,28 @@ class Scenery extends Renderable {  // Scenery-specific rendering functions
     //     return sceneryGrid
     // }
 
-
-
-    // try with for ... of
-    public createLayer(grid: any) {
-        const sceneryGrid: any = []
-        grid.forEach((item: any, i: any) => {
-            const rowItems = grid[i]
-            console.log("rowItems", rowItems)
-            let row = ''  // possibly make each row a table?
-            rowItems.forEach((element: any, j: any) => {
-                row += this.renderSpan(rowItems[j]) // add rendered items to the grid
-            })
-            sceneryGrid.push(row)
-            
+    // trying with forEach
+    public createStringifiedLayer(grid: ILandscape[][]) {
+        const sceneryGrid: string[] = [];
+        grid.forEach((outerArray: ILandscape[]) => {
+            let row = ""; // possibly make each row a table?
+            outerArray.forEach((element: ILandscape) => {
+                row += this.renderSpan(element); // add rendered items to the grid
+            });
+            sceneryGrid.push(row);
         });
 
-
-        
-        console.log("scenery", sceneryGrid)
-        return sceneryGrid
+        return sceneryGrid;
     }
 
     public drawLayer() {
-        const layer = this.getLayer()
-        console.log("draw layer", layer)
+        const layer: string[] = this.getLayer();
+        console.log("draw layer", layer);
 
-        const gridToHTML = layer.join('<br />')  // using HTML breaks for now
-        const el = document.getElementById('landscape-layer')!
-        el.innerHTML = gridToHTML
+        const gridToHTML = layer.join("<br />"); // using HTML breaks for now
+        const el = document.getElementById("landscape-layer")!;
+        el.innerHTML = gridToHTML;
     }
 }
 
-
-export default Scenery
+export default Scenery;

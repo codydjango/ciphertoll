@@ -1,9 +1,10 @@
+import { Character } from "./Character";
 import { IMapSize } from "./game";
 import { ILandscape } from "./LandscapeData";
 import MapGenerator from "./MapGenerator";
 import Utility from "./Utility";
 
-class Map {
+export class Map {
     public static getCol(mapData: ILandscape[][]) {
         return mapData.length;
     }
@@ -22,7 +23,7 @@ class Map {
     public col: number;
     public row: number;
     public itemsOnMap: any[];
-    public character: any;
+    public character: Character;
 
     constructor(mapData: ILandscape[][]) {
         // console.log('map constructor', mapData)
@@ -38,7 +39,7 @@ class Map {
         return this.map;
     }
 
-    public getMapCenter() {
+    public getMapCenter(): number[] {
         return [Math.floor(this.col / 2), Math.floor(this.row / 2)];
     }
 
@@ -49,7 +50,7 @@ class Map {
         ];
     }
 
-    public setCharacter(character: any) {
+    public setCharacter(character: Character) {
         this.character = character;
         this.character.setMap(this.map);
     }
@@ -67,5 +68,3 @@ class Map {
         this.itemsOnMap.push(item);
     }
 }
-
-export default Map;

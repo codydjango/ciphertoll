@@ -1,19 +1,33 @@
 import { DIRECTIONS } from "./Constants";
 import eventManager from "./eventManager";
 import inventory from "./inventory";
+import { Map } from "./Map";
 import Moveable from "./Moveable";
 
-class Character extends Moveable {
+export interface IActor {
+    name: string;
+    type: string;
+    element: string;
+    cls: string;
+    left: number;
+    top: number;
+    x: number;
+    y: number;
+}
+
+export class Character extends Moveable {
     // Character data and actions
-    public mapInstance: any;
-    public initialPosition: any;
+    public map: Map;
+    public initialPosition: number[];
     public location: any;
 
-    constructor(mapInstance: any, initialPosition?: any) {
-        super(mapInstance);
+    constructor(map: Map, initialPosition?: number[]) {
+        super(map);
 
-        this.mapInstance = mapInstance;
-        this.initialPosition = initialPosition;
+        this.map = map;
+        if (initialPosition) {
+            this.initialPosition = initialPosition;
+        }
 
         this.initSettings();
         this.render();
@@ -30,18 +44,18 @@ class Character extends Moveable {
         this.drawLayer("character-layer");
     }
 
-    public getPosition(): any {
+    public getPosition(): number[] {
         let position;
         this.initialPosition
             ? (position = this.initialPosition)
-            : (position = this.mapInstance.getMapCenter());
+            : (position = this.map.getMapCenter());
         return position;
     }
 
-    public getCharacter(): any {
+    public getCharacter(): IActor {
         const { cssLeft, cssTop } = this.getCSSCoordinates();
         const { x, y } = this.getGridIndices();
-        const character = {
+        const character: IActor = {
             name: "character",
             type: "actor",
             element: "@",
@@ -58,7 +72,7 @@ class Character extends Moveable {
         return this[fnName].bind(this, arg);
     }
 
-    public move(direction: any) {
+    public move(direction: string) {
         this.location = this.updateGridIndices(
             this.getCharacter(),
             DIRECTIONS[direction]
@@ -98,7 +112,7 @@ class Character extends Moveable {
     public getLocalItem(): any {
         const char = this.getCharacter();
         let localItem = null;
-        this.mapInstance.itemsOnMap.forEach((item: any) => {
+        this.map.itemsOnMap.forEach((item: any) => {
             if (item.x === char.x && item.y === char.y) {
                 localItem = item;
             }
@@ -142,5 +156,3 @@ class Character extends Moveable {
         }
     }
 }
-
-export default Character;

@@ -14,7 +14,7 @@ class ParticleMiner extends Item {
     public cancellationID: number;
 
     // need types
-    public allParticles: any;
+    public allParticles: any[];
     public locale: any;
 
     constructor() {
@@ -42,7 +42,7 @@ class ParticleMiner extends Item {
     }
 
     public mine(location: any) {
-        this.locale = this.map[location[1]][location[0]];
+        this.locale = this.landscape[location[1]][location[0]];
         this.setMiningConfig();
 
         // calculate ratios once, rather than w every interval
@@ -52,7 +52,7 @@ class ParticleMiner extends Item {
             this.checkParticleAmounts();
         }, 3000);
 
-        this.setOnMap(this.map, location);
+        this.setOnMap(this.landscape, location);
         this.render();
     }
 
