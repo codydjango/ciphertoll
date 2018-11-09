@@ -21,7 +21,7 @@ class Renderable {
         }
 
         if (unit.top && unit.left) {
-            style = `top: ${unit.top + 1}px; left: ${unit.left + 1}px`;
+            style = `top: ${unit.top}px; left: ${unit.left}px`;
         }
         return `<span class="unit ${cls}" style="${style}">${element}</span>`;
     }
