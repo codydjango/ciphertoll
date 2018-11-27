@@ -1,6 +1,6 @@
 import { ILandscape } from './LandscapeData';
 import { Map } from './Map';
-import Renderable from './Renderable';
+import { Renderable } from './Renderable';
 
 class Scenery extends Renderable {
   // Scenery-specific rendering functions
@@ -41,7 +41,7 @@ class Scenery extends Renderable {
     grid.forEach((outerArray: ILandscape[]) => {
       let row = ''; // possibly make each row a table?
       outerArray.forEach((element: ILandscape) => {
-        row += this.renderSpan(element); // add rendered items to the grid
+        row += this.renderSpan(element); // uses Renderable.renderSpan here
       });
       sceneryGrid.push(row);
     });

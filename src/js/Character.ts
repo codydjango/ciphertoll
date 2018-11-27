@@ -3,6 +3,7 @@ import eventManager from './eventManager';
 import inventory from './inventory';
 import { Map } from './Map';
 import Moveable from './Moveable';
+import { ILandscape } from './LandscapeData';
 
 export interface IActor {
   name: string;
@@ -18,7 +19,7 @@ export interface IActor {
 export class Character extends Moveable {
   // Character data and actions
   public map: Map;
-  public location: any;
+  public location: ILandscape;
 
   constructor(map: Map, initialPosition?: number[]) {
     super(map);
@@ -44,33 +45,26 @@ export class Character extends Moveable {
     this.drawLayer('character-layer');
   }
 
-  //   public setInitialPosition() { // shadowed method
-  //     let position = this.map.getRandomMapLocation();
-
-  //     if (this.checkWalkable(position)) {
-  //       this.initialPosition = position;
-  //     } else {
-  //       this.setInitialPosition();
-  //     }
-  //   }
-
   public getCharacter(): IActor {
-    const { cssLeft, cssTop } = this.getCSSCoordinates();
+    const { left, top } = this.getCSSCoordinates();
     const { x, y } = this.getGridIndices();
     const character: IActor = {
       name: 'character',
       type: 'actor',
       element: '@',
       cls: 'character',
-      left: cssLeft,
-      top: cssTop,
+      left,
+      top,
       x,
       y,
     };
     return character;
   }
 
-  public getAction(fnName: any, arg: any): any {
+  // try to do this with generics?
+  // returns a bound function, based on the strings it receives
+  // forcing fn to return void for now
+  public getAction(fnName: string, arg?: string): () => void {
     return this[fnName].bind(this, arg);
   }
 

@@ -2,7 +2,7 @@ import { IActor } from './Character';
 import eventManager from './eventManager';
 import { ILandscape } from './LandscapeData';
 import { Map } from './Map';
-import Renderable from './Renderable';
+import { Renderable } from './Renderable';
 import Utility from './Utility';
 
 interface IMove {
@@ -117,9 +117,9 @@ class Moveable extends Renderable {
     // but shifts the character's display grid over to the left and down ...
     // possibly try shifting entire grid over ???
     // so that we're not mulitplying the css.width etc by ZERO
-    const cssLeft = this.gridIndices[0] * css.height;
-    const cssTop = this.gridIndices[1] * css.width;
-    return { cssLeft, cssTop };
+    const left = this.gridIndices[0] * css.height;
+    const top = this.gridIndices[1] * css.width;
+    return { left, top };
   }
 }
 

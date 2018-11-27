@@ -3,6 +3,7 @@ import Moveable from '../Moveable';
 import Utility from '../Utility';
 import { ILandscape } from '../LandscapeData';
 import { Map } from '../Map';
+import { ICoordinates } from '../Renderable';
 
 // const ITEMS = {
 //     miner: {
@@ -82,9 +83,9 @@ class Item extends Moveable {
   }
 
   public setCoordinates() {
-    const { cssLeft, cssTop } = this.getCSSCoordinates();
-    this.left = cssLeft;
-    this.top = cssTop;
+    const { left, top } = this.getCSSCoordinates();
+    this.left = left;
+    this.top = top;
   }
 
   public setGridIndices() {

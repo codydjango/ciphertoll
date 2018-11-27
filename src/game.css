@@ -18,7 +18,9 @@ body {
 
 #status {
   display: block;
-  position: relative;
+  position: absolute;
+  top: 620;
+  left: 0;
   text-align: left;
   color: white;
 }

@@ -49,7 +49,7 @@ export class Game {
     }
 
     const moved = (location: any) => {
-      console.log('location', location);
+      //   console.log('location', location);
     };
     eventManager.subscribe('moved-to', moved);
 
@@ -109,9 +109,9 @@ export class Game {
     this.initGame();
   }
 
-  public initUserInput(character: any) {
+  public initUserInput(character: Character) {
     return new UserInput({
-      '78': this.reset.bind(this), // (r) reset map
+      '78': this.reset.bind(this), // (n) new map
       '38': character.getAction('move', 'north'),
       '37': character.getAction('move', 'west'),
       '39': character.getAction('move', 'east'),
