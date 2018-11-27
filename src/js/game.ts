@@ -1,128 +1,128 @@
-import Blueprints from "./Blueprints";
-import Blueprint from "./Blueprints";
-import { Character } from "./Character";
-import eventManager from "./eventManager";
-import inventory from "./inventory";
-import InventoryDisplay from "./InventoryDisplay";
-import { generateItems } from "./items";
-import ParticleMiner from "./items/ParticleMiner";
-import { ILandscape } from "./LandscapeData";
-import { Map } from "./Map";
-import miningInventory from "./miningInventory";
-import Scenery from "./Scenery";
-import Status from "./Status";
-import { store } from "./store";
-import UserInput from "./UserInput";
+import Blueprints from './Blueprints';
+import Blueprint from './Blueprints';
+import { Character } from './Character';
+import eventManager from './eventManager';
+import inventory from './inventory';
+import InventoryDisplay from './InventoryDisplay';
+import { generateItems } from './items';
+import ParticleMiner from './items/ParticleMiner';
+import { ILandscape } from './LandscapeData';
+import { Map } from './Map';
+import miningInventory from './miningInventory';
+import Scenery from './Scenery';
+import Status from './Status';
+import { store } from './store';
+import UserInput from './UserInput';
 
-const COL = 60;
-const ROW = 60;
+const COL = 80;
+const ROW = 80;
 const ITEM_NUM = 5;
 
 export interface IMapSize {
-    col: number;
-    row: number;
+  col: number;
+  row: number;
 }
 
 interface ISettings {
-    mapData: ILandscape[][];
+  mapData: ILandscape[][];
 }
 
 export class Game {
-    public blueprint: Blueprint;
-    public items: ParticleMiner[];
-    public settings: ISettings;
-    public status: Status;
-    public map: Map;
-    public character: Character;
+  public blueprint: Blueprint;
+  public items: ParticleMiner[];
+  public settings: ISettings;
+  public status: Status;
+  public map: Map;
+  public character: Character;
 
-    public scenery: Scenery;
-    public inventory: any;
-    public miningInventory: any;
-    public input: UserInput;
-    public inventoryDisplay: InventoryDisplay;
+  public scenery: Scenery;
+  public inventory: any;
+  public miningInventory: any;
+  public input: UserInput;
+  public inventoryDisplay: InventoryDisplay;
 
-    public initGame() {
-        if (this.hasGameInProgress()) {
-            this.resumeSettings();
-        } else {
-            this.generateSettings();
-        }
-
-        const moved = (location: any) => {
-            console.log("location", location);
-        };
-        eventManager.subscribe("moved-to", moved);
-
-        this.loadSettings(this.settings);
-        this.startGame();
+  public initGame() {
+    if (this.hasGameInProgress()) {
+      this.resumeSettings();
+    } else {
+      this.generateSettings();
     }
 
-    public hasGameInProgress() {
-        return store.has("map");
-    }
+    const moved = (location: any) => {
+      console.log('location', location);
+    };
+    eventManager.subscribe('moved-to', moved);
 
-    public resumeSettings() {
-        this.settings = {
-            mapData: store.get("map")
-        };
-    }
+    this.loadSettings(this.settings);
+    this.startGame();
+  }
 
-    public generateSettings() {
-        this.settings = {
-            mapData: []
-        };
+  public hasGameInProgress() {
+    return store.has('map');
+  }
 
-        const mapSize: IMapSize = { col: COL, row: ROW };
-        this.settings.mapData = Map.generate(mapSize);
+  public resumeSettings() {
+    this.settings = {
+      mapData: store.get('map'),
+    };
+  }
 
-        store.set("map", this.settings.mapData);
-    }
+  public generateSettings() {
+    this.settings = {
+      mapData: [],
+    };
 
-    // started typing here
+    const mapSize: IMapSize = { col: COL, row: ROW };
+    this.settings.mapData = Map.generate(mapSize);
 
-    public loadSettings(settings: ISettings) {
-        const blueprint = (this.blueprint = Blueprints.random());
-        const items = (this.items = generateItems(ITEM_NUM));
+    store.set('map', this.settings.mapData);
+  }
 
-        this.status = new Status();
-        this.inventoryDisplay = new InventoryDisplay();
+  // started typing here
 
-        const map = (this.map = new Map(settings.mapData));
-        this.scenery = new Scenery(map);
-        const character = (this.character = new Character(map));
+  public loadSettings(settings: ISettings) {
+    this.status = new Status();
+    this.inventoryDisplay = new InventoryDisplay();
 
-        map.setItems(items);
-        map.setCharacter(character);
+    const map = (this.map = new Map(settings.mapData));
+    this.scenery = new Scenery(map);
+    const character = (this.character = new Character(map));
 
-        this.inventory = inventory;
-        this.inventory.add(blueprint);
-        this.miningInventory = miningInventory;
+    const blueprint = (this.blueprint = Blueprints.random());
+    const items = (this.items = generateItems(ITEM_NUM, map));
 
-        this.input = this.initUserInput(character);
-    }
+    map.setItems(items);
+    map.setCharacter(character);
 
-    public reset() {
-        console.log("reset game!");
+    this.inventory = inventory;
+    this.inventory.add(blueprint);
+    this.miningInventory = miningInventory;
 
-        eventManager.publish("reset");
+    this.input = this.initUserInput(character);
+  }
 
-        this.initGame();
-    }
+  public reset() {
+    console.log('reset game!');
 
-    public initUserInput(character: any) {
-        return new UserInput({
-            "78": this.reset.bind(this), // (r) reset map
-            "38": character.getAction("move", "north"),
-            "37": character.getAction("move", "west"),
-            "39": character.getAction("move", "east"),
-            "40": character.getAction("move", "south"),
-            "84": character.getAction("take"), // (t)ake item
-            "77": character.getAction("mine") // deploy particle (m)iner
-        });
-    }
+    eventManager.publish('reset');
 
-    public startGame() {
-        this.status.set("you wake up");
-        this.status.set(`you are carrying ${this.blueprint.name}`, 4000);
-    }
+    this.initGame();
+  }
+
+  public initUserInput(character: any) {
+    return new UserInput({
+      '78': this.reset.bind(this), // (r) reset map
+      '38': character.getAction('move', 'north'),
+      '37': character.getAction('move', 'west'),
+      '39': character.getAction('move', 'east'),
+      '40': character.getAction('move', 'south'),
+      '84': character.getAction('take'), // (t)ake item
+      '77': character.getAction('mine'), // deploy particle (m)iner
+    });
+  }
+
+  public startGame() {
+    this.status.set('you wake up');
+    this.status.set(`you are carrying ${this.blueprint.name}`, 4000);
+  }
 }
