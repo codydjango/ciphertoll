@@ -5,17 +5,17 @@ import { Renderable } from './Renderable';
 class Scenery extends Renderable {
   // Scenery-specific rendering functions
 
-  public map: ILandscape[][];
+  public landscape: ILandscape[][];
 
   constructor(map: Map) {
     super();
-    this.map = map.getMap();
+    this.landscape = map.getMap();
     this.renderLayer();
     console.log('scenery rendered');
   }
 
   public renderLayer() {
-    const grid = this.map.map(arr => arr.slice());
+    const grid = this.landscape.map(arr => arr.slice());
     this.setLayer(this.createStringifiedLayer(grid));
     this.drawLayer();
   }

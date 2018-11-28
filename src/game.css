@@ -140,6 +140,10 @@ body {
   color: #8bcbd1;
 }
 
+.town {
+  color: #e5a0ff;
+}
+
 @keyframes mining-full {
   0% {
     color: lime;

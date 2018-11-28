@@ -4,6 +4,7 @@ import { ILandscape } from './LandscapeData';
 import MapGenerator from './MapGenerator';
 import Utility from './Utility';
 import Item from './items/Item';
+import { Town } from './towns/Town';
 
 export class Map {
   public static getCol(mapData: ILandscape[][]) {
@@ -68,5 +69,11 @@ export class Map {
 
   public pushItem(item: any) {
     this.itemsOnMap.push(item);
+  }
+
+  public setTowns(towns: Town[]) {
+    towns.forEach(town => {
+      this.landscape[town.y][town.x] = town.data;
+    });
   }
 }

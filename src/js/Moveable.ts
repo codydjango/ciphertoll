@@ -93,8 +93,8 @@ class Moveable extends Renderable {
   public checkWalkable(newGridIndices: number[]) {
     let walkable = false;
 
-    const y = newGridIndices[1];
     const x = newGridIndices[0];
+    const y = newGridIndices[1];
 
     if (this.landscape[y]) {
       walkable = this.landscape[y][x].walkable;

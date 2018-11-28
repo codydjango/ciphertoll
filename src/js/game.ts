@@ -13,10 +13,12 @@ import Scenery from './Scenery';
 import Status from './Status';
 import { store } from './store';
 import UserInput from './UserInput';
+import { generateTowns } from './towns';
 
 const COL = 80;
 const ROW = 80;
 const ITEM_NUM = 5;
+const TOWN_NUM = 4;
 
 export interface IMapSize {
   col: number;
@@ -85,6 +87,10 @@ export class Game {
     this.inventoryDisplay = new InventoryDisplay();
 
     const map = (this.map = new Map(settings.mapData));
+
+    const towns = generateTowns(TOWN_NUM, map);
+    map.setTowns(towns);
+
     this.scenery = new Scenery(map);
     const character = (this.character = new Character(map));
 
