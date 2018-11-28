@@ -18,9 +18,9 @@ body {
 
 #status {
   display: block;
-  position: absolute;
-  top: 620;
-  left: 0;
+  position: relative;
+  /* top: 620;
+  left: 0; */
   text-align: left;
   color: white;
 }
@@ -70,6 +70,7 @@ body {
 #landscape-layer {
   left: 0;
   top: 0;
+  position: relative;
   z-index: 0;
 }
 

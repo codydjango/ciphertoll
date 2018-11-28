@@ -1,9 +1,8 @@
 import eventManager from '../eventManager';
 import Moveable from '../Moveable';
 import Utility from '../Utility';
-import { ILandscape } from '../LandscapeData';
 import { Map } from '../Map';
-import { ICoordinates } from '../Renderable';
+import ParticleMiner from './ParticleMiner';
 
 // const ITEMS = {
 //     miner: {
@@ -115,15 +114,16 @@ class Item extends Moveable {
     }
   }
 
-  public onTake() {
+  public onTake(this: ParticleMiner) {
+    // bypass by forcing to ParticleMiner
     this.x = null;
     this.y = null;
     this.offMap = true; // changes css display to 'none'
 
+    // call child method from parent by forcing ParticleMiner
     switch (this.name) {
       case 'particle miner':
-        // this.haltMining()
-        console.log('call haltMining here'); // cannot call child method from parent class ...
+        this.haltMining();
         break;
     }
 

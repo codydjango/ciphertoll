@@ -111,6 +111,7 @@ class ParticleMiner extends Item {
   public haltMining() {
     // this.mining = false
     window.clearInterval(this.cancellationID);
+    console.log('haltmining called');
   }
 }
 
