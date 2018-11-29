@@ -3,7 +3,7 @@ import { IMapSize } from './game';
 import { bare, features, ILandscape } from './LandscapeData';
 import Utility from './Utility';
 
-interface IDirection {
+export interface IDirection {
   x: number;
   y: number;
 }

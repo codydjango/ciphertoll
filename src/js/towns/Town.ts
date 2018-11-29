@@ -3,7 +3,13 @@ import { Map } from '../Map';
 import Moveable from '../Moveable';
 import Utility from '../Utility';
 
-const townData: ILandscape = {
+import { TOWNS, ITown, ILocation } from './town.data';
+import eventManager from '../eventManager';
+
+import { IDirection } from '../MapGenerator';
+import UserInput from '../UserInput';
+
+const mapInfo: ILandscape = {
   element: 'X',
   description: '',
   probability: 0,
@@ -14,28 +20,17 @@ const townData: ILandscape = {
   walkable: true,
 };
 
-const names = [
-  'Halliburton',
-  'Quetzal',
-  'Ophelia',
-  'Miranda',
-  'Barclay',
-  'Leander',
-];
-
-const descriptions = [
-  `you stumble into the town of XXX`,
-  `the glowing embers of XXX illumine the horizon`,
-  `the village of XXX stands overlooking the valley`,
-  `twisted strands of rebar mark the site where XXX once stood`,
-];
-
 export class Town extends Moveable {
   public map: Map;
-  public data: ILandscape;
+  public mapInfo: ILandscape;
   public x: number;
   public y: number;
-  public name: string;
+  //   public name: string;
+  public data: ITown;
+
+  //menu properties
+  public menuItemIndex: number;
+  public menuItem: ILocation;
 
   constructor(map: Map) {
     super(map);
@@ -44,41 +39,100 @@ export class Town extends Moveable {
     this.setMap(map.landscape);
 
     this.generateTown();
-    console.log(this.data.description); // descriptions different here
+    console.log(this.mapInfo.description); // descriptions different here
 
-    this.placeTown();
+    this.placeTownOnMap();
+    eventManager.subscribe('access-town', this.enterTown, this);
   }
 
-  placeTown() {
+  generateTown() {
+    // get data for map
+    this.mapInfo = Object.assign({}, mapInfo);
+
+    // get townData
+    const i = Utility.randomize(TOWNS.length);
+    this.data = Object.assign({}, TOWNS[i]);
+    TOWNS.splice(i, 1);
+
+    this.mapInfo.description = this.data.description;
+  }
+
+  placeTownOnMap() {
     this.setInitialPosition();
 
     this.x = this.initialPosition[0];
     this.y = this.initialPosition[1];
   }
 
-  generateTown() {
-    this.data = Object.assign({}, townData);
-    this.name = this.getRandomTownName();
-    this.data.description = this.getRandomDescription();
+  enterTown(coordinates: IDirection) {
+    const { x, y } = coordinates;
+    if (this.x == x && this.y == y) {
+      // menu navigation
+      this.initTownInput();
+      this.menuItemIndex = 0;
+      this.menuItem = this.data.locations[this.menuItemIndex];
+      console.log(this.menuItem.description);
+      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
+    }
   }
 
-  getRandomDescription() {
-    const i = Utility.randomize(descriptions.length);
+  // generalized menu controls ... could abstract from class?
 
-    const placeholderDescription = descriptions[i];
+  nextMenuItem = () => {
+    if (!this.toggle) {
+      this.menuItemIndex =
+        (this.menuItemIndex + 1) % this.data.locations.length;
+      this.menuItem = this.data.locations[this.menuItemIndex];
+      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
 
-    descriptions.splice(i, 1);
+      console.log(this.menuItemIndex);
+    }
+  };
 
-    const description = placeholderDescription.replace('XXX', `${this.name}`);
+  previousMenuItem = () => {
+    if (!this.toggle) {
+      this.menuItemIndex = this.menuItemIndex - 1;
+      if (this.menuItemIndex < 0) {
+        this.menuItemIndex = this.data.locations.length - 1;
+      }
+      this.menuItem = this.data.locations[this.menuItemIndex];
+      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
 
-    return description;
-  }
+      console.log(this.menuItemIndex);
+    }
+  };
 
-  getRandomTownName() {
-    const i = Utility.randomize(names.length);
-    const name = names[i];
-    names.splice(i, 1);
+  public toggle = false;
 
-    return name;
+  accessMenuItem = () => {
+    console.log('access');
+    console.log(this.menuItem.description);
+    if (!this.toggle) {
+      eventManager.publish(
+        'display-town',
+        this.data,
+        this.menuItemIndex,
+        this.menuItem.description,
+      );
+      this.toggle = !this.toggle;
+    } else {
+      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
+      this.toggle = !this.toggle;
+    }
+  };
+
+  exitMenu = () => {
+    console.log('leaving town');
+    eventManager.publish('reset-user-input');
+    eventManager.publish('hide-town');
+  };
+
+  public initTownInput() {
+    return new UserInput({
+      '32': this.accessMenuItem, // (space) access item
+      '38': this.previousMenuItem, // up arrow key
+      '40': this.nextMenuItem, // down arrow key
+      '88': this.exitMenu, // e(x)it town
+    });
   }
 }

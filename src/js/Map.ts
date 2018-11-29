@@ -73,7 +73,7 @@ export class Map {
 
   public setTowns(towns: Town[]) {
     towns.forEach(town => {
-      this.landscape[town.y][town.x] = town.data;
+      this.landscape[town.y][town.x] = town.mapInfo;
     });
   }
 }

@@ -20,22 +20,6 @@ class Scenery extends Renderable {
     this.drawLayer();
   }
 
-  // old version, linter does not like simple for loops
-
-  // public createLayer(grid: any) {
-  //     const sceneryGrid = []
-  //     for (let i = 0; i < grid.length; i++) {
-  //         const rowItems = grid[i]
-  //         let row = ''  // possibly make each row a table?
-  //         for (let i = 0; i < rowItems.length; i++) {
-  //             row += this.renderSpan(rowItems[i]) // add rendered items to the grid
-  //         }
-  //         sceneryGrid.push(row)
-  //     }
-  //     return sceneryGrid
-  // }
-
-  // trying with forEach
   public createStringifiedLayer(grid: ILandscape[][]) {
     const sceneryGrid: string[] = [];
     grid.forEach((outerArray: ILandscape[]) => {

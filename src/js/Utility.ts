@@ -14,12 +14,17 @@ class Utility {
     return str.match(/\d+/)![0];
   }
 
-  public static randomize(mult: number) {
-    return Math.floor(Math.random() * mult);
+  public static randomize(range: number) {
+    return Math.floor(Math.random() * range);
   }
 
   public static Id() {
     return generateId();
+  }
+
+  public static copyArray(arr: any[]) {
+    const copy = arr.map(x => x);
+    return copy;
   }
 
   public static probability(percentage: any) {

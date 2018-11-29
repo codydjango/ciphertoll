@@ -145,4 +145,17 @@ export class Character extends Moveable {
       eventManager.publish('status', 'you do not have any particle miners');
     }
   }
+
+  public enter() {
+    console.log('enter town');
+    const { x, y } = this.getCharacter();
+    if (this.map.landscape[y][x].cls == 'town') {
+      eventManager.publish('access-town', { x, y });
+    }
+  }
+
+  // public exit() {
+  //   console.log('exit town');
+  //   eventManager.publish('hide-town');
+  // }
 }

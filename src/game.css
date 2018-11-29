@@ -35,6 +35,15 @@ body {
     overflow: auto;
     overflow-wrap: normal;*/
 
+#town-menu {
+  display: block;
+  position: absolute;
+  left: 850;
+  color: white;
+  top: 600;
+  width: 450;
+}
+
 #inventory-status {
   display: block;
   position: absolute;
@@ -43,7 +52,7 @@ body {
   top: 50;
   /*    overflow: auto;
     overflow-wrap: normal;*/
-  width: 200;
+  width: 450;
 }
 
 #mining-status {
@@ -51,10 +60,10 @@ body {
   position: absolute;
   left: 850;
   color: white;
-  top: 300;
+  top: 200;
   /*    overflow: auto;
     overflow-wrap: normal;*/
-  width: 200;
+  width: 450;
 }
 
 .unit {
@@ -141,7 +150,17 @@ body {
 }
 
 .town {
-  color: #e5a0ff;
+  color: black;
+  animation: town 5s infinite;
+}
+
+@keyframes town {
+  0% {
+    color: black;
+  }
+  50% {
+    color: rgb(255, 90, 206);
+  }
 }
 
 @keyframes mining-full {

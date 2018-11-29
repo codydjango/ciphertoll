@@ -3,7 +3,7 @@ import Blueprint from './Blueprints';
 import { Character } from './Character';
 import eventManager from './eventManager';
 import inventory from './inventory';
-import InventoryDisplay from './InventoryDisplay';
+import { Menus } from './InventoryDisplay';
 import { generateItems } from './items';
 import ParticleMiner from './items/ParticleMiner';
 import { ILandscape } from './LandscapeData';
@@ -18,7 +18,7 @@ import { generateTowns } from './towns';
 const COL = 80;
 const ROW = 80;
 const ITEM_NUM = 5;
-const TOWN_NUM = 4;
+const TOWN_NUM = 6;
 
 export interface IMapSize {
   col: number;
@@ -41,7 +41,7 @@ export class Game {
   public inventory: any;
   public miningInventory: any;
   public input: UserInput;
-  public inventoryDisplay: InventoryDisplay;
+  public menus: Menus;
 
   public initGame() {
     if (this.hasGameInProgress()) {
@@ -84,7 +84,7 @@ export class Game {
 
   public loadSettings(settings: ISettings) {
     this.status = new Status();
-    this.inventoryDisplay = new InventoryDisplay();
+    this.menus = new Menus();
 
     const map = (this.map = new Map(settings.mapData));
 
@@ -105,6 +105,7 @@ export class Game {
     this.miningInventory = miningInventory;
 
     this.input = this.initUserInput(character);
+    eventManager.subscribe('reset-user-input', this.resetUserInput, this);
   }
 
   public reset() {
@@ -113,6 +114,11 @@ export class Game {
     eventManager.publish('reset');
 
     this.initGame();
+  }
+
+  public resetUserInput() {
+    const character = this.character;
+    this.input = this.initUserInput(character);
   }
 
   public initUserInput(character: Character) {
@@ -124,6 +130,8 @@ export class Game {
       '40': character.getAction('move', 'south'),
       '84': character.getAction('take'), // (t)ake item
       '77': character.getAction('mine'), // deploy particle (m)iner
+      '69': character.getAction('enter'), // (e)nter town
+      //   '88': character.getAction('exit'), // e(x)it town -- exit lives on menu input
     });
   }
 

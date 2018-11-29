@@ -1,19 +1,19 @@
 import Utility from './Utility';
 
-interface IKeyActionMap {
-  '78': () => void;
-  '38': () => void;
-  '37': () => void;
-  '39': () => void;
-  '40': () => void;
-  '84': () => void;
-  '77': () => void;
-}
+// interface IKeyActionMap {
+//   '78': () => void;
+//   '38': () => void;
+//   '37': () => void;
+//   '39': () => void;
+//   '40': () => void;
+//   '84': () => void;
+//   '77': () => void;
+// }
 
 class UserInput {
-  public keyActionMap: IKeyActionMap;
+  public keyActionMap: any;
 
-  constructor(keyActionMap: IKeyActionMap) {
+  constructor(keyActionMap: any) {
     this.keyActionMap = keyActionMap;
 
     document.onkeydown = this.tryActionForEvent.bind(this);

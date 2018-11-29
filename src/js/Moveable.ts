@@ -4,11 +4,7 @@ import { ILandscape } from './LandscapeData';
 import { Map } from './Map';
 import { Renderable } from './Renderable';
 import Utility from './Utility';
-
-interface IMove {
-  x: number;
-  y: number;
-}
+import { IDirection } from './MapGenerator';
 
 class Moveable extends Renderable {
   // movement and placement on the grid
@@ -49,7 +45,7 @@ class Moveable extends Renderable {
     return { x, y };
   }
 
-  public updateGridIndices(actor: IActor, move: IMove) {
+  public updateGridIndices(actor: IActor, move: IDirection) {
     const newGridIndices = [
       this.gridIndices[0] + move.x,
       this.gridIndices[1] + move.y,
