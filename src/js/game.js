@@ -17,10 +17,10 @@ const ITEM_NUM = 5
 
 class Game {
     constructor() {
-        this.initGame()
+        
     }
 
-    initGame() {
+    init() {
         let settings
 
         if (this.hasGameInProgress()) {

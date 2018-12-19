@@ -17,5 +17,26 @@
 
         <script language="javascript" type="text/javascript" src="web3.min.js"></script>
         <script src="./game.bundle.js"></script>
+
+        <script>
+            var web3js;
+
+            window.addEventListener('load', onPageLoad)
+
+            function onPageLoad() {
+                if (typeof web3 !== 'undefined') {
+                    // Use Mist/MetaMask's provider
+                    web3js = new Web3(web3.currentProvider);
+                } else {
+                    alert('subsume the metamask');
+                }
+
+                startApp();
+            }
+
+            function startApp() {
+                this.game.init();
+            }
+        </script>
     </body>
 </html>
