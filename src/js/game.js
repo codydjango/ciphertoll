@@ -17,8 +17,6 @@ const ITEM_NUM = 5
 
 class Game {
     constructor() {
-        //
-
         this.initGame()
     }
 
@@ -32,11 +30,14 @@ class Game {
         }
 
 
-        const moved = (location) => {console.log('location', location)}
-        eventManager.subscribe('moved-to', moved)
-
+        this.loadEventHandlers()
         this.loadSettings(settings)
         this.startGame()
+    }
+
+    loadEventHandlers() {
+        const moved = (location) => {console.log('location', location)}
+        eventManager.subscribe('moved-to', moved)
     }
 
     hasGameInProgress() {
