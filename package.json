@@ -1,15 +1,15 @@
 {
     "name": "game",
     "version": "0.0.1",
-    "main": "src/index.js",
+    "main": "frontend/index.js",
     "license": "MIT",
     "scripts": {
         "serve": "node ./server.js",
         "start": "concurrently \"yarn serve\" \"yarn watch\"",
         "browserify": "./node_modules/.bin/browserify",
         "watchify": "./node_modules/.bin/watchify",
-        "build": "yarn browserify ./src/index.js -d -o ./src/game.bundle.js",
-        "watch": "yarn watchify ./src/index.js --debug -o ./src/game.bundle.js"
+        "build": "yarn browserify ./frontend/index.js -d -o ./frontend/game.bundle.js",
+        "watch": "yarn watchify ./frontend/index.js --debug -o ./frontend/game.bundle.js"
     },
     "browserify": {
         "transform": [

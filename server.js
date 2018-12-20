@@ -16,7 +16,7 @@ var port = 3000
 
 
 
-app.use(express.static('src'))
+app.use(express.static('frontend'))
 app.listen(port, listening)
 
 function listening() {
@@ -24,8 +24,8 @@ function listening() {
     browserSync({
         proxy: `localhost:${port}`,
         files: [
-            './src/game.bundle.js',
-            './src/**/*.{html,css}'
+            './frontend/game.bundle.js',
+            './frontend/**/*.{html,css}'
         ]
     })
 }
