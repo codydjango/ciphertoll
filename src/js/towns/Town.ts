@@ -28,7 +28,7 @@ export class Town extends Moveable {
   //   public name: string;
   public data: ITown;
 
-  //menu properties
+  // menu properties
   public menuItemIndex: number;
   public menuItem: ILocation;
 
@@ -68,7 +68,7 @@ export class Town extends Moveable {
     const { x, y } = coordinates;
     if (this.x == x && this.y == y) {
       // menu navigation
-      this.initTownInput();
+      this.initMenuInput(); // could pass in THIS as arg to initMenuInput, so it knows where to call fns...
       this.menuItemIndex = 0;
       this.menuItem = this.data.locations[this.menuItemIndex];
       console.log(this.menuItem.description);
@@ -78,14 +78,14 @@ export class Town extends Moveable {
 
   // generalized menu controls ... could abstract from class?
 
+  public toggle = false;
+
   nextMenuItem = () => {
     if (!this.toggle) {
       this.menuItemIndex =
         (this.menuItemIndex + 1) % this.data.locations.length;
       this.menuItem = this.data.locations[this.menuItemIndex];
       eventManager.publish('display-town', this.data, this.menuItemIndex, null);
-
-      console.log(this.menuItemIndex);
     }
   };
 
@@ -97,16 +97,11 @@ export class Town extends Moveable {
       }
       this.menuItem = this.data.locations[this.menuItemIndex];
       eventManager.publish('display-town', this.data, this.menuItemIndex, null);
-
-      console.log(this.menuItemIndex);
     }
   };
 
-  public toggle = false;
-
   accessMenuItem = () => {
     console.log('access');
-    console.log(this.menuItem.description);
     if (!this.toggle) {
       eventManager.publish(
         'display-town',
@@ -122,12 +117,12 @@ export class Town extends Moveable {
   };
 
   exitMenu = () => {
-    console.log('leaving town');
+    eventManager.publish('status', `leaving ${this.data.name}`);
     eventManager.publish('reset-user-input');
     eventManager.publish('hide-town');
   };
 
-  public initTownInput() {
+  public initMenuInput() {
     return new UserInput({
       '32': this.accessMenuItem, // (space) access item
       '38': this.previousMenuItem, // up arrow key
