@@ -1,10 +1,26 @@
 import UserInput from './UserInput';
 import eventManager from './eventManager';
 
+/**
+ * Generalized Menu Functionality
+ *
+ * The data-holder class instance which wants to use this menu system
+ * must pass itself -- 'this' -- into an instance of Menu. Also, the
+ * data-holder must own the four methods listed on the ICaller interface.
+ *
+ */
+
 interface ICaller {
+  // fn which returns the array that Menu will work with
   getMenuArray: () => string[];
+
+  // what to do when the cursor selects an array item
   selectMenuItem: (idx: number) => void;
-  accessMenuItem: (idx: number, item: any) => void;
+
+  // what to do once an array item is accessed (via spacebar)
+  accessMenuItem: (idx: number) => void;
+
+  // what to do when the user exits the menu
   exitMenu: () => void;
 }
 
@@ -43,7 +59,7 @@ export class Menu {
   accessMenuItem = () => {
     console.log('access');
     if (!this.toggle) {
-      this.caller.accessMenuItem(this.itemIndex, this.item);
+      this.caller.accessMenuItem(this.itemIndex);
       this.toggle = !this.toggle;
     } else {
       this.caller.selectMenuItem(this.itemIndex);

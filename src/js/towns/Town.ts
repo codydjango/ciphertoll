@@ -73,23 +73,24 @@ export class Town extends Moveable {
   }
 
   // menu-navigation functions
+  // these 4 functions must exist on the calling class in order for Menu to work
 
-  getMenuArray() {
+  getMenuArray = () => {
     return this.data.locations;
-  }
+  };
 
-  selectMenuItem(itemIndex: number) {
+  selectMenuItem = (itemIndex: number) => {
     eventManager.publish('display-town', this.data, itemIndex, null);
-  }
+  };
 
-  accessMenuItem(itemIndex: number, selectedItem: any) {
+  accessMenuItem = (itemIndex: number) => {
     eventManager.publish(
       'display-town',
       this.data,
       itemIndex,
-      selectedItem.description,
+      this.data.locations[itemIndex].description,
     );
-  }
+  };
 
   exitMenu = () => {
     eventManager.publish('status', `leaving ${this.data.name}`);
