@@ -7,7 +7,8 @@ import { TOWNS, ITown, ILocation } from './town.data';
 import eventManager from '../eventManager';
 
 import { IDirection } from '../MapGenerator';
-import UserInput from '../UserInput';
+
+import { Menu } from '../Menu';
 
 const mapInfo: ILandscape = {
   element: 'X',
@@ -27,10 +28,6 @@ export class Town extends Moveable {
   public y: number;
   //   public name: string;
   public data: ITown;
-
-  // menu properties
-  public menuItemIndex: number;
-  public menuItem: ILocation;
 
   constructor(map: Map) {
     super(map);
@@ -67,67 +64,35 @@ export class Town extends Moveable {
   enterTown(coordinates: IDirection) {
     const { x, y } = coordinates;
     if (this.x == x && this.y == y) {
-      // menu navigation
-      this.initMenuInput(); // could pass in THIS as arg to initMenuInput, so it knows where to call fns...
-      this.menuItemIndex = 0;
-      this.menuItem = this.data.locations[this.menuItemIndex];
-      console.log(this.menuItem.description);
-      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
+      const menu = new Menu(this);
+      menu.initMenuInput();
+      menu.item = this.data.locations[menu.itemIndex];
+      console.log(menu.item.description);
+      this.selectMenuItem(menu.itemIndex);
     }
   }
 
-  // generalized menu controls ... could abstract from class?
+  // menu-navigation functions
 
-  public toggle = false;
+  getMenuArray() {
+    return this.data.locations;
+  }
 
-  nextMenuItem = () => {
-    if (!this.toggle) {
-      this.menuItemIndex =
-        (this.menuItemIndex + 1) % this.data.locations.length;
-      this.menuItem = this.data.locations[this.menuItemIndex];
-      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
-    }
-  };
+  selectMenuItem(itemIndex: number) {
+    eventManager.publish('display-town', this.data, itemIndex, null);
+  }
 
-  previousMenuItem = () => {
-    if (!this.toggle) {
-      this.menuItemIndex = this.menuItemIndex - 1;
-      if (this.menuItemIndex < 0) {
-        this.menuItemIndex = this.data.locations.length - 1;
-      }
-      this.menuItem = this.data.locations[this.menuItemIndex];
-      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
-    }
-  };
-
-  accessMenuItem = () => {
-    console.log('access');
-    if (!this.toggle) {
-      eventManager.publish(
-        'display-town',
-        this.data,
-        this.menuItemIndex,
-        this.menuItem.description,
-      );
-      this.toggle = !this.toggle;
-    } else {
-      eventManager.publish('display-town', this.data, this.menuItemIndex, null);
-      this.toggle = !this.toggle;
-    }
-  };
+  accessMenuItem(itemIndex: number, selectedItem: any) {
+    eventManager.publish(
+      'display-town',
+      this.data,
+      itemIndex,
+      selectedItem.description,
+    );
+  }
 
   exitMenu = () => {
     eventManager.publish('status', `leaving ${this.data.name}`);
-    eventManager.publish('reset-user-input');
     eventManager.publish('hide-town');
   };
-
-  public initMenuInput() {
-    return new UserInput({
-      '32': this.accessMenuItem, // (space) access item
-      '38': this.previousMenuItem, // up arrow key
-      '40': this.nextMenuItem, // down arrow key
-      '88': this.exitMenu, // e(x)it town
-    });
-  }
 }
