@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "chokidar": "^2.0.4",
     "concurrently": "^4.1.0",
     "express": "^4.16.4",
     "tslib": "^1.9.3"
