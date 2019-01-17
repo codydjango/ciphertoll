@@ -1,8 +1,9 @@
-var express = require('express')
-var app = express()
-var port = 3000
+var express = require('express');
+var app = express();
+var port = 3000;
 
-app.listen(port, listening)
+app.listen(port, listening);
 
 function listening() {
-    console.log(`API listening on localhost:${port}`)
+  console.log(`API listening on localhost:${port}`);
+}
