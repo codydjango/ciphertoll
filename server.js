@@ -6,4 +6,3 @@ app.listen(port, listening)
 
 function listening() {
     console.log(`API listening on localhost:${port}`)
-}
