@@ -1,16 +1,9 @@
-# An html5/es6 prototyping environment, ported to Typescript
+# Ciphertoll 
 
-forked from `https://github.com/codydjango/game`
-sitting atop of `parcel` for server and code transpilation
+A vision of a mashup ec721-backed incremental game and roguelike set in a dystopic near-future.
 
-### install
+Currently still working out different mechanics.
 
-```
-apt-get node
-apt-get yarn
-yarn
-```
+Basic map roguelike available at:
 
-### run
-
-`yarn start`
+`yarn run start`
